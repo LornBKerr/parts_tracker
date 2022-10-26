@@ -15,7 +15,7 @@ def close_database(dbref):
     dbref.sql_close()
 
 @pytest.fixture
-def create_items_table(tmpdir):
+def open_database(tmpdir):
     path = tmpdir.join(database)
     dbref = Dbal()
     dbref.sql_connect(path)

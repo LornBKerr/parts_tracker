@@ -23,9 +23,11 @@ def open_database(tmpdir):
     return dbref
 
 @pytest.fixture
-def create_items_table():
+def create_items_table(tmpdir):
+    path = tmpdir.join(database)
     dbref = Dbal()
-    dbref.sql_connect('parts_test.db')
+    # valid connection
+    dbref.sql_connect(path)
     dbref.sql_query("DROP TABLE IF EXISTS 'items'")
     create_table = 'CREATE TABLE IF NOT EXISTS "items"' + \
                           '("record_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,' + \
