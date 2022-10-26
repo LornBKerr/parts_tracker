@@ -1,0 +1,28 @@
+# ########################################################
+#
+# Requirements file for PartsTracker program virtual environment
+#
+# File:       requirements.txt
+# Author:     Lorn B Kerr
+# Copyright:  (c) 2022 Lorn B Kerr
+# License:    see file LICENSE
+#
+# ########################################################
+
+# local project library
+-e /home/larry/development/lbk_library
+
+# Test PyPi url
+--extra-index-url https://test.pypi.org/simple/
+
+# local project library
+lbk_library
+PyQt6
+
+# Testing Requirements
+pytest
+pytest_cover
+coverage
+tox
+#PyInstaller
+
