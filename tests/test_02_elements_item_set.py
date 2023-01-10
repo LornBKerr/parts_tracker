@@ -7,7 +7,7 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from lbk_library import Dbal
-from db_elements import Item, ItemSet
+from elements import Item, ItemSet
 
 database = 'parts_test.db'
 
@@ -166,4 +166,4 @@ def test_12_iterator(create_items_table):
         i += 1
     close_database(dbref)
 
-# end test_02_db_elements_item_set.py
+# end test_02_elements_item_set.py

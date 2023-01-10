@@ -7,7 +7,7 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from lbk_library import Dbal
-from db_elements import Item
+from elements import Item
 
 database = 'parts_test.db'
 
@@ -366,4 +366,4 @@ def test_0121_item_delete(create_items_table):
     assert len(item.get_properties()) == 8
     close_database(dbref)
 
-#end test_01_db_elements_item.py
+#end test_01_elements_item.py
