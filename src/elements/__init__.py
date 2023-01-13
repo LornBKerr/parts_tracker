@@ -23,4 +23,4 @@ License    MIT (https://opensource.org/licenses/MIT)
 
 from .item import Item
 from .item_set import ItemSet
-#from .part import Part
+from .part import Part
