@@ -2,25 +2,35 @@
 The Parts Database Element Collection
 
 This module contains the following classes
-    Item extends Library.Element
-    ItemSet extends Library.ElementSet
-    Part extends Library.Element
-    PartSet extends Library.ElementSet
-    Order extends Library.Element
-    OrderSet extends Library.ElementSet
-    OrderLine extends Library.Element
-    OrderLineSet extends Library.ElementSet
-    Source extends Library.Element
-    SourceSet extends Library.ElementSet
-    Condition extends Library.Element
-    ConditionSet extends Library.ElementSet
-
+    Item extends lbk_library.Element
+    ItemSet extends lbk_library.ElementSet
+    Part extends lbk_library.Element
+    PartSet extends lbk_library.ElementSet
+#    Order extends lbk_library.Element
+#    OrderSet extends lbk_library.ElementSet
+#    OrderLine extends lbk_library.Element
+#    OrderLineSet extends lbk_library.ElementSet
+#    Source extends lbk_library.Element
+#    SourceSet extends lbk_library.ElementSet
+#    Condition extends lbk_library.Element
+#    ConditionSet extends lbk_library.ElementSet
+#
 File       __init__.py
 Author     Lorn B Kerr
-Copyright  (c) 2020-2021 Lorn B Kerr
+Copyright  (c) 2023 Lorn B Kerr
 License    MIT (https://opensource.org/licenses/MIT)
 """
 
 from .item import Item
 from .item_set import ItemSet
 from .part import Part
+from .part_set import PartSet
+#from .order import Order
+#from .order_set import OrderSet
+#from .order_line import OrderLine
+#from .order_line_set import OrderLineSet
+#from .source import Source
+#from .source_set import SourceSet
+#from .condition import Condition
+#from .condition_set import ConditionSet
+
