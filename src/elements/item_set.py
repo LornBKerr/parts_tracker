@@ -9,7 +9,7 @@ License:    MIT, see file License
 
 from lbk_library import Dbal, ElementSet
 
-from .item import Item
+from . import Item
 
 class ItemSet(ElementSet):
     """
