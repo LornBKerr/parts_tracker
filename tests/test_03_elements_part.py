@@ -86,25 +86,25 @@ part_values = dict({'record_id': 9876,
 # ********************************************************************** 
 # Begin Tests
 # ********************************************************************** 
-def test_01_constr(open_database):
+def test_03_01_constr(open_database):
     dbref = open_database
     part = Part(dbref)
     assert type(part) == Part
     close_database(dbref)
     
-def test_02_get_table(open_database):
+def test_03_02_get_table(open_database):
     dbref = open_database
     part = Part(dbref)
     assert part.get_table() == 'parts'
     close_database(dbref)
     
-def test_03_get_dbref(open_database):
+def test_03_03_get_dbref(open_database):
     dbref = open_database
     part = Part(dbref)
     assert part.get_dbref() == dbref
     close_database(dbref)
 
-def test_04_get_set_part_number(open_database):
+def test_03_04_get_set_part_number(open_database):
     dbref = open_database
     part = Part(dbref)
     defaults = part.get_initial_values()
@@ -121,7 +121,7 @@ def test_04_get_set_part_number(open_database):
     assert result['entry'] == part.get_part_number()
     close_database(dbref)
 
-def test_05_get_set_source(open_database):
+def test_03_05_get_set_source(open_database):
     dbref = open_database
     part = Part(dbref)
     defaults = part.get_initial_values()
@@ -138,7 +138,7 @@ def test_05_get_set_source(open_database):
     assert result['entry'] == part.get_source()
     close_database(dbref)
 
-def test_06_get_set_description(open_database):
+def test_03_06_get_set_description(open_database):
     dbref = open_database
     part = Part(dbref)
     defaults = part.get_initial_values()
@@ -155,13 +155,13 @@ def test_06_get_set_description(open_database):
     assert result['entry'] == part.get_description()
     close_database(dbref)
 
-def test_07_get_properties_type(open_database):
+def test_03_07_get_properties_type(open_database):
     dbref = open_database
     part = Part(dbref)
     assert isinstance(part.get_properties(), dict)
     close_database(dbref)
 
-def test_08_item_get_default_property_values(open_database):
+def test_03_08_item_get_default_property_values(open_database):
     dbref = open_database
     part = Part(dbref)
     defaults = part.get_initial_values()
@@ -170,7 +170,7 @@ def test_08_item_get_default_property_values(open_database):
     assert part.get_description() == defaults['description']
     close_database(dbref)
 
-def test_09_set_properties_from_dict(open_database):
+def test_03_09_set_properties_from_dict(open_database):
     # set Part from array
     dbref = open_database
     part = Part(dbref)
@@ -180,13 +180,13 @@ def test_09_set_properties_from_dict(open_database):
     assert part_values['description'] == part.get_description()
     close_database(dbref)
 
-def test_10_get_properties_size(open_database):
+def test_03_10_get_properties_size(open_database):
     dbref = open_database
     part = Part(dbref)
     assert len(part.get_properties()) == len(part_values)
     close_database(dbref)
 
-def test_11_part_from_dict(open_database):
+def test_03_11_part_from_dict(open_database):
     # set Part from array
     dbref = open_database
     part = Part(dbref, part_values)
@@ -197,7 +197,7 @@ def test_11_part_from_dict(open_database):
     assert part_values['remarks'] == part.get_remarks()
     close_database(dbref)
     
-def test_12_part_from_partial_dict(open_database):
+def test_03_12_part_from_partial_dict(open_database):
     dbref = open_database
     del part_values['source']
     part = Part(dbref, part_values)
@@ -208,7 +208,7 @@ def test_12_part_from_partial_dict(open_database):
     assert part_values['remarks'] == part.get_remarks()
     close_database(dbref)
 
-def test_13_bad_column_name(open_database):
+def test_03_13_bad_column_name(open_database):
     dbref = open_database
     part = Part(dbref, None, 'a_column')
     defaults = part.get_initial_values()
@@ -219,7 +219,7 @@ def test_13_bad_column_name(open_database):
     assert part.get_remarks() == defaults['remarks']
     close_database(dbref)
 
-def test_14_part_add(open_database):
+def test_03_14_part_add(open_database):
     dbref = open_database
     create_parts_table(dbref)
     part = Part(dbref, part_values)
@@ -232,7 +232,7 @@ def test_14_part_add(open_database):
     assert part_values['remarks'] == part.get_remarks()
     close_database(dbref)
     
-def test_15_part_read_db(open_database):
+def test_03_15_part_read_db(open_database):
     dbref = open_database
     create_parts_table(dbref)
     part = Part(dbref)
@@ -256,7 +256,7 @@ def test_15_part_read_db(open_database):
     assert len(part2.get_properties()) == 0
     close_database(dbref)
 
-def test_16_part_update(open_database):
+def test_03_16_part_update(open_database):
     dbref = open_database
     create_parts_table(dbref)
     part = Part(dbref)
@@ -276,7 +276,7 @@ def test_16_part_update(open_database):
     assert part_values['remarks'] == part.get_remarks()
     close_database(dbref)
 
-def test_17_part_delete(open_database):
+def test_03_17_part_delete(open_database):
     dbref = open_database
     create_parts_table(dbref)
     part = Part(dbref)
@@ -291,7 +291,7 @@ def test_17_part_delete(open_database):
     assert isinstance(part.get_properties(), dict)
     assert len(part.get_properties()) == len(part_values)
 
-def test_17_get_total_quantity(open_database):
+def test_03_17_get_total_quantity(open_database):
     dbref = open_database
     create_parts_table(dbref)
     # create items table with 4 entries, three with current part number

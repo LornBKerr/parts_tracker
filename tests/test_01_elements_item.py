@@ -58,25 +58,25 @@ item_values = dict({'record_id': 9876,
                     'box': 5})
 
 
-def test_01_constr(open_database):
+def test_01_01_constr(open_database):
     dbref = open_database
     item = Item(dbref)
     assert isinstance(item, Item)
     close_database(dbref)
 
-def test_02_get_table(open_database):
+def test_01_02_get_table(open_database):
     dbref = open_database
     item = Item(dbref)
     assert item.get_table() == 'items'
     close_database(dbref)
 
-def test_03_get_dbref(open_database):
+def test_01_03_get_dbref(open_database):
     dbref = open_database
     item = Item(dbref)
     assert item.get_dbref() == dbref
     close_database(dbref)
 
-def test_04_get_set_part_number(open_database):
+def test_01_04_get_set_part_number(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -93,7 +93,7 @@ def test_04_get_set_part_number(open_database):
     assert result['entry'] == item.get_part_number()
     close_database(dbref)
 
-def test_05_get_set_assembly(open_database):
+def test_01_05_get_set_assembly(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -110,7 +110,7 @@ def test_05_get_set_assembly(open_database):
     assert result['entry'] == item.get_assembly()
     close_database(dbref)
 
-def test_06_get_set_quantity(open_database):
+def test_01_06_get_set_quantity(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -130,7 +130,7 @@ def test_06_get_set_quantity(open_database):
     assert result['entry'] == item.get_quantity()
     close_database(dbref)
 
-def test_07_get_set_condition(open_database):
+def test_01_07_get_set_condition(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -147,7 +147,7 @@ def test_07_get_set_condition(open_database):
     assert result['entry'] == item.get_condition()
     close_database(dbref)
 
-def test_08_get_set_installed(open_database):
+def test_01_08_get_set_installed(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -167,7 +167,7 @@ def test_08_get_set_installed(open_database):
     assert result['entry'] == item.get_installed()
     close_database(dbref)
 
-def test_09_get_set_box(open_database):
+def test_01_09_get_set_box(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -187,14 +187,14 @@ def test_09_get_set_box(open_database):
     assert result['entry'] == item.get_box()
     close_database(dbref)
 
-def test_10_get_properties_type(open_database):
+def test_01_10_get_properties_type(open_database):
     dbref = open_database
     item = Item(dbref)
     data = item.get_properties()
     assert isinstance(data, dict)
     close_database(dbref)
 
-def test_11_item_get_default_property_values(open_database):
+def test_01_11_item_get_default_property_values(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -207,7 +207,7 @@ def test_11_item_get_default_property_values(open_database):
     assert item.get_box() == defaults['box']
     close_database(dbref)
 
-def test_12_set_properties_from_dict(open_database):
+def test_01_12_set_properties_from_dict(open_database):
     # set Item from array
     dbref = open_database
     item = Item(dbref)
@@ -222,13 +222,13 @@ def test_12_set_properties_from_dict(open_database):
     assert item_values['box'] == item.get_box()
     close_database(dbref)
 
-def test_13_item_get_properties_size(open_database):
+def test_01_13_item_get_properties_size(open_database):
     dbref = open_database
     item = Item(dbref)
     assert len(item.get_properties()) == len(item_values)
     close_database(dbref)
 
-def test_14_item_from_dict(open_database):
+def test_01_14_item_from_dict(open_database):
     # set Part from array
     dbref = open_database
     item = Item(dbref, item_values)
@@ -242,7 +242,7 @@ def test_14_item_from_dict(open_database):
     assert item_values['box'] == item.get_box()
     close_database(dbref)
 
-def test_15_item_from__partial_dict(open_database):
+def test_01_15_item_from__partial_dict(open_database):
     dbref = open_database
     del item_values['assembly']
     item = Item(dbref, item_values)
@@ -256,7 +256,7 @@ def test_15_item_from__partial_dict(open_database):
     assert item_values['box'] == item.get_box()
     close_database(dbref)
 
-def test_16_item_add(create_items_table):
+def test_01_16_item_add(create_items_table):
     dbref = create_items_table
     item = Item(dbref, item_values)
     item_id = item.add()
@@ -271,7 +271,7 @@ def test_16_item_add(create_items_table):
     assert item_values['box'] == item.get_box()
     close_database(dbref)
 
-def test_17_item_read_db(create_items_table):
+def test_01_17_item_read_db(create_items_table):
     dbref = create_items_table
     item = Item(dbref)
     item.set_properties(item_values)
@@ -299,7 +299,7 @@ def test_17_item_read_db(create_items_table):
     assert len(item2.get_properties()) == 0
     close_database(dbref)
 
-def test_18_item_update(create_items_table):
+def test_01_18_item_update(create_items_table):
     dbref = create_items_table
     item = Item(dbref)
     item.set_properties(item_values)
@@ -322,7 +322,7 @@ def test_18_item_update(create_items_table):
     assert item_values['box'] == item.get_box()
     close_database(dbref)
 
-def test_19_item_delete(create_items_table):
+def test_01_19_item_delete(create_items_table):
     dbref = create_items_table
     item = Item(dbref)
     item.set_properties(item_values)

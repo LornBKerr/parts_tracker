@@ -6,20 +6,13 @@ src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from lbk_library import Dbal
+from lbk_library import Dbal, ElementSet
 from elements import Item, ItemSet
 
 database = 'parts_test.db'
 
 def close_database(dbref):
     dbref.sql_close()
-
-@pytest.fixture
-def open_database(tmpdir):
-    path = tmpdir.join(database)
-    dbref = Dbal()
-    dbref.sql_connect(path)
-    return dbref
 
 @pytest.fixture
 def create_items_table(tmpdir):
@@ -51,7 +44,7 @@ def load_items_table(dbref):
                  ['9', 'X055', 'EB', '1', 'Usable', '1', '', ''],
                  ['56', 'BULB-1895', 'JCIB', '2', 'Replace', '1', '', 'License Plate Lamp'],
                  ['59', '158-520', 'JCIA', '2', 'Replace', '1', '', ''],
-                 ['70', 'BTB1108', 'CX', '1', 'Usable', '1', '', '']
+                 ['70', 'BTB1108', 'CX', '1', 'Usable', '1', '', ''],
                 ]
     sql_query = {'type': 'INSERT', 'table': 'items'}
     for values in value_set:
@@ -64,38 +57,39 @@ def load_items_table(dbref):
         dbref.sql_query(sql, entries)
 
 
-def test_0201_constructor(create_items_table):
+def test_02_01_constructor(create_items_table):
     dbref = create_items_table
     item_set = ItemSet(dbref)
     assert isinstance(item_set, ItemSet)
+    assert isinstance(item_set, ElementSet)
     close_database(dbref)
     
-def test_0202_get_dbref(create_items_table):
+def test_02_02_get_dbref(create_items_table):
     dbref = create_items_table
     item_set = ItemSet(dbref)
     assert item_set.get_dbref() == dbref
     close_database(dbref)
 
-def test_0203_get_table(create_items_table):
+def test_02_03_get_table(create_items_table):
     dbref = create_items_table
     item_set = ItemSet(dbref)
     assert item_set.get_table() == 'items'
     close_database(dbref)
 
-def test_0204_set_table(create_items_table):
+def test_02_04_set_table(create_items_table):
     dbref = create_items_table
     item_set = ItemSet(dbref)
     item_set.set_table('parts')
     assert item_set.get_table() == 'parts'
     close_database(dbref)
     
-def test_0205_get_property_set(create_items_table):
+def test_02_05_get_property_set(create_items_table):
     dbref = create_items_table
     item_set = ItemSet(dbref)
     assert isinstance(item_set.get_property_set(), list)
     close_database(dbref)
     
-def test_0206_set_property_set_none(create_items_table):
+def test_02_06_set_property_set_none(create_items_table):
     dbref = create_items_table
     item_set = ItemSet(dbref)
     assert isinstance(item_set.get_property_set(), list)
@@ -104,7 +98,7 @@ def test_0206_set_property_set_none(create_items_table):
     assert len(item_set.get_property_set()) == 0
     close_database(dbref)
 
-def test_0207_all_rows_empty(create_items_table):
+def test_02_07_all_rows_empty(create_items_table):
     dbref = create_items_table
     item_set = ItemSet(dbref)
     count_result = dbref.sql_query("SELECT COUNT(*) FROM " + item_set.get_table())
@@ -113,16 +107,16 @@ def test_0207_all_rows_empty(create_items_table):
     assert count == item_set.get_number_elements()
     close_database(dbref)
 
-def test_0208_selected_rows(create_items_table):
+def test_02_08_selected_rows(create_items_table):
     dbref = create_items_table
     load_items_table(dbref)
-    item_set = ItemSet(dbref,'part_number', 'BTB1108')
+    item_set = ItemSet(dbref, 'part_number', 'BTB1108')
     count_result = dbref.sql_query("SELECT COUNT(*) FROM " + item_set.get_table() + " WHERE part_number = 'BTB1108'")
     count = dbref.sql_fetchrow(count_result)['COUNT(*)']
     assert count == len(item_set.get_property_set())
     close_database(dbref)
 
-def test_0209_ordered_selected_rows(create_items_table):
+def test_02_09_ordered_selected_rows(create_items_table):
     dbref = create_items_table
     load_items_table(dbref)
     item_set = ItemSet(dbref,'part_number', 'BTB1108', 'assembly')
@@ -136,7 +130,7 @@ def test_0209_ordered_selected_rows(create_items_table):
         assert item1.get_assembly() < item2.get_assembly()
     close_database(dbref)
 
-def test_10_selected_rows_limit(create_items_table):
+def test_02_10_selected_rows_limit(create_items_table):
     dbref = create_items_table
     load_items_table(dbref)
     limit = 5
@@ -145,7 +139,7 @@ def test_10_selected_rows_limit(create_items_table):
     assert item_set.get_property_set()[0].get_record_id() == 1
     close_database(dbref)
 
-def test_11_selected_rows_limit_offset(create_items_table):
+def test_02_11_selected_rows_limit_offset(create_items_table):
     dbref = create_items_table
     load_items_table(dbref)
     limit = 5
@@ -155,7 +149,7 @@ def test_11_selected_rows_limit_offset(create_items_table):
     assert item_set.get_property_set()[0].get_record_id() == 3
     close_database(dbref)
 
-def test_12_iterator(create_items_table):
+def test_02_12_iterator(create_items_table):
     dbref = create_items_table
     load_items_table(dbref)
     limit = 5
