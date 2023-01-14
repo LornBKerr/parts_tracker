@@ -11,9 +11,7 @@ from copy import deepcopy
 from typing import Any      #, Union
 
 from lbk_library import Dbal, Element
-from .item import Item
-from .item_set import ItemSet
-
+from . import Item, ItemSet
 
 class Part(Element):
     """
