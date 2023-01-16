@@ -72,7 +72,7 @@ class Part(Element):
         if isinstance(part_key, dict):
             # make sure there are no missing keys
             for key in self.defaults:
-                if not key in part_key:
+                if key not in part_key:
                     part_key[key] = deepcopy(self.defaults[key])
 
         if column is None:

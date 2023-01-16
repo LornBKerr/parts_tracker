@@ -30,6 +30,7 @@ class OrdersListPage:
 
         # set up the Orders Listing Table
         self.table = self.main_window.orders_table_widget
+
     # #
     # #
 
@@ -38,6 +39,7 @@ class OrdersListPage:
         Read the database order table and update the display table.
         """
         pass
+
     # ##
     # ##
     # end update_table()
@@ -50,6 +52,7 @@ class OrdersListPage:
 
     # end clear_table()
 
+
 # ###
-## end class OrdersListPage
-#
+
+# end class OrdersListPage

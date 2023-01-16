@@ -7,6 +7,9 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
+import os
+import sys
+
 from lbk_library import Dbal
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QTreeWidgetItem  # , QTableWidgetItem
@@ -40,6 +43,7 @@ class AssemblyTreePage:
         self.main_window.button_expand_tree.clicked.connect(self.action_expand)
 
         self.tree.itemClicked.connect(self.action_item_clicked)
+
     # end __init__()
 
     def update_tree(self) -> None:
@@ -141,7 +145,8 @@ class AssemblyTreePage:
         """
         Set the tree headers.
 
-        The header names are set and the column widths to match the size of the entries are set.
+        The header names are set and the column widths to match the size
+        of the entries are set.
         """
         column_names = [
             "Assembly",
@@ -192,14 +197,14 @@ class AssemblyTreePage:
             column (int): the column clicked
         """
         item_number_column = 1
-        dialog = ItemDialog(
-            self.main_window.tab_widget,
-            self.dbref,
-            tree_item.text(item_number_column),
-            EDIT_ELEMENT,
-        )
-        dialog.exec()
-        self.update_tree()
+        # dialog = ItemDialog(
+        #    self.main_window.tab_widget,
+        #    self.dbref,
+        #    tree_item.text(item_number_column),
+        #    EDIT_ELEMENT,
+        # )
+        # dialog.exec()
+        # self.update_tree()
 
     # end action_item_clicked
 
