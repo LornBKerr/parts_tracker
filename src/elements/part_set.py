@@ -13,10 +13,12 @@ from lbk_library import Dbal, ElementSet
 
 from . import Part
 
+
 class PartSet(ElementSet):
     """
     This is a set of Parts in the database.
     """
+
     def __init__(
         self,
         dbref: Dbal,
@@ -55,7 +57,8 @@ class PartSet(ElementSet):
             limit,
             offset,
         )
+
     # end __init__()
 
-# end PartSet
 
+# end PartSet
