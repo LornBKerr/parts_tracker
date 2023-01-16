@@ -10,8 +10,7 @@ Copyright  (c) 2023 Lorn B Kerr
 License    License:    MIT, see file License
 """
 
-from .main_window import MainWindow
 from .assembly_tree_page import AssemblyTreePage
-from .parts_list_page import PartsListPage
+from .main_window import MainWindow
 from .orders_list_page import OrdersListPage
-
+from .parts_list_page import PartsListPage
