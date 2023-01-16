@@ -17,12 +17,13 @@ class Item(Element):
     """
     Implement a single Item in the database
     """
+
     def __init__(self, dbref: Dbal, item_key: str | dict[str, Any] = None) -> None:
         """
         Define a single replacable Item from the car.
 
         The requested Item is keyed on the item_key. It can be a single
-        integer value (the item_number/record_id), a dict object 
+        integer value (the item_number/record_id), a dict object
         containing the properties of an Item, or None.
 
         If the item_key is a single integer value, the Item will be
@@ -86,9 +87,9 @@ class Item(Element):
             match the required keys of the Item being creates/modified
         """
         if properties is not None and isinstance(properties, dict):
-                # Handle the 'record_id' and 'remarks' entries
+            # Handle the 'record_id' and 'remarks' entries
             super().set_properties(properties)
-                # Handle all the other properties here
+            # Handle all the other properties here
             for key in properties:
                 if key == "part_number":
                     self.set_part_number(properties[key])
@@ -143,17 +144,13 @@ class Item(Element):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        result = self.validate.text_field(
-            part_number, self.validate.REQUIRED, 0, 30
-        )
+        result = self.validate.text_field(part_number, self.validate.REQUIRED, 0, 30)
         if result["valid"]:
             self._set_property("part_number", result["entry"])
         else:
             self._set_property("part_number", self.defaults["part_number"])
 
-        self.update_property_flags(
-            "part_number", result["entry"], result["valid"]
-        )
+        self.update_property_flags("part_number", result["entry"], result["valid"])
         return result
 
         # end set_part_number()
@@ -195,9 +192,7 @@ class Item(Element):
         """
         if assembly:
             assembly = assembly.upper()
-        result = self.validate.text_field(
-            assembly, self.validate.REQUIRED, 1, 15
-        )
+        result = self.validate.text_field(assembly, self.validate.REQUIRED, 1, 15)
         if result["valid"]:
             self._set_property("assembly", result["entry"])
         else:
@@ -221,7 +216,7 @@ class Item(Element):
 
         # end get_quantity()
 
-    def set_quantity(self, quantity: int |float | str) -> dict[str, Any]:
+    def set_quantity(self, quantity: int | float | str) -> dict[str, Any]:
         """
         Set the quantity of items represented by this Item.
 
@@ -242,9 +237,7 @@ class Item(Element):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        result = self.validate.integer_field(
-            quantity, self.validate.REQUIRED, 0, 999
-        )
+        result = self.validate.integer_field(quantity, self.validate.REQUIRED, 0, 999)
         if result["valid"]:
             self._set_property("quantity", result["entry"])
         else:
@@ -292,17 +285,13 @@ class Item(Element):
                     otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        result = self.validate.text_field(
-            condition, self.validate.REQUIRED, 1, 15
-        )
+        result = self.validate.text_field(condition, self.validate.REQUIRED, 1, 15)
         if result["valid"]:
             self._set_property("condition", result["entry"])
         else:
             self._set_property("condition", self.defaults["condition"])
 
-        self.update_property_flags(
-            "condition", result["entry"], result["valid"]
-        )
+        self.update_property_flags("condition", result["entry"], result["valid"])
         return result
 
         # end set_condition()
@@ -323,7 +312,7 @@ class Item(Element):
 
         # end get_installed()
 
-    def set_installed(self, installed: bool ) -> dict[str, Any]:
+    def set_installed(self, installed: bool) -> dict[str, Any]:
         """
         Set the Item's installation status.
 
@@ -347,9 +336,7 @@ class Item(Element):
         else:
             self._set_property("installed", self.defaults["installed"])
 
-        self.update_property_flags(
-            "installed", result["entry"], result["valid"]
-        )
+        self.update_property_flags("installed", result["entry"], result["valid"])
         return result
 
     # end set_installed()
@@ -396,5 +383,6 @@ class Item(Element):
         return result
 
         # end set_box()
+
 
 # end Item
