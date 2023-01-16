@@ -12,18 +12,19 @@ from pathlib import Path
 from typing import Any  # , Union
 
 from lbk_library import Dbal, IniFileParser
-from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
 from PyQt6 import uic
+from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 from .assembly_tree_page import AssemblyTreePage
-from .parts_list_page import PartsListPage
 from .orders_list_page import OrdersListPage
+from .parts_list_page import PartsListPage
 
 
 class MainWindow(QMainWindow):
     """
     Build and execute the Main Window for the Parts Tracker Program
     """
+
     def __init__(self, app: QApplication) -> None:
         """
         Initialize all the windows for the Program
@@ -51,56 +52,37 @@ class MainWindow(QMainWindow):
         self.config_handler: IniFileParser
         """ Handler to read and write configuration ('.ini') files """
 
-            # get the gui form displayed by the window
+        # get the gui form displayed by the window
         self.form = uic.loadUi("src/forms/main_window.ui", self)
 
-           # the current configuration state
+        # the current configuration state
         self.config_handler = IniFileParser("parts_tracker.ini", "parts_tracker")
         self.config = self.get_config_file()
 
-            # the current database handler
+        # the current database handler
         self.dbref = self.open_database()
 
-            # configure the window, loading parts information as available
+        # configure the window, loading parts information as available
         self.configure_window()
 
-            # set the actions for the main gui
+        # set the actions for the main gui
 
-            # system close button (upper right corner)
+        # system close button (upper right corner)
         app.aboutToQuit.connect(self.exit_app_action)
 
-            # File Menu Items
+        # File Menu Items
         self.form.action_file_open.triggered.connect(self.file_open_action)
         self.form.action_file_close.triggered.connect(self.file_close_action)
-#        self.form.action_file_new.triggered.connect(self.file_new_action)
-#        self.form.action_recent_file_1.triggered.connect(self.recent_file_1_action)
-#        self.form.action_recent_file_2.triggered.connect(self.recent_file_2_action)
-#        self.form.action_recent_file_3.triggered.connect(self.recent_file_3_action)
-#        self.form.action_recent_file_4.triggered.connect(self.recent_file_4_action)
+        # #
+        # #
         self.form.action_file_exit.triggered.connect(self.exit_app_action)
-#
-#            # Assemblies/Items Menu Actions
-#        self.form.action_new_item.triggered.connect(lambda: self.item_dialog_action(None, ADD_ELEMENT))
-#        self.form.action_edit_item.triggered.connect(lambda: self.item_dialog_action(None, EDIT_ELEMENT))
-#        self.form.action_edit_assembly_tree.triggered.connect(self.edit_assembly_tree_action)
-#        self.form.action_save_assembly_list.triggered.connect(self.save_assembly_list_action)
-#        self.form.action_update_assemby_tree.triggered.connect(self.update_assembly_tree_action)
-#
-#            # Parts Menu Actions
-#        self.form.action_new_part.triggered.connect(lambda: self.part_dialog_action(None, ADD_ELEMENT))
-#        self.form.action_edit_part.triggered.connect(lambda: self.part_dialog_action(None, EDIT_ELEMENT))
-#        self.form.action_change_part_number.triggered.connect(self.part_change_pn_dialog_action)
-#        self.form.action_update_part_list_table.triggered.connect(self.update_part_list_table_action)
-#
-#            # Orders Menu Actions
-#        self.form.action_new_order.triggered.connect(lambda: self.order_dialog_action(None, ADD_ELEMENT))
-#        self.form.action_edit_order.triggered.connect(lambda: self.order_dialog_action(None, EDIT_ELEMENT))
-#        self.form.action_update_order_table.triggered.connect(lambda: (self.order_list.update_table()))
-
-            # show the window
+        # ##
+        # ##
+        # show the window
         self.show()
+
     # end __init__()
-    
+
     def get_config_file(self) -> dict[str, Any]:
         """
         Get the stored configuration
@@ -115,7 +97,7 @@ class MainWindow(QMainWindow):
         Returns:
             (dict) The new configuration file.
         """
-            # get config file
+        # get config file
         config = self.config_handler.read_config()
         if not config:
             # define default configuration file
@@ -131,24 +113,19 @@ class MainWindow(QMainWindow):
             else:
                 break
         return config
-    # end get_config_file()
 
+    # end get_config_file()
 
     def save_config_file(self) -> None:
         """
         Write the config file to storage.
         """
         self.config_handler.write_config(self.config)
+
     # end save_config_file()
 
-#    ##
-#    # Allow child dialogs to update the config settings
-#    #
-#    # @param config (dict) the updated config file from a child dialog
-#    def update_config_file(self, config):
-#        self.config = config
-#        self.save_config_file()
-#    # end update_config_file()
+    # ###
+    # ###
 
     def open_database(self) -> Dbal:
         """
@@ -162,13 +139,14 @@ class MainWindow(QMainWindow):
         """
         dbref = Dbal()
         if self.recent_files:
-                # use first filename to open the parts file
+            # use first filename to open the parts file
             self.db_filepath = self.recent_files[0]
             dbref.sql_connect(self.db_filepath)
             self.set_menus_enabled(True)
         else:
             self.set_menus_enabled(False)
         return dbref
+
     # end _open_database()
 
     def configure_window(self):
@@ -186,6 +164,7 @@ class MainWindow(QMainWindow):
         self.part_list = PartsListPage(self.form, self.dbref)
         self.order_list = OrdersListPage(self.form, self.dbref)
         self.form.tab_widget.setCurrentIndex(0)
+
     # end configure_window()
 
     def set_files_menu(self) -> None:
@@ -214,6 +193,7 @@ class MainWindow(QMainWindow):
             self.form.menu_file_recent.setDisabled(True)
         else:
             self.form.menu_file_recent.setDisabled(False)
+
     # end set_files_menu()
 
     def set_menus_enabled(self, menus_enabled: bool) -> None:
@@ -230,6 +210,7 @@ class MainWindow(QMainWindow):
         self.form.menu_assembly_listing.setEnabled(menus_enabled)
         self.form.menu_parts.setEnabled(menus_enabled)
         self.form.menu_orders.setEnabled(menus_enabled)
+
     # end set_menus_enabled()
 
     def exit_app_action(self) -> None:
@@ -242,6 +223,7 @@ class MainWindow(QMainWindow):
             if self.dbref.sql_is_connected():
                 self.dbref.sql_close()
         self.close()
+
     # end exit_app_action()
 
     def file_open_action(self, not_used) -> None:
@@ -258,24 +240,11 @@ class MainWindow(QMainWindow):
             return
         filepath = return_value[0]
         self.load_new_file(filepath)
+
     # end file_open_action()
 
-#    ##
-#    # Create and load a new PartsTracker File.
-#    #
-#    # The database is created with new, empty tables. The file already exists, it is
-#    # deleted first, then recreated.
-#    #
-#    def file_new_action(self) -> None:
-#        table_definition = parts_table_sql.sql
-#        file_name = QFileDialog.getSaveFileName(
-#            None, "New File", "../", "Parts Files (*.db)"
-#        )[0]
-#        if Path(file_name).is_file():
-#            os.remove(file_name)
-#        new_file = NewFile(file_name, table_definition)
-#        self.load_new_file(file_name)
-#    # end file_new_action()
+    # ####
+    # ####
 
     def load_new_file(self, filepath: str) -> None:
         """
@@ -284,7 +253,7 @@ class MainWindow(QMainWindow):
         Parameters:
             filepath (String): An absolute path to file to open
         """
-            # if file is already on the list, remove it
+        # if file is already on the list, remove it
         if self.recent_files:
             for i in range(len(self.recent_files)):
                 if self.recent_files[i] == filepath:
@@ -294,7 +263,7 @@ class MainWindow(QMainWindow):
             # add to beginning of list
         self.recent_files.insert(0, filepath)
 
-            # update config settings and save
+        # update config settings and save
         for i in range(len(self.recent_files)):
             self.config["FILES"]["file" + str(i)] = self.recent_files[i]
 
@@ -310,20 +279,21 @@ class MainWindow(QMainWindow):
 
         self.dbref.sql_connect(filepath)
 
-            # update the window
+        # update the window
         if self.dbref.sql_is_connected():
             self.set_menus_enabled(True)
             self.assembly_tree.update_tree()
             self.part_list.update_table()
             self.order_list.update_table()
             self.form.tab_widget.setCurrentIndex(0)
+
     # end load_new_file()
 
     def file_close_action(self, not_used) -> None:
         """
         Close the current database file
         """
-            # if a file is open, then close it
+        # if a file is open, then close it
         if self.dbref.sql_is_connected():
             self.dbref.sql_close()
             self.set_menus_enabled(False)
@@ -332,140 +302,15 @@ class MainWindow(QMainWindow):
             # save the configuration file
         self.save_config_file()
 
-            # update the display
+        # update the display
         self.assembly_tree.clear_tree()
         self.part_list.clear_table()
         self.order_list.clear_table()
         self.form.tab_widget.setCurrentIndex(0)
+
     # end file_close_action()
 
-#    ##
-#    # Open the first most recent file
-#    #
-#    def recent_file_1_action(self) -> None:
-#        if self.recent_files and len(self.recent_files) > 0:
-#            self.load_new_file(self.recent_files[0])
-#    # end recent_file_1_action()
-#
-#    ##
-#    # Open the second most recent file
-#    #
-#    def recent_file_2_action(self) -> None:
-#        if self.recent_files and len(self.recent_files) > 1:
-#            self.load_new_file(self.recent_files[1])
-#    # end recent_file_2_action()
-#
-#    ##
-#    # Open the third most recent file
-#    #
-#    def recent_file_3_action(self) -> None:
-#        if self.recent_files and len(self.recent_files) > 2:
-#            self.load_new_file(self.recent_files[2])
-#    # end recent_file_3_action()
-#
-#    ##
-#    # Open the fourth most recent file
-#    #
-#    def recent_file_4_action(self) -> None:
-#        if self.recent_files and len(self.recent_files) > 3:
-#            self.load_new_file(self.recent_files[3])
-#    # end recent_file_4_action()
-#
-#    ##
-#    # Revise the assembly structure of the tree.
-#    #
-#    # @param dbref (Dbal) reference to the database for this item.
-#    # @param resources (AppResources) reference to the app resources
-#    #
-#    def edit_assembly_tree_action(self) -> None:
-#        print('calling edit sturcture dialog')
-#        EditStructureDialog(self, self.dbref, self.update_assembly_tree_action).exec()
-#    # end edit_assembly_tree_action()
-#
-#    ##
-#    # Save a list of items in assembly order to a csv file and/or a xlsx file
-#    #
-#    # @param dbref (Dbal) reference to the database for this item.
-#    # @param resources (AppResources) reference to the app resources
-#    # @param config (dict) the configuration settings
-#    #
-#    def save_assembly_list_action(self) -> None:
-#        SaveAssyListDialog(self, self.dbref, self.config).exec()
-#    # end save_assembly_list_action()
-#
-#    ##
-#    # Update the assembly tree display returning to the collapsed view
-#    #
-#    def update_assembly_tree_action(self) -> None:
-#        self.assembly_tree.update_tree()
-#    # end update_assembly_tree_action()
-#
-#    ##
-#    # Activate the Item Editing form
-#    #
-#    # @param resources (AppResources) reference to the app resources for this dialog.
-#    # @param entry_index (integer) the index into the database for the item to be
-#    #   edited, default is None
-#    # @param add_item (int) The constant Dialog.ADD_ELEMENT if a new item is to be aded, Dialog.EDIT_ELEMENT for editing an
-#    #   existing item
-#    #
-#    def item_dialog_action(self, entry_index: int, add_item: int) -> None:
-#        ItemDialog(self, self.dbref, entry_index, add_item).exec()
-#        self.assembly_tree.update_tree()
-#    # end item_dialog_action()
-#
-#    ##
-#    # Activate the Part Editing form
-#    #
-#    # @param parent (QMainWindow) the parent window owning this dialog.
-#    # @param dbref (Dbal) reference to the database for this item.
-#    # @param entry_index (integer) the index into the database for the part to be
-#    #   edited
-#    # @param add_part (int) The constant Dialog.ADD_ELEMENT if a new part is to be aded, Dialog.EDIT_ELEMENT for editing an
-#    #   existing part
-#    #
-#    def part_dialog_action(self, entry_index: int, add_part: int) -> None:
-#        PartDialog(self, self.dbref, entry_index, add_part).exec()
-#        self.part_list.update_table()
-#    # part_dialog_action_add
-#
-#    ##
-#    # Change a part number throughout the database.
-#    #
-#    # @param parent (QMainWindow) the parent window owning this dialog.
-#    # @param dbref (Dbal) reference to the database for this item.
-#    #
-#    def part_change_pn_dialog_action(self) -> None:
-#        ChangePartNumberDialog(self, self.dbref).exec()
-#        self.assembly_tree.update_tree()
-#        self.part_list.update_table()
-#        self.order_list.update_table()
-#    # end part_change_pn_dialog_action()
-#
-#    ##
-#    # Update the Parts list table after some change.
-#    #
-#    # @param dbref (Dbal) reference to the database for this item.
-#    #
-#    def update_part_list_table_action(self, dbref):
-#        self.part_list.update_table()
-#     # end update_part_list_table_action()
-#
-#    ##
-#    # Activate the Order Editing form
-#    #
-#    # @param parent (QMainWindow) the parent window owning this dialog.
-#    # @param dbref (Dbal) reference to the database for this order.
-#    # @param resources (AppResources) reference to the app resources for this dialog.
-#    # @param entry_index (integer) the index into the database for the order to be
-#    #   edited, default is None
-#    # @param add_order (int) The constant Dialog.ADD_ELEMENT if a new order is to be aded, Dialog.EDIT_ELEMENT for editing an
-#    #   existing order
-#    #
-#    def order_dialog_action(self, entry_index: int, add_order: int) -> None:
-#        OrderDialog(self, self.dbref, entry_index, add_order).exec()
-#        self.order_list.update_table()
-#    # end order_dialog_action()
+    # #####
+    # #####
 
 # end Class MainWindow
-
