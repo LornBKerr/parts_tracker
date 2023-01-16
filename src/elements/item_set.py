@@ -11,17 +11,19 @@ from lbk_library import Dbal, ElementSet
 
 from . import Item
 
+
 class ItemSet(ElementSet):
     """
     Provides a set of Items from the database table 'items'.
     """
+
     def __init__(
         self,
         dbref: Dbal,
         where_column: str = None,
         where_value: str = None,
         order_by_column: str = None,
-        limit: int = None,    # No limit
+        limit: int = None,  # No limit
         offset: int = None,
     ) -> None:
         """
@@ -55,5 +57,6 @@ class ItemSet(ElementSet):
         )
 
         # end __init__()
+
 
 # end Class ItemSet
