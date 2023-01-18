@@ -78,7 +78,7 @@ def load_parts_table(dbref):
         dbref.sql_query(sql, entries)
 
 
-def test_04_01_constr(create_parts_table):
+def test_08_01_constr(create_parts_table):
     dbref = create_parts_table
     part_set = PartSet(dbref)
     assert isinstance(part_set, PartSet)
@@ -86,21 +86,21 @@ def test_04_01_constr(create_parts_table):
     close_database(dbref)
 
 
-def test_04_02_get_dbref(create_parts_table):
+def test_08_02_get_dbref(create_parts_table):
     dbref = create_parts_table
     part_set = PartSet(dbref)
     assert part_set.get_dbref() == dbref
     close_database(dbref)
 
 
-def test_04_03_get_table(create_parts_table):
+def test_08_03_get_table(create_parts_table):
     dbref = create_parts_table
     part_set = PartSet(dbref)
     assert part_set.get_table() == "parts"
     close_database(dbref)
 
 
-def test_04_04_set_table(create_parts_table):
+def test_08_04_set_table(create_parts_table):
     dbref = create_parts_table
     part_set = PartSet(dbref)
     part_set.set_table("items")
@@ -108,14 +108,14 @@ def test_04_04_set_table(create_parts_table):
     close_database(dbref)
 
 
-def test_04_05_get_property_set(create_parts_table):
+def test_08_05_get_property_set(create_parts_table):
     dbref = create_parts_table
     part_set = PartSet(dbref)
     assert isinstance(part_set.get_property_set(), list)
     close_database(dbref)
 
 
-def test_04_06_set_property_set_none(create_parts_table):
+def test_08_06_set_property_set_none(create_parts_table):
     dbref = create_parts_table
     part_set = PartSet(dbref)
     assert isinstance(part_set.get_property_set(), list)
@@ -125,7 +125,7 @@ def test_04_06_set_property_set_none(create_parts_table):
     close_database(dbref)
 
 
-def test_04_07_all_rows_empty(create_parts_table):
+def test_08_07_all_rows_empty(create_parts_table):
     dbref = create_parts_table
     part_set = PartSet(dbref)
     count_result = dbref.sql_query("SELECT COUNT(*) FROM " + part_set.get_table())
@@ -136,7 +136,7 @@ def test_04_07_all_rows_empty(create_parts_table):
     close_database(dbref)
 
 
-def test_04_08_selected_rows(create_parts_table):
+def test_08_08_selected_rows(create_parts_table):
     dbref = create_parts_table
     load_parts_table(dbref)
     part_set = PartSet(dbref, "source", "Victoria British")
