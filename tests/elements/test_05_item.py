@@ -17,12 +17,14 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from lbk_library import Dbal
-
 from elements import Item
-
 from test_setup_elements import (
-    database_name, close_database, open_database, create_items_table
+    close_database,
+    create_items_table,
+    database_name,
+    open_database,
 )
+
 
 # set item values from dict of values
 item_values = {
@@ -35,6 +37,7 @@ item_values = {
     "remarks": "test",
     "box": 5,
 }
+
 
 def test_05_01_constr(open_database):
     dbref = open_database
@@ -182,7 +185,7 @@ def test_05_10_get_properties_type(open_database):
     close_database(dbref)
 
 
-def test_05_11_item_get_default_property_values(open_database):
+def test_05_11_get_default_property_values(open_database):
     dbref = open_database
     item = Item(dbref)
     defaults = item.get_initial_values()
@@ -220,7 +223,6 @@ def test_05_13_item_get_properties_size(open_database):
 
 
 def test_05_14_item_from_dict(open_database):
-    # set Part from array
     dbref = open_database
     item = Item(dbref, item_values)
     assert item_values["record_id"] == item.get_record_id()

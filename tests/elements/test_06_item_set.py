@@ -8,12 +8,15 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from lbk_library import Dbal, ElementSet
+from test_setup_elements import (
+    close_database,
+    create_items_table,
+    database_name,
+    open_database,
+)
 
 from elements import Item, ItemSet
 
-from test_setup_elements import (
-    database_name, close_database, open_database, create_items_table
-)
 
 def load_items_table(dbref):
     columns = [
