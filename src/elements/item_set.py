@@ -1,7 +1,7 @@
 """
 This is a set of Items in the database.
 
-File:       item_setl.py
+File:       item_set.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License

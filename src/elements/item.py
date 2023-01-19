@@ -72,7 +72,7 @@ class Item(Element):
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
 
-        # end __init__()
+    # end __init__()
 
     def set_properties(self, properties: dict[str, Any]) -> None:
         """
@@ -107,7 +107,7 @@ class Item(Element):
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
 
-        # end set_properties()
+    # end set_properties()
 
     def get_part_number(self) -> str:
         """
@@ -121,7 +121,7 @@ class Item(Element):
             part_number = self.defaults["part_number"]
         return part_number
 
-        # end get_part_number()
+    # end get_part_number()
 
     def set_part_number(self, part_number: str) -> dict[str, Any]:
         """
@@ -153,7 +153,7 @@ class Item(Element):
         self.update_property_flags("part_number", result["entry"], result["valid"])
         return result
 
-        # end set_part_number()
+    # end set_part_number()
 
     def get_assembly(self) -> str:
         """
@@ -168,7 +168,7 @@ class Item(Element):
             assembly = self.defaults["assembly"]
         return assembly
 
-        # end get_assembly()
+    # end get_assembly()
 
     def set_assembly(self, assembly: str) -> dict[str, Any]:
         """
@@ -200,7 +200,7 @@ class Item(Element):
         self.update_property_flags("assembly", result["entry"], result["valid"])
         return result
 
-        # end set_assembly()
+    # end set_assembly()
 
     def get_quantity(self) -> int:
         """
@@ -214,7 +214,7 @@ class Item(Element):
             quantity = self.defaults["quantity"]
         return quantity
 
-        # end get_quantity()
+    # end get_quantity()
 
     def set_quantity(self, quantity: int | float | str) -> dict[str, Any]:
         """
@@ -246,7 +246,7 @@ class Item(Element):
         self.update_property_flags("quantity", result["entry"], result["valid"])
         return result
 
-        # end set_quantity()
+    # end set_quantity()
 
     def get_condition(self) -> str:
         """
@@ -261,7 +261,7 @@ class Item(Element):
             condition = self.defaults["condition"]
         return condition
 
-        # end get_condition()
+    # end get_condition()
 
     def set_condition(self, condition: str) -> dict[str, Any]:
         """
@@ -294,7 +294,7 @@ class Item(Element):
         self.update_property_flags("condition", result["entry"], result["valid"])
         return result
 
-        # end set_condition()
+    # end set_condition()
 
     def get_installed(self) -> bool:
         """
@@ -360,14 +360,15 @@ class Item(Element):
         """
         Set the number of the storage box containing this item.
 
-        The valid and changed flags are updated based on the result of this operation.
+        The valid and changed flags are updated based on the result of
+        this operation.
 
         Parameters:
             box (int) The storage box number (integer between 0 and 99),
-            default is 0 (not stored in box)
+            default is 0 (item is not stored in a box)
 
         Returns:
-            (dict
+            (dict)
                 ['entry'] - the updated storage box
                 ['valid'] - (bool) True if the operation suceeded,
                     False otherwise
@@ -382,7 +383,7 @@ class Item(Element):
         self.update_property_flags("box", result["entry"], result["valid"])
         return result
 
-        # end set_box()
+    # end set_box()
 
 
 # end Item
