@@ -12,6 +12,7 @@ from typing import Any  # , Union
 
 from lbk_library import Dbal, Element
 
+
 class Condition(Element):
     """
     Implement a single Condition in the database.
@@ -44,21 +45,21 @@ class Condition(Element):
 
         # Default values for the Condition
         self.defaults: dict(str, Any) = {
-            'record_id': 0,
-            'condition': '',
+            "record_id": 0,
+            "condition": "",
         }
 
         self.set_initial_values(deepcopy(self.defaults))
         self.clear_value_valid_flags()
-        
+
         if isinstance(condition_key, dict):
             # make sure there are no missing keys
             for key in self.defaults:
-                if not key in condition_key:
+                if key not in condition_key:
                     condition_key[key] = deepcopy(self.defaults[key])
 
         if isinstance(condition_key, (int, str)):
-            condition_key = self.get_properties_from_db('record_id', condition_key)
+            condition_key = self.get_properties_from_db("record_id", condition_key)
 
         if not condition_key:
             condition_key = deepcopy(self.defaults)
@@ -66,6 +67,7 @@ class Condition(Element):
         self.set_properties(condition_key)
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
+
     # end __init__()
 
     def set_properties(self, properties: dict[str, Any]) -> None:
@@ -85,8 +87,9 @@ class Condition(Element):
             super().set_properties(properties)
             # Handle all the other properties here
             for key in properties.keys():
-                if key == 'condition':
+                if key == "condition":
                     self.set_condition(properties[key])
+
     # end set_properties()
 
     def get_condition(self) -> str:
@@ -97,10 +100,11 @@ class Condition(Element):
             (str) The Condition's condition or, if None, the
                 default value.
         """
-        condition = self._get_property('condition')
+        condition = self._get_property("condition")
         if condition is None:
-            condition = self.defaults['condition']
+            condition = self.defaults["condition"]
         return condition
+
     # end get_condition(()
 
     def set_condition(self, condition: str) -> dict[str, Any]:
@@ -122,13 +126,14 @@ class Condition(Element):
                 ['msg'] - (str) Error message if not valid
         """
         result = self.validate.text_field(condition, self.validate.REQUIRED, 1, 31)
-        if result['valid']:
-            self._set_property('condition', result['entry'])
+        if result["valid"]:
+            self._set_property("condition", result["entry"])
         else:
-            self._set_property('condition', self.defaults['condition'])
+            self._set_property("condition", self.defaults["condition"])
         self.update_property_flags("condition", result["entry"], result["valid"])
         return result
+
     # end set_condition(()
 
-# end Condition
 
+# end Condition
