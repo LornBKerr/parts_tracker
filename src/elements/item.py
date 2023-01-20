@@ -36,7 +36,7 @@ class Item(Element):
 
         Parameters:
             dbref (Dbal): reference to the database holding the element
-            item_key (str | dict) the item number of the Item being
+            item_key (int | str | dict) the item number of the Item being
                 constructed or an dict object of the values for an Item
                 for direct insertion into the properties array.
         """
