@@ -22,10 +22,7 @@ from test_setup_elements import close_database, database_name, open_database
 from elements import Condition
 
 
-@pytest.fixture
-def create_conditions_table():
-    dbref = Dbal()
-    dbref.sql_connect("parts_test.db")
+def create_conditions_table(dbref):
     dbref.sql_query("DROP TABLE IF EXISTS 'conditions'")
     create_table = 'CREATE TABLE "conditions" (record_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, condition TEXT DEFAULT "")'
     result = dbref.sql_query(create_table)
@@ -133,8 +130,9 @@ def test_01_10_item_from__partial_dict(open_database):
     close_database(dbref)
 
 
-def test_01_11_add(create_conditions_table):
-    dbref = create_conditions_table
+def test_01_11_add(open_database):
+    dbref = open_database
+    create_conditions_table(dbref)
     condition = Condition(dbref, condition_values)
     record_id = condition.add()
     assert record_id == 1
@@ -143,8 +141,9 @@ def test_01_11_add(create_conditions_table):
     close_database(dbref)
 
 
-def test_01_12_read_db(create_conditions_table):
-    dbref = create_conditions_table
+def test_01_12_read_db(open_database):
+    dbref = open_database
+    create_conditions_table(dbref)
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
@@ -164,8 +163,9 @@ def test_01_12_read_db(create_conditions_table):
     close_database(dbref)
 
 
-def test_01_13_update(create_conditions_table):
-    dbref = create_conditions_table
+def test_01_13_update(open_database):
+    dbref = open_database
+    create_conditions_table(dbref)
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
@@ -183,8 +183,9 @@ def test_01_13_update(create_conditions_table):
     close_database(dbref)
 
 
-def test_01_14_delete(create_conditions_table):
-    dbref = create_conditions_table
+def test_01_14_delete(open_database):
+    dbref = open_database
+    create_conditions_table(dbref)
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
