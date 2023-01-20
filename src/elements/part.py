@@ -30,7 +30,6 @@ class Part(Element):
         The general defaults are: string values are set to
         empty string, numeric values are set to 0, and logical values
         are set to False.
-
         If 'part_key' is not given, the 'column' is ignored and an empty
         Part is constructed with all properties set to default values.
 
@@ -92,8 +91,6 @@ class Part(Element):
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
 
-    # end __init__()
-
     def set_properties(self, properties: dict[str, Any]) -> None:
         """
         Set the values of the Part properties array.
@@ -121,8 +118,6 @@ class Part(Element):
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
 
-    # end set_properties()
-
     def get_part_number(self) -> str:
         """
         Get the Part's part number.
@@ -136,26 +131,26 @@ class Part(Element):
             part_number = self.defaults["part_number"]
         return part_number
 
-    # end get_part_number()
-
     def set_part_number(self, part_number: str) -> dict[str, Any]:
         """
         Set the Part's part number.
 
-                The part number is required and must be between 2 and 30
-                characters long. The valid and changed flags are updated based
-                on the result of the set operation.
+        The part number is required and must be between 2 and 30
+        characters long. The valid and changed flags are updated based
+        on the result of the set operation.
 
-                Parameters:
-                    part_number (str): the new part number for the Part. If the
-                        supplied part number is not valid, the part number is
-                        set to the default empty string.
+        Parameters:
+            part_number (str): the new part number for the Part. If the
+                supplied part number is not valid, the part number is
+                set to the default empty string.
 
-                Returns:
-                    (dict) {['entry'] (str) the updated Part Number
-                            ['valid'] (bool) True if the operation suceeded,
-                                             false otherwise
-                            ['msg'] (Str) Error message if not valid
+        Returns:
+            (dict) {
+                ['entry'] (str) the updated Part Number
+                ['valid'] (bool) True if the operation suceeded,
+                    false otherwise
+                ['msg'] (Str) Error message if not valid
+            }
         """
         result = self.validate.text_field(part_number, self.validate.REQUIRED, 2, 30)
         if result["valid"]:
@@ -165,8 +160,6 @@ class Part(Element):
 
         self.update_property_flags("part_number", result["entry"], result["valid"])
         return result
-
-    # end get_part_number()
 
     def get_source(self) -> str:
         """
@@ -180,8 +173,6 @@ class Part(Element):
             source = self.defaults["source"]
         return source
 
-    # end get_source()
-
     def set_source(self, source: str) -> dict[str, Any]:
         """
         Set the Part's source.
@@ -194,22 +185,21 @@ class Part(Element):
             source (str): the new source for the Part. If the supplied
                 source is not valid, the source is set to an empty string.
 
-                Returns:
-                    (dict) {['entry'] (str) the updated Source
-                            ['valid'] (bool) True if the operation suceeded,
-                                             false otherwise
-                            ['msg'] (Str) Error message if not valid
+        Returns:
+            (dict) {
+                ['entry'] (str) the updated Source
+                ['valid'] (bool) True if the operation suceeded,
+                    false otherwise
+                ['msg'] (Str) Error message if not valid
+            }
         """
         result = self.validate.text_field(source, self.validate.REQUIRED)
         if result["valid"]:
             self._set_property("source", result["entry"])
         else:
             self._set_property("source", self.defaults["source"])
-
         self.update_property_flags("source", result["entry"], result["valid"])
         return result
-
-    # end set_source()
 
     def get_description(self) -> str:
         """
@@ -222,8 +212,6 @@ class Part(Element):
         if description is None:
             description = self.defaults["description"]
         return description
-
-    # end get_description()
 
     def set_description(self, description: str) -> dict[str, Any]:
         """
@@ -238,22 +226,21 @@ class Part(Element):
             supplied description is not valid, the description is set to
             the empty string
 
-                Returns:
-                    (dict) {['entry'] (str) the updated Description
-                            ['valid'] (bool) True if the operation suceeded,
-                                             false otherwise
-                            ['msg'] (Str) Error message if not valid
+        Returns:
+            (dict) {
+                ['entry'] (str) the updated Description
+                ['valid'] (bool) True if the operation suceeded,
+                    false otherwise
+                ['msg'] (Str) Error message if not valid
+            }
         """
         result = self.validate.text_field(description, self.validate.REQUIRED)
         if result["valid"]:
             self._set_property("description", result["entry"])
         else:
             self._set_property("description", self.defaults["description"])
-
         self.update_property_flags("description", result["entry"], result["valid"])
         return result
-
-    # end set_description()
 
     def get_total_quantity(self) -> int:
         """
@@ -274,8 +261,6 @@ class Part(Element):
         for item in item_set:
             quantity += item.get_quantity()
         return quantity
-
-    # end get_total_quantity
 
 
 # end class Parts

@@ -1,7 +1,7 @@
 """
 Test the Part class.
 
-File:       item.py
+File:       test_07_part.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
@@ -17,13 +17,15 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from lbk_library import Dbal
+from test_setup_elements import (
+    close_database,
+    create_items_table,
+    create_parts_table,
+    database_name,
+    open_database,
+)
 
 from elements import Item, Part
-
-from test_setup_elements import (
-    database_name, close_database, open_database, create_items_table,
-    create_parts_table,
-)
 
 # used for testing part.get_total_quantity
 # set item values from array of values
@@ -50,6 +52,7 @@ part_values = dict(
         "remarks": "From local source",
     }
 )
+
 
 def test_07_01_constr(open_database):
     dbref = open_database
@@ -308,4 +311,4 @@ def test_07_17_get_total_quantity(open_database):
     close_database(dbref)
 
 
-# end test_03_elements_part.py
+# end test_07_part.py
