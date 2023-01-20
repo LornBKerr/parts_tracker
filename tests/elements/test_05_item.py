@@ -17,7 +17,6 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from lbk_library import Dbal
-from elements import Item
 from test_setup_elements import (
     close_database,
     create_items_table,
@@ -25,6 +24,7 @@ from test_setup_elements import (
     open_database,
 )
 
+from elements import Item
 
 # set item values from dict of values
 item_values = {
