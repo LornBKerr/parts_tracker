@@ -22,10 +22,7 @@ from test_setup_elements import close_database, database_name, open_database
 from elements import Source
 
 
-@pytest.fixture
-def create_sources_table():
-    dbref = Dbal()
-    dbref.sql_connect("parts_test.db")
+def create_sources_table(dbref):
     dbref.sql_query("DROP TABLE IF EXISTS 'sources'")
     create_table = 'CREATE TABLE "sources" (record_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, source TEXT DEFAULT "")'
     result = dbref.sql_query(create_table)
@@ -133,8 +130,9 @@ def test_03_10_item_from__partial_dict(open_database):
     close_database(dbref)
 
 
-def test_03_11_add(create_sources_table):
-    dbref = create_sources_table
+def test_03_11_add(open_database):
+    dbref = open_database
+    create_sources_table(dbref)
     source = Source(dbref, source_values)
     record_id = source.add()
     assert record_id == 1
@@ -143,8 +141,9 @@ def test_03_11_add(create_sources_table):
     close_database(dbref)
 
 
-def test_03_12_read_db(create_sources_table):
-    dbref = create_sources_table
+def test_03_12_read_db(open_database):
+    dbref = open_database
+    create_sources_table(dbref)
     source = Source(dbref)
     source.set_properties(source_values)
     record_id = source.add()
@@ -164,8 +163,9 @@ def test_03_12_read_db(create_sources_table):
     close_database(dbref)
 
 
-def test_03_13_update(create_sources_table):
-    dbref = create_sources_table
+def test_03_13_update(open_database):
+    dbref = open_database
+    create_sources_table(dbref)
     source = Source(dbref)
     source.set_properties(source_values)
     record_id = source.add()
@@ -183,8 +183,9 @@ def test_03_13_update(create_sources_table):
     close_database(dbref)
 
 
-def test_03_14_delete(create_sources_table):
-    dbref = create_sources_table
+def test_03_14_delete(open_database):
+    dbref = open_database
+    create_sources_table(dbref)
     source = Source(dbref)
     source.set_properties(source_values)
     record_id = source.add()
