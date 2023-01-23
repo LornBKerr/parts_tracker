@@ -440,5 +440,3 @@ def test_09_15_delete(open_database):
     assert len(order_line2.get_properties()) == len(order_line_values)
     close_database(dbref)
 
-
-# end test_09_order

@@ -338,5 +338,3 @@ def test_05_19_item_delete(open_database):
     assert len(item.get_properties()) == 8
     close_database(dbref)
 
-
-# end test_01_item.py
