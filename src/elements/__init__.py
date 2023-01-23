@@ -6,12 +6,12 @@ This module contains the following classes
     ConditionSet extends lbk_library.ElementSet
     Item extends lbk_library.Element
     ItemSet extends lbk_library.ElementSet
+    OrderLine extends lbk_library.Element
+    OrderLineSet extends lbk_library.ElementSet
     Part extends lbk_library.Element
     PartSet extends lbk_library.ElementSet
 #    Order extends lbk_library.Element
 #    OrderSet extends lbk_library.ElementSet
-#    OrderLine extends lbk_library.Element
-#    OrderLineSet extends lbk_library.ElementSet
     Source extends lbk_library.Element
     SourceSet extends lbk_library.ElementSet
 
@@ -25,6 +25,7 @@ from .condition import Condition
 from .condition_set import ConditionSet
 from .item import Item
 from .item_set import ItemSet
+from .order_line import OrderLine
 from .part import Part
 from .part_set import PartSet
 from .source import Source

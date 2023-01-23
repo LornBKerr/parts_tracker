@@ -44,7 +44,6 @@ def create_items_table(dbref):
         + ' "remarks" TEXT DEFAULT NULL)'
     )
     dbref.sql_query(create_table)
-    return dbref
 
 
 def create_parts_table(dbref):
@@ -56,5 +55,21 @@ def create_parts_table(dbref):
         + ' "source" TEXT DEFAULT NULL,'
         + ' "description" TEXT NOT NULL,'
         + ' "remarks" TEXT DEFAULT NULL );'
+    )
+    result = dbref.sql_query(create_table)
+
+
+def create_orderlines_table(dbref):
+    dbref.sql_query("DROP TABLE IF EXISTS 'order_lines'")
+    create_table = (
+        'CREATE TABLE IF NOT EXISTS "order_lines" ('
+        + ' "record_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,'
+        + ' "order_number" TEXT DEFAULT "",'
+        + ' "line" INTEGER DEFAULT 0.0,'
+        + ' "part_number" TEXT DEFAULT "",'
+        + ' "cost_each" FLOAT DEFAULT 0.0,'
+        + ' "quantity" INTEGER DEFAULT 0,'
+        + ' "remarks" TEXT'
+        + " );"
     )
     result = dbref.sql_query(create_table)
