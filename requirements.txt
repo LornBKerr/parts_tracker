@@ -1,28 +1,33 @@
 # ########################################################
 #
-# Requirements file for PartsTracker program virtual environment
+# Configuration file for building and testing the PartsTracker program 
 #
-# File:       requirements.txt
+# File:       pyproject.toml
 # Author:     Lorn B Kerr
-# Copyright:  (c) 2022 Lorn B Kerr
-# License:    see file LICENSE
+# Copyright:  (c) 2023 Lorn B Kerr
+# License:    MIT, see file LICENSE
 #
 # ########################################################
-
-# local project library
--e ../../development/lbk_library
 
 # Test PyPi url
 --extra-index-url https://test.pypi.org/simple/
 
 # local project library
 lbk_library
+
+# General Requirements
 PyQt6
 
 # Testing Requirements
+black
+coverage
+flake8
+flake8-pyproject
+isort
+PyInstaller
+pydocstyle
+pydocstyle[toml]
 pytest
 pytest_cover
-coverage
-tox
-#PyInstaller
+pytest-qt
 
