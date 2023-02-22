@@ -14,13 +14,11 @@ from lbk_library import Dbal, Element
 
 
 class Condition(Element):
-    """
-    Implement a single Condition in the database.
-    """
+    """Implement a single Condition in the database."""
 
     def __init__(self, dbref: Dbal, condition_key: str = None) -> None:
         """
-        The constructor for a single Condition.
+        Implement a single Condition.
 
         The requested Condition is keyed on the condition_key. It can be
         a single integer value (the record_id) or a dict object
@@ -68,8 +66,6 @@ class Condition(Element):
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
 
-    # end __init__()
-
     def set_properties(self, properties: dict[str, Any]) -> None:
         """
         Set the values of the Condition properties array.
@@ -90,11 +86,9 @@ class Condition(Element):
                 if key == "condition":
                     self.set_condition(properties[key])
 
-    # end set_properties()
-
     def get_condition(self) -> str:
         """
-        Get the condition for this Condition object
+        Get the condition for this Condition object.
 
         Returns:
             (str) The Condition's condition or, if None, the
@@ -104,8 +98,6 @@ class Condition(Element):
         if condition is None:
             condition = self.defaults["condition"]
         return condition
-
-    # end get_condition(()
 
     def set_condition(self, condition: str) -> dict[str, Any]:
         """
@@ -132,8 +124,3 @@ class Condition(Element):
             self._set_property("condition", self.defaults["condition"])
         self.update_property_flags("condition", result["entry"], result["valid"])
         return result
-
-    # end set_condition(()
-
-
-# end Condition

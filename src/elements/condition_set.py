@@ -15,9 +15,7 @@ from . import Condition
 
 
 class ConditionSet(ElementSet):
-    """
-    Provides a set of Conditions from the database table 'conditions'.
-    """
+    """Provides set of Conditions from database table 'conditions'."""
 
     def __init__(
         self,
@@ -27,7 +25,7 @@ class ConditionSet(ElementSet):
         order_by_column: str = None,
     ) -> None:
         """
-        Builds a set of Conditions from the database table 'conditions'.
+        Build a set of Conditions from the database table 'conditions'.
 
         Note: This set does not support 'limit' and 'offset' entries
         when creating the set.
@@ -48,8 +46,3 @@ class ConditionSet(ElementSet):
         super().__init__(
             dbref, table_name, element_type, where_column, where_value, order_by_column
         )
-
-
-# end __init__()
-
-# end ConditionSet
