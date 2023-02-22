@@ -1,5 +1,5 @@
 """
-This is the list displaying the Orders in the database
+This is the list displaying the Orders in the database.
 
 File:       orders_list_page.py
 Author:     Lorn B Kerr
@@ -9,50 +9,62 @@ License:    MIT, see file License
 
 
 from lbk_library import Dbal
-from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem
+
+# from elements import OrderSet
 
 
 class OrdersListPage:
-    """
-    This is the list displaying the Orders in the database
-    """
+    """Display the Orders in the database."""
 
     def __init__(self, main_window: QMainWindow, dbref: Dbal) -> None:
         """
-        Initialize and display the Order List
+        Initialize and display the Order List.
 
         Parameters:
-        main_window (QMainWindow): the parent window
-        dbref (Dbal): reference to the database for this item.
+            main_window (QMainWindow): the parent window
+            dbref (Dbal): reference to the database for this item.
         """
         self.main_window: QMainWindow = main_window
         self.dbref: Dbal = dbref
 
-        # set up the Orders Listing Table
-        self.table = self.main_window.orders_table_widget
-
-    # #
-    # #
-
     def update_table(self) -> None:
+        """Read database order table and update the display table."""
+        pass
+
+    def clear_table(self) -> None:
+        """Clear the Order Line table."""
+        pass
+
+    def set_table_headers(self):
         """
-        Read the database order table and update the display table.
+        Set the table headers.
+
+        Set the header names and set the column widths to match the size
+        of the entries.
         """
         pass
 
-    # ##
-    # ##
-    # end update_table()
-
-    def clear_table(self) -> None:
+    def _get_number_lines(self, order_number: str) -> int:
         """
-        Clear the contents of the Order Line table
+        Get the total number of lines for this order number.
+
+        The order_lines table is searched for the lines using this order
+        number.
+
+        Parameters:
+            order_number (str): Order being searched for.
+
+        Returns:
+            (int) the total number of order lines found.
         """
-        self.table.clearContents()
+        pass
 
-    # end clear_table()
+    def action_order_clicked(self, table_item: QTableWidgetItem) -> None:
+        """
+        Show the Order Editing dialog for the specified order.
 
-
-# ###
-
-# end class OrdersListPage
+        Parameters:
+            table_item (QTableWidgetItem): The clicked item.
+        """
+        pass

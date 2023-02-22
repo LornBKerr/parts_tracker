@@ -1,5 +1,5 @@
 """
-This is the list displaying the Parts in the database
+This is the list displaying the Parts in the database.
 
 File:       parts_list_page.py
 Author:     Lorn B Kerr
@@ -8,17 +8,15 @@ License:    MIT, see file License
 """
 
 from lbk_library import Dbal
-from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem
 
 
 class PartsListPage:
-    """
-    This is the list displaying the Parts in the database
-    """
+    """Displaying the Parts in the database."""
 
     def __init__(self, main_window: QMainWindow, dbref: Dbal) -> None:
         """
-        Initialize and display the Part List
+        Initialize and display the Part List.
 
         Parameters
             main_window (QMainWindow): the parent window
@@ -27,32 +25,28 @@ class PartsListPage:
         self.main_window: QMainWindow = main_window
         self.dbref: Dbal = dbref
 
-        # set up the Parts Listing Table
-        self.table = self.main_window.parts_table_widget
-        # set the table headers and load the table
-
-    # #
-    # #
-
     def update_table(self) -> None:
+        """Update the display table from database."""
+        pass
+
+    def clear_table(self):
+        """Clear the contents of the Parts Table."""
+        pass
+
+    def set_table_headers(self) -> None:
         """
-        Read the database part table and update the display table.
+        Set the table headers.
+
+        The header names are set and the column widths to match the size
+        of the entries are set.
         """
         pass
 
-    # ##
-    # ##
-
-    def clear_table(self):
+    def action_part_clicked(self, table_item: QTableWidgetItem) -> None:
         """
-        Clear the contents of the Parts Table.
+        Display the Part Editing dialog for the indicated part number.
+
+        Parameters:
+            table_item (QTableWidgetItem); The requested part number.
         """
-        self.table.clearContents()
-
-    # end clear_table()
-
-
-# ###
-# ###
-
-# end class PartsListPage
+        pass
