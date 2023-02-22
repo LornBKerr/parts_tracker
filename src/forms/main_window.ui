@@ -347,10 +347,16 @@
     <addaction name="separator"/>
     <addaction name="action_file_exit"/>
    </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_assembly_listing"/>
    <addaction name="menu_parts"/>
    <addaction name="menu_orders"/>
+   <addaction name="menu_help"/>
   </widget>
   <action name="action_update_assemby_tree">
    <property name="text">
