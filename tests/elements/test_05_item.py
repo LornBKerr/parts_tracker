@@ -337,4 +337,3 @@ def test_05_19_item_delete(open_database):
     assert isinstance(item.get_properties(), dict)
     assert len(item.get_properties()) == 8
     close_database(dbref)
-

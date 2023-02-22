@@ -14,6 +14,7 @@ from lbk_library import Dbal
 # name of test database
 database_name = "parts_test.db"
 
+
 # close database
 def close_database(dbref):
     dbref.sql_close()
