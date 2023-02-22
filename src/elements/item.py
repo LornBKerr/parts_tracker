@@ -14,9 +14,7 @@ from lbk_library import Dbal, Element
 
 
 class Item(Element):
-    """
-    Implement a single Item in the database
-    """
+    """Implement a single Item in the database."""
 
     def __init__(self, dbref: Dbal, item_key: str | dict[str, Any] = None) -> None:
         """
@@ -342,8 +340,7 @@ class Item(Element):
     # end set_installed()
 
     def get_box(self) -> int:
-        """
-        Get the storage box containing this item
+        """Get the storage box containing this item.
 
         Returns:
             (int) The storage box number (integer between 1 and 99 if

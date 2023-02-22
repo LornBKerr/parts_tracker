@@ -15,9 +15,7 @@ from . import Part
 
 
 class PartSet(ElementSet):
-    """
-    This is a set of Parts in the database.
-    """
+    """Provides set of Parts in the database."""
 
     def __init__(
         self,
@@ -29,7 +27,7 @@ class PartSet(ElementSet):
         offset: int = None,
     ) -> None:
         """
-        Builds a set of Parts from the database table 'parts'.
+        Build a set of Parts from the database table 'parts'.
 
         Parameters:
             dbref (Dbal): reference to the database holding the parts

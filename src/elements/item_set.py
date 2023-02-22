@@ -13,9 +13,7 @@ from . import Item
 
 
 class ItemSet(ElementSet):
-    """
-    Provides a set of Items from the database table 'items'.
-    """
+    """Provides set of Items from database table 'items'."""
 
     def __init__(
         self,
@@ -27,7 +25,7 @@ class ItemSet(ElementSet):
         offset: int = None,
     ) -> None:
         """
-        Builds a set of Items from the database table 'items'.
+        Build a set of Items from the database table 'items'.
 
         Parameters:
             dbref (Dbal): the dababase instance to use.

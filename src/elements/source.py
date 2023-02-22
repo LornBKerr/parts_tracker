@@ -14,13 +14,11 @@ from lbk_library import Dbal, Element
 
 
 class Source(Element):
-    """
-    Implement a single Source in the database.
-    """
+    """Build a single Source in the database."""
 
     def __init__(self, dbref: Dbal, source_key: str = None) -> None:
         """
-        The constructor for a single Source.
+        Build a single Source.
 
         The requested Source is keyed on the source_key. It can be
         a single integer value (the record_id) or a dict object
@@ -94,7 +92,7 @@ class Source(Element):
 
     def get_source(self) -> str:
         """
-        Get the source for this Source object
+        Get the source for this Source object.
 
         Returns:
             (str) The Source's source or, if None, the

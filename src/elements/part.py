@@ -12,17 +12,15 @@ from typing import Any  # , Union
 
 from lbk_library import Dbal, Element
 
-from . import Item, ItemSet
+from . import ItemSet
 
 
 class Part(Element):
-    """
-    Implement a single Part in the database.
-    """
+    """Implement a single Part in the database."""
 
     def __init__(self, dbref: Dbal, part_key: Any = None, column: str = None) -> None:
         """
-        The constructor for a single Part.
+        Initialize a single Part.
 
         The 'column' can be set to None, "record_id", or "part_number".
         If not one of these three choices, both 'part_key' and 'column'

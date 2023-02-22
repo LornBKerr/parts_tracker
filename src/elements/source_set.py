@@ -15,9 +15,7 @@ from . import Source
 
 
 class SourceSet(ElementSet):
-    """
-    Provides a set of Sources from the database table 'sources'.
-    """
+    """Provides a set of Sources from the database table 'sources'."""
 
     def __init__(
         self,
@@ -27,7 +25,7 @@ class SourceSet(ElementSet):
         order_by_column: str = None,
     ) -> None:
         """
-        Builds a set of Sources from the database table 'sources'.
+        Build a set of Sources from the database table 'sources'.
 
         Note: This set does not support 'limit' and 'offset' entries
         when creating the set.

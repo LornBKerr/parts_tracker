@@ -14,13 +14,11 @@ from lbk_library import Dbal, Element
 
 
 class OrderLine(Element):
-    """
-    Implements single OrderLine in the database.
-    """
+    """Implements single OrderLine in the database."""
 
     def __init__(self, dbref: Dbal, order_line_key: Any = None) -> None:
         """
-        The constructor for a single OrderLine.
+        Implement a single OrderLine.
 
         The requested OrderLine is keyed on the order_line_key. It can
         be a single integer value (the record_id), a dict object
@@ -241,7 +239,6 @@ class OrderLine(Element):
             (float) The cost each for the part on this Order, otherwise
             the default value if not assigned yet.
         """
-
         cost_each = self._get_property("cost_each")
         if cost_each is None:
             cost_each = self.defaults["cost_each"]
@@ -249,8 +246,7 @@ class OrderLine(Element):
 
     def set_cost_each(self, cost_each: float | str) -> dict[str, Any]:
         """
-        Set the cost each in dollars and cents of the part on this
-        order line.
+        Set the cost each in dollars and cents.
 
         The valid and changed flags are updated based on the result of
         the set operation.
@@ -292,7 +288,7 @@ class OrderLine(Element):
 
     def set_quantity(self, quantity: int | str) -> dict[str, Any]:
         """
-        Set the quantity for this OrderLine
+        Set the quantity for this OrderLine.
 
         The valid and changed flags are updated based on the result of
         the set operation.
@@ -316,10 +312,10 @@ class OrderLine(Element):
 
     def get_line_cost(self) -> float:
         """
-        Get the dollar/cents cost for the quantity of parts on this
-        Order Line.
+        Get dollar/cents cost for the quantity of parts.
 
-        Line cost is calculated as the quantity * cost_each in cents.
+        Line cost is calculated as the quantity * cost_each in cents
+        (rounded to nearest cent.)
 
         Returns:
             (float) the calculated line cost in cents for this
