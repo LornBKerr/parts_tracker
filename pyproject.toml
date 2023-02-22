@@ -24,7 +24,6 @@ per-file-ignores = '__init__.py:F401'
 
 [tool.pydocstyle]
 inherit = false
-match = '*.py'
+match = '(?!test_).*\.py'
 match-dir='./src/*'
-
 
