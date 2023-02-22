@@ -1,5 +1,5 @@
 """
-Build and execute the Main Window for the Parts Tracker Program
+Build and execute the Main Window for the Parts Tracker Program.
 
 File:       main_window.py
 Author:     Lorn B Kerr
@@ -8,56 +8,45 @@ License:    MIT, see file License
 """
 
 import os
+import re
 from pathlib import Path
-from typing import Any  # , Union
+from typing import Any
 
 from lbk_library import Dbal, IniFileParser
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
+from PyQt6.QtWidgets import QApplication, QMainWindow  # , QFileDialog
 
 from .assembly_tree_page import AssemblyTreePage
 from .orders_list_page import OrdersListPage
 from .parts_list_page import PartsListPage
 
+# from dialogs import Dialog, ItemDialog
+
 
 class MainWindow(QMainWindow):
-    """
-    Build and execute the Main Window for the Parts Tracker Program
-    """
+    """Build the Main Window for the Parts Tracker Program."""
 
-    def __init__(self, app: QApplication) -> None:
+    def __init__(self, app: QApplication, test_config_dir: str = None) -> None:
         """
-        Initialize all the windows for the Program
+        Initialize the main window for the Program.
 
         Parameters:
             app (QApplication): the QApplication instance
+            test_config_dir (str): dir for the config file for testing
+                purposes only; not used for normal running.
         """
         super().__init__()
 
-        self.assembly_tree: AssemblyTreePage = None
-        """ The tabbed pane for the assembly_tree """
-        self.part_list: PartsListPage = None
-        """ The tabbed pane for the parts list """
-        self.order_list: OrdersListPage = None
-        """ The tabbed pane for the order list """
-
         self.__closing: bool = False  # Is the window closing event in process
 
-        self.recent_files: list[str] = []
-        """ The set of recent files, newest file first """
-        self.db_filepath: str = ""
-        """ The currently open database absolute file path """
-        self.config: dict[str, Any] = {}
-        """ The configuration settings """
-        self.config_handler: IniFileParser
-        """ Handler to read and write configuration ('.ini') files """
+        # the current configuration state
+        self.config_handler = IniFileParser(
+            "parts_tracker.ini", "parts_tracker", test_config_dir
+        )
+        self.config = self.get_config_file()
 
         # get the gui form displayed by the window
         self.form = uic.loadUi("src/forms/main_window.ui", self)
-
-        # the current configuration state
-        self.config_handler = IniFileParser("parts_tracker.ini", "parts_tracker")
-        self.config = self.get_config_file()
 
         # the current database handler
         self.dbref = self.open_database()
@@ -67,65 +56,71 @@ class MainWindow(QMainWindow):
 
         # set the actions for the main gui
 
-        # system close button (upper right corner)
-        app.aboutToQuit.connect(self.exit_app_action)
-
         # File Menu Items
-        self.form.action_file_open.triggered.connect(self.file_open_action)
-        self.form.action_file_close.triggered.connect(self.file_close_action)
-        # #
-        # #
-        self.form.action_file_exit.triggered.connect(self.exit_app_action)
-        # ##
-        # ##
+
+        self.form.action_file_exit.triggered.connect(self.close)
+
         # show the window
         self.show()
 
-    # end __init__()
-
     def get_config_file(self) -> dict[str, Any]:
         """
-        Get the stored configuration
+        Get the stored configuration.
 
         The minimal config dict structure is:
-        <pre>  {
-                 'FILES': {'file0': str, 'file1': str, 'file2': str, 'file3': str]}
-                }
-        </pre>
+        {
+            'state': {
+                'recent_files': (list) the 4 most recent db files opened
+                'xls_file_loc": (str) where to store the parts listings
+            }
+        }
         'FIlES' is the set of recent files opened, most recent first
 
         Returns:
             (dict) The new configuration file.
         """
-        # get config file
         config = self.config_handler.read_config()
         if not config:
             # define default configuration file
             config = {
-                "FILES": {"file0": "", "file1": "", "file2": "", "file3": ""},
-                "LOCATIONS": {"assy_file_dir": str(Path.home())},
+                "settings": {
+                    "recent_files": [],  # 1 empty entry
+                    "xls_file_loc": str(Path.home()),
+                }
             }
-
-            # set recent files list
-        for i in range(4):
-            if config["FILES"]["file" + str(i)]:
-                self.recent_files.append(config["FILES"]["file" + str(i)])
-            else:
-                break
+        # convert any strings representing lists to lists
+        for section in config:
+            for option in config[section]:
+                if isinstance(config[section][option], str) and re.match(
+                    r"\[.*\]", config[section][option]
+                ):
+                    a_list = config[section][option][1:-1]
+                    if len(a_list) == 0:  # empty list
+                        config[section][option] = []
+                    else:
+                        a_list = a_list.replace("'", "")
+                        a_list = a_list.replace(" ", "")
+                        config[section][option] = a_list.split(",")
         return config
 
-    # end get_config_file()
-
-    def save_config_file(self) -> None:
+    def save_config_file(self, config: dict[str, Any]) -> None:
         """
         Write the config file to storage.
+
+        Parameters:
+            config (dict[str, Any]: The config file to save.
         """
-        self.config_handler.write_config(self.config)
+        self.config_handler.write_config(config)
 
-    # end save_config_file()
+    def update_config_file(self, config):
+        """
+        Allow child dialogs to update the config settings.
 
-    # ###
-    # ###
+        Parameters:
+            config (dict): the updated config file.
+        """
+        self.config = config
+        self.save_config_file(self.config)
 
     def open_database(self) -> Dbal:
         """
@@ -138,26 +133,24 @@ class MainWindow(QMainWindow):
             (Dbal): The database reference
         """
         dbref = Dbal()
-        if self.recent_files:
+        if len(self.config["settings"]["recent_files"]):
             # use first filename to open the parts file
-            self.db_filepath = self.recent_files[0]
-            dbref.sql_connect(self.db_filepath)
+            dbref.sql_connect(self.config["settings"]["recent_files"][0])
             self.set_menus_enabled(True)
         else:
             self.set_menus_enabled(False)
         return dbref
 
-    # end _open_database()
-
     def configure_window(self):
         """
         Configure the displayed window.
 
-        Set the File menu list, size the window and fill the tabbed
+        Set the File menu list and fill the tabbed
         pages with data from the parts file if available.
+
+        TODO: Add resizing
         """
-        # set the file menu
-        self.set_files_menu()
+        self.set_recent_files_menu()
 
         # Load the display widgets
         self.assembly_tree = AssemblyTreePage(self.form, self.dbref)
@@ -165,36 +158,34 @@ class MainWindow(QMainWindow):
         self.order_list = OrdersListPage(self.form, self.dbref)
         self.form.tab_widget.setCurrentIndex(0)
 
-    # end configure_window()
-
-    def set_files_menu(self) -> None:
+    def set_recent_files_menu(self) -> None:
         """
-        Update the Recent Files display.
+        Update the Recent Files menu.
 
         Show up to 4 recently opened files as listed in the
-        config['FILES'] variable. If less than 4 files are held, hide
+        config['files'] variable. If less than 4 files are held, hide
         remaining menu actions.
         """
         menu_actions = self.form.menu_file_recent.actions()
         i = 0
         # set the recent files that are known
-        for i in range(len(self.recent_files)):
-            menu_actions[i].setText(os.path.basename(self.recent_files[i]))
+        for i in range(len(self.config["settings"]["recent_files"])):
+            menu_actions[i].setText(
+                os.path.basename(self.config["settings"]["recent_files"][i])
+            )
             menu_actions[i].setVisible(True)
             i += 1
 
-            # hide remainder of file menu
+        # hide remainder of file menu
         while i < len(menu_actions):
             menu_actions[i].setVisible(False)
             i += 1
 
-            # If no recent files, disable menu item
-        if not self.recent_files:
+        # If no recent files, disable menu item
+        if not self.config["settings"]["recent_files"]:
             self.form.menu_file_recent.setDisabled(True)
         else:
-            self.form.menu_file_recent.setDisabled(False)
-
-    # end set_files_menu()
+            self.form.menu_file_recent.setEnabled(True)
 
     def set_menus_enabled(self, menus_enabled: bool) -> None:
         """
@@ -211,107 +202,8 @@ class MainWindow(QMainWindow):
         self.form.menu_parts.setEnabled(menus_enabled)
         self.form.menu_orders.setEnabled(menus_enabled)
 
-    # end set_menus_enabled()
-
     def exit_app_action(self) -> None:
-        """
-        Save the config file, close database, then Exit
-        """
-        if not self.__closing:
-            self.__closing = True
-            self.config_handler.write_config(self.config)
-            if self.dbref.sql_is_connected():
-                self.dbref.sql_close()
-        self.close()
-
-    # end exit_app_action()
-
-    def file_open_action(self, not_used) -> None:
-        """
-        Open a Parts file.
-
-        Open a parts file, add the file to the recent files list, and
-        update the display with the the new dataset.
-        """
-        return_value = QFileDialog.getOpenFileName(
-            None, "Open file", "~/", "Parts Files (*.db)"
-        )
-        if not return_value[0]:
-            return
-        filepath = return_value[0]
-        self.load_new_file(filepath)
-
-    # end file_open_action()
-
-    # ####
-    # ####
-
-    def load_new_file(self, filepath: str) -> None:
-        """
-        Build and display a new, empty database file.
-
-        Parameters:
-            filepath (String): An absolute path to file to open
-        """
-        # if file is already on the list, remove it
-        if self.recent_files:
-            for i in range(len(self.recent_files)):
-                if self.recent_files[i] == filepath:
-                    del self.recent_files[i]
-                    break
-
-            # add to beginning of list
-        self.recent_files.insert(0, filepath)
-
-        # update config settings and save
-        for i in range(len(self.recent_files)):
-            self.config["FILES"]["file" + str(i)] = self.recent_files[i]
-
-        for i in range(len(self.recent_files), 4):
-            self.config["FILES"]["file" + str(i)] = ""
-
-        self.save_config_file()
-        self.set_files_menu()
-
-        # close the old parts file and open the new
-        if self.dbref.sql_is_connected():  # if open, close it
-            self.dbref.sql_close()
-
-        self.dbref.sql_connect(filepath)
-
-        # update the window
-        if self.dbref.sql_is_connected():
-            self.set_menus_enabled(True)
-            self.assembly_tree.update_tree()
-            self.part_list.update_table()
-            self.order_list.update_table()
-            self.form.tab_widget.setCurrentIndex(0)
-
-    # end load_new_file()
-
-    def file_close_action(self, not_used) -> None:
-        """
-        Close the current database file
-        """
-        # if a file is open, then close it
+        """Save the config file, close database, then Exit."""
+        self.config_handler.write_config(self.config)
         if self.dbref.sql_is_connected():
             self.dbref.sql_close()
-            self.set_menus_enabled(False)
-            self.db_filepath = ""
-
-            # save the configuration file
-        self.save_config_file()
-
-        # update the display
-        self.assembly_tree.clear_tree()
-        self.part_list.clear_table()
-        self.order_list.clear_table()
-        self.form.tab_widget.setCurrentIndex(0)
-
-    # end file_close_action()
-
-    # #####
-    # #####
-
-
-# end Class MainWindow
