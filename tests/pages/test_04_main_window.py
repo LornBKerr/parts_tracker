@@ -11,7 +11,6 @@ import os
 import sys
 from pathlib import Path
 
-import mock
 import pytest
 
 src_path = os.path.join(os.path.realpath("."), "src")
@@ -28,11 +27,10 @@ from pages import AssemblyTreePage, MainWindow, OrdersListPage, PartsListPage
 
 
 def test_04_01_class_type(qtbot):
-    with mock.patch.object(QApplication, "aboutToQuit"):
-        main = MainWindow(qtbot)
-        qtbot.addWidget(main)
-        assert isinstance(main, MainWindow)
-        assert isinstance(main, QMainWindow)
+    main = MainWindow(qtbot)
+    qtbot.addWidget(main)
+    assert isinstance(main, MainWindow)
+    assert isinstance(main, QMainWindow)
 
 
 def test_04_02_get_set_config_file(qtbot, filesystem):
@@ -167,12 +165,27 @@ def test_04_06_configure_window(qtbot, filesystem):
     main.form.tab_widget.currentIndex() == 0
 
 
-def test_p04_07_exit(qtbot, filesystem, monkeypatch):
+def test_04_07_exit_app_action(qtbot, filesystem):
     # set up new test filesystem
     source = filesystem
     config_dir = source / ".config"
+    db_file_path = Path(source / "Documents/parts_tracker/")
     main = MainWindow(qtbot, config_dir)
     qtbot.addWidget(main)
-    db_file_path = source / "Documents/parts_tracker/"
+    config = main.get_config_file()
+    config["settings"]["recent_files"].append(str(db_file_path) + "/test_file1.db")
+    db_path = db_file_path / "test_file1.db"
+    db_path.open(mode="r")
+    main.config = config
+    main.dbref = main.open_database()
+    assert isinstance(main.dbref, Dbal)
+    assert main.dbref.sql_is_connected()
 
-    main.form.close()
+    main.config["settings"]["recent_files"].append(str(db_file_path) + "/test_file2.db")
+    main.exit_app_action()
+    assert not main.dbref.sql_is_connected()
+    assert len(main.config["settings"]["recent_files"]) == 2
+
+
+def test_p04_08_exit(qtbot, filesystem):
+    pass
