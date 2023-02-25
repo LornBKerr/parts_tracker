@@ -16,7 +16,7 @@ multi_line_output = 3
 src_paths = './src/*'
 
 [tool.flake8]
-max-line-length = 120
+max-line-length = 88
 filename = '*.py'
 exclude = ['*git', '__pycache__', 'docs', 'build', 'dist', '*venv', 'pending', 'tests']
 ignore = ['F841', 'W503']
