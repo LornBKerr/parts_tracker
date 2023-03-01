@@ -1,14 +1,13 @@
 # ########################################################
 #
-# Requirements file for PartsTracker program virtual environment
+# Tool configuration for parts_tracker program.
 #
-# File:       requirements.txt
+# File:       pyproject.toml
 # Author:     Lorn B Kerr
 # Copyright:  (c) 2022, 2023 Lorn B Kerr
 # License:    MIT, see file LICENSE
 #
 # ########################################################
-
 
 [tool.isort]
 profile = 'black'
@@ -21,6 +20,7 @@ filename = '*.py'
 exclude = ['*git', '__pycache__', 'docs', 'build', 'dist', '*venv', 'pending', 'tests']
 ignore = ['F841', 'W503']
 per-file-ignores = '__init__.py:F401'
+max-complexity = 10
 
 [tool.pydocstyle]
 inherit = false
