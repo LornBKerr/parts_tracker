@@ -1,10 +1,10 @@
 # ########################################################
 #
-# Configuration file for building and testing the PartsTracker program 
+# Requirements for the PartsTracker virtual environment.
 #
-# File:       pyproject.toml
+# File:       requirements.txt
 # Author:     Lorn B Kerr
-# Copyright:  (c) 2023 Lorn B Kerr
+# Copyright:  (c) 2022, 2023 Lorn B Kerr
 # License:    MIT, see file LICENSE
 #
 # ########################################################
@@ -29,5 +29,6 @@ pydocstyle
 pydocstyle[toml]
 pytest
 pytest_cover
+pytest-mock
 pytest-qt
 
