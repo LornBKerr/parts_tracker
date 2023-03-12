@@ -11,9 +11,11 @@ License:    MIT, see file License
 import pytest
 from lbk_library import Dbal
 
+# ######################################################
+# Set up and access the database
+
 # name of test database
 db_name = "parts_test.db"
-
 
 sql_statements = [
     (
@@ -94,6 +96,9 @@ def db_create(db_open):
     return dbref
 
 
+# ######################################################
+# Test values for an Item
+
 # Set single item value set and database item table
 item_values = {
     "record_id": 9876,
@@ -140,3 +145,18 @@ def load_items_table(dbref):
             i += 1
         sql = dbref.sql_query_from_array(sql_query, entries)
         dbref.sql_query(sql, entries)
+
+
+# ######################################################
+# Test values for an Part
+
+# set part values from array of values
+part_values = dict(
+    {
+        "record_id": 9876,
+        "part_number": "13215",
+        "source": "Moss",
+        "description": "bolt",
+        "remarks": "From local source",
+    }
+)
