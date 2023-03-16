@@ -66,8 +66,6 @@ class Source(Element):
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
 
-    # end __init__()
-
     def set_properties(self, properties: dict[str, Any]) -> None:
         """
         Set the values of the Source properties array.
@@ -88,8 +86,6 @@ class Source(Element):
                 if key == "source":
                     self.set_source(properties[key])
 
-    # end set_properties()
-
     def get_source(self) -> str:
         """
         Get the source for this Source object.
@@ -102,8 +98,6 @@ class Source(Element):
         if source is None:
             source = self.defaults["source"]
         return source
-
-    # end get_source(()
 
     def set_source(self, source: str) -> dict[str, Any]:
         """
@@ -130,8 +124,3 @@ class Source(Element):
             self._set_property("source", self.defaults["source"])
         self.update_property_flags("source", result["entry"], result["valid"])
         return result
-
-    # end set_source(()
-
-
-# end Source

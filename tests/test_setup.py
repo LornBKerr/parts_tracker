@@ -191,3 +191,45 @@ part_values = dict(
         "remarks": "From local source",
     }
 )
+
+
+# ######################################################
+# Test values for a Source
+
+# set source values from array of values
+source_values = dict(
+    {
+        "record_id": 15,
+        "source": "Moss USA",
+    }
+)
+
+
+def load_sources_table(dbref):
+    columns = ["record_id", "source"]
+    value_set = [
+        [1, "Moss USA"],
+        [2, "Victoria British"],
+        [3, "B-Hive"],
+        [4, "Moss Europe"],
+        [5, "Roadster Factory"],
+        [6, "McMaster-Carr"],
+        [7, "None"],
+        [8, "Fastenal"],
+        [9, "British Parts Northwest"],
+        [10, "Ebay"],
+        [11, "Advanced Auto Wire"],
+        [12, "Little British Car Co"],
+        [13, "Strapping Lad Suspension"],
+        [14, "Local Purchase"],
+        [15, "Tire Rack"],
+    ]
+    sql_query = {"type": "INSERT", "table": "sources"}
+    for values in value_set:
+        entries = {}
+        i = 0
+        while i < len(columns):
+            entries[columns[i]] = values[i]
+            i += 1
+        sql = dbref.sql_query_from_array(sql_query, entries)
+        dbref.sql_query(sql, entries)
