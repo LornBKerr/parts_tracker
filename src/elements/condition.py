@@ -8,7 +8,7 @@ License:    MIT, see file License
 """
 
 from copy import deepcopy
-from typing import Any  # , Union
+from typing import Any
 
 from lbk_library import Dbal, Element
 
@@ -48,6 +48,7 @@ class Condition(Element):
         }
 
         self.set_initial_values(deepcopy(self.defaults))
+
         self.clear_value_valid_flags()
 
         if isinstance(condition_key, dict):

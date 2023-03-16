@@ -1,7 +1,7 @@
 """
 Test the Condition class.
 
-File:       test_01_condition.py
+File:       test_001_condition.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
@@ -11,57 +11,40 @@ import os
 import sys
 
 import pytest
+from lbk_library import Dbal
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from lbk_library import Dbal
-from test_setup_elements import close_database, database_name, open_database
+from test_setup import condition_values, db_close, db_create, db_name, db_open
 
 from elements import Condition
 
 
-def create_conditions_table(dbref):
-    dbref.sql_query("DROP TABLE IF EXISTS 'conditions'")
-    create_table = 'CREATE TABLE "conditions" (record_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, condition TEXT DEFAULT "")'
-    result = dbref.sql_query(create_table)
-    return dbref
-
-
-# set condition values from array of values
-condition_values = dict(
-    {
-        "record_id": 15,
-        "condition": "Replace",
-    }
-)
-
-
-def test_01_01_constr(open_database):
-    dbref = open_database
+def test_001_01_constr(db_open):
+    dbref = db_open
     condition = Condition(dbref)
     assert type(condition) == Condition
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_02_get_table(open_database):
-    dbref = open_database
+def test_001_02_get_table(db_open):
+    dbref = db_open
     condition = Condition(dbref)
     assert condition.get_table() == "conditions"
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_03_get_dbref(open_database):
-    dbref = open_database
+def test_001_03_get_dbref(db_open):
+    dbref = db_open
     condition = Condition(dbref)
     assert condition.get_dbref() == dbref
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_04_set_condition(open_database):
-    # set empty Condition
-    dbref = open_database
+def test_001_04_get_set_condition(db_open):
+    dbref = db_open
     condition = Condition(dbref)
     defaults = condition.get_initial_values()
     condition._set_property("condition", condition_values["condition"])
@@ -75,75 +58,73 @@ def test_01_04_set_condition(open_database):
     assert result["valid"]
     assert result["entry"] == condition_values["condition"]
     assert result["entry"] == condition.get_condition()
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_05_get_properties_type(open_database):
-    dbref = open_database
+def test_001_05_get_properties_type(db_open):
+    dbref = db_open
     condition = Condition(dbref)
     data = condition.get_properties()
     assert type(data) == dict
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_06_get_default_property_values(open_database):
-    dbref = open_database
+def test_001_06_get_default_property_values(db_open):
+    dbref = db_open
     condition = Condition(dbref)
     defaults = condition.get_initial_values()
     assert condition.get_record_id() == defaults["record_id"]
     assert condition.get_condition() == defaults["condition"]
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_07_set_properties_from_dict(open_database):
+def test_001_07_set_properties_from_dict(db_open):
     # set Condition from array
-    dbref = open_database
+    dbref = db_open
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_08_get_properties_size(open_database):
-    dbref = open_database
+def test_001_08_get_properties_size(db_open):
+    dbref = db_open
     condition = Condition(dbref)
     data = condition.get_properties()
     assert len(data) == 2
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_09_condition_from_dict(open_database):
-    dbref = open_database
+def test_001_09_condition_from_dict(db_open):
+    dbref = db_open
     condition = Condition(dbref, condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_10_item_from__partial_dict(open_database):
-    dbref = open_database
+def test_001_10_item_from__partial_dict(db_open):
+    dbref = db_open
     values = {"record_id": 15}
     condition = Condition(dbref, values)
     assert values["record_id"] == condition.get_record_id()
     assert "" == condition.get_condition()
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_11_add(open_database):
-    dbref = open_database
-    create_conditions_table(dbref)
+def test_001_11_add(db_create):
+    dbref = db_create
     condition = Condition(dbref, condition_values)
     record_id = condition.add()
     assert record_id == 1
     assert record_id == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_12_read_db(open_database):
-    dbref = open_database
-    create_conditions_table(dbref)
+def test_001_12_read_db(db_create):
+    dbref = db_create
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
@@ -160,18 +141,16 @@ def test_01_12_read_db(open_database):
     condition2.set_properties(condition2.get_properties_from_db(None, None))
     assert isinstance(condition2.get_properties(), dict)
     assert len(condition2.get_properties()) == 0
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_13_update(open_database):
-    dbref = open_database
-    create_conditions_table(dbref)
+def test_001_13_update(db_create):
+    dbref = db_create
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
     assert record_id == 1
     assert condition_values["condition"] == condition.get_condition()
-
     # update condition
     condition.set_condition("British Wiring")
     result = condition.update()
@@ -180,12 +159,11 @@ def test_01_13_update(open_database):
     assert record_id == condition.get_record_id()
     assert not condition_values["condition"] == condition.get_condition()
     assert "British Wiring" == condition.get_condition()
-    close_database(dbref)
+    db_close(dbref)
 
 
-def test_01_14_delete(open_database):
-    dbref = open_database
-    create_conditions_table(dbref)
+def test_001_14_delete(db_create):
+    dbref = db_create
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
@@ -196,4 +174,4 @@ def test_01_14_delete(open_database):
     condition2 = Condition(dbref, condition_values["record_id"])
     assert isinstance(condition2.get_properties(), dict)
     assert len(condition2.get_properties()) == len(condition_values)
-    close_database(dbref)
+    db_close(dbref)

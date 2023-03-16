@@ -97,6 +97,37 @@ def db_create(db_open):
 
 
 # ######################################################
+# Test values for a Condition
+
+# set condition values from array of values
+condition_values = {
+    "record_id": 15,
+    "condition": "Replace",
+}
+
+
+def load_conditions_table(dbref):
+    columns = ["record_id", "condition"]
+    value_set = [
+        [1, "Usable"],
+        [2, "Replace"],
+        [3, "Rebuild"],
+        [4, "Missing"],
+        [5, "New"],
+        [6, "Unknown"],
+    ]
+    sql_query = {"type": "INSERT", "table": "conditions"}
+    for values in value_set:
+        entries = {}
+        i = 0
+        while i < len(columns):
+            entries[columns[i]] = values[i]
+            i += 1
+        sql = dbref.sql_query_from_array(sql_query, entries)
+        dbref.sql_query(sql, entries)
+
+
+# ######################################################
 # Test values for an Item
 
 # Set single item value set and database item table
