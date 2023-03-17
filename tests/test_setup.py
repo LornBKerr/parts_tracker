@@ -193,6 +193,44 @@ part_values = dict(
 )
 
 
+def load_parts_table(dbref):
+    columns = ["record_id", "part_number", "source", "description", "remarks"]
+    value_set = [
+        [
+            "1786",
+            "X081",
+            "Local Purchase",
+            "Rivet, Pop,1/8",
+            "",
+        ],
+        ["1787", "X080", "None", "Fenders, Rear", ""],
+        ["1788", "X079", "None", "O-Ring Gasket, 1/4 ID, 3/8 ID", ""],
+        ["1789", "453-721", "Moss USA", "Dashboard", ""],
+        ["1790", "15-112-BL", "Victoria British", "Radio Back Panel", ""],
+        ["1791", "472-078", "Moss USA", "Radio Blanking Plate Set", ""],
+        ["1792", "12-1124", "Victoria British", "Screw	Radio Console", ""],
+        ["1793", "12-5304", "Victoria British", "Nut, Spire, Radio Console", ""],
+        ["1794", "281-050", "Moss USA", "Grommet, 1 x 5/16	Choke Cable", ""],
+        [
+            "1795",
+            "282-385",
+            "Moss USA",
+            "Grommet, 9/16x 3/16",
+            "License Plate",
+        ],
+        ["1796", "324-655", "None", "Washer, Flat, 3/8 ID, 1 1/4 OD, 1/8 Thick", ""],
+    ]
+    sql_query = {"type": "INSERT", "table": "parts"}
+    for values in value_set:
+        entries = {}
+        i = 0
+        while i < len(columns):
+            entries[columns[i]] = values[i]
+            i += 1
+        sql = dbref.sql_query_from_array(sql_query, entries)
+        dbref.sql_query(sql, entries)
+
+
 # ######################################################
 # Test values for a Source
 

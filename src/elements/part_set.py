@@ -55,8 +55,3 @@ class PartSet(ElementSet):
             limit,
             offset,
         )
-
-    # end __init__()
-
-
-# end PartSet
