@@ -3,19 +3,21 @@ Test the ItemSet class.
 
 File:       test_006_item_set.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2022 Lorn B Kerr
+Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
 """
+
 import os
-#import pytest
+import sys
+
+import pytest
 from lbk_library import Dbal, ElementSet
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from test_setup import db_close, db_create, load_items_table
-)
+from test_setup import db_close, db_create, db_open, load_items_table
 
 from elements import Item, ItemSet
 

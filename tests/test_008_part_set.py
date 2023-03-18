@@ -1,3 +1,12 @@
+"""
+Test the ItemSet class.
+
+File:       test_008_part_set.py
+Author:     Lorn B Kerr
+Copyright:  (c) 2022, 2023 Lorn B Kerr
+License:    MIT, see file License
+"""
+
 import os
 import sys
 

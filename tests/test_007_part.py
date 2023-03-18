@@ -12,12 +12,11 @@ import sys
 
 import pytest
 from lbk_library import Dbal
+from test_setup import db_close, db_create, db_open, item_values, part_values
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
-
-from test_setup import db_close, db_create, db_name, db_open, item_values, part_values
 
 from elements import Item, Part
 
