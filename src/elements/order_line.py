@@ -1,5 +1,5 @@
 """
-Implements single OrderLine in the database.
+Implements a single OrderLine in the database.
 
 File:       order_line.py
 Author:     Lorn B Kerr

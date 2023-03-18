@@ -179,6 +179,66 @@ def load_items_table(dbref):
 
 
 # ######################################################
+# Test values for an OrderLine
+
+order_line_values = {
+    "record_id": 10,
+    "order_number": "09-001",
+    "line": 3,
+    "part_number": "13571",
+    "cost_each": 10.01,
+    "quantity": 3,
+    "remarks": "remarks",
+}
+
+
+def load_order_lines_table(dbref):
+    columns = [
+        "record_id",
+        "order_number",
+        "line",
+        "part_number",
+        "cost_each",
+        "quantity",
+        "remarks",
+    ]
+    value_set = [
+        [27, "06-015", 1, "373-830", 23.5, 1, ""],
+        [28, "06-015", 2, "Z0033", 91.0, 1, "P/N Replaced by ZE005"],
+        [
+            29,
+            "07-001",
+            1,
+            "267-995",
+            13.0,
+            1,
+            "Used as core for new shocks from NOSIMPORTS",
+        ],
+        [
+            30,
+            "07-001",
+            2,
+            "267-985",
+            13.0,
+            1,
+            "Used as core for new shocks from NOSIMPORTS",
+        ],
+        [31, "07-002", 1, "458-885", 187.5, 1, "includes shipping"],
+        [32, "07-002", 2, "458-875", 187.5, 1, "includes shipping"],
+        [33, "07-003", 1, "X5005", 800.0, 1, ""],
+    ]
+    sql_query = {"type": "INSERT", "table": "order_lines"}
+    for values in value_set:
+        entries = {}
+        i = 0
+        while i < len(columns):
+            entries[columns[i]] = values[i]
+            i += 1
+        sql = dbref.sql_query_from_array(sql_query, entries)
+        dbref.sql_query(sql, entries)
+
+
+# ######################################################
 # Test values for an Part
 
 # set part values from array of values
