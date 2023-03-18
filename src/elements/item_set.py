@@ -53,8 +53,3 @@ class ItemSet(ElementSet):
             limit,
             offset,
         )
-
-        # end __init__()
-
-
-# end Class ItemSet
