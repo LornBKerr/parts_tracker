@@ -12,7 +12,7 @@ import sys
 
 import pytest
 from lbk_library import Dbal, ElementSet
-from test_setup import (db_close, db_create, db_open, load_conditions_table,
+from test_setup import db_close, db_create, db_open, load_conditions_table
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
