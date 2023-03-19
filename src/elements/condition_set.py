@@ -11,7 +11,7 @@ from typing import Any
 
 from lbk_library import Dbal, ElementSet
 
-from . import Condition
+from .condition import Condition
 
 
 class ConditionSet(ElementSet):
