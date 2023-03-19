@@ -25,8 +25,10 @@ from .condition import Condition
 from .condition_set import ConditionSet
 from .item import Item
 from .item_set import ItemSet
+from .order import Order
 from .order_line import OrderLine
 from .order_line_set import OrderLineSet
+from .order_set import OrderSet
 from .part import Part
 from .part_set import PartSet
 from .source import Source

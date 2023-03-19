@@ -8,7 +8,7 @@ License:    MIT, see file License
 """
 
 from copy import deepcopy
-from typing import Any  # , Union
+from typing import Any
 
 from lbk_library import Dbal, Element
 

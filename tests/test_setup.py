@@ -179,6 +179,101 @@ def load_items_table(dbref):
 
 
 # ######################################################
+# Test values for an Order
+
+order_values = {
+    "record_id": 9876,
+    "order_number": "09-001",
+    "date": "10/02/2009",
+    "source": "Moss",
+    "subtotal": 25.25,
+    "shipping": 2.95,
+    "discount": -1.02,
+    "tax": 1.77,
+    "total": 28.95,
+    "remarks": "From local source",
+}
+
+
+def load_orders_table(dbref):
+    columns = [
+        "record_id",
+        "order_number",
+        "date",
+        "source",
+        "remarks",
+        "subtotal",
+        "shipping",
+        "tax",
+        "discount",
+        "total",
+    ]
+    value_set = [
+        [13, "06-013", "2006-08-22", "B-Hive", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+        [14, "06-015", "2006-12-04", "Ebay", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+        [
+            15,
+            "06-016",
+            "2006-05-05",
+            "Local Purchase",
+            "Napa Auto Parts",
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        [
+            16,
+            "07-001",
+            "2007-07-02",
+            "Local Purchase",
+            "From David Deutsch, MG Experience member",
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        [
+            17,
+            "07-002",
+            "2007-09-28",
+            "Local Purchase",
+            "From Steve Adamski, MG Experience member",
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        [
+            18,
+            "07-003",
+            "2007-12-06",
+            "Local Purchase",
+            "Professional Crygenic Metallurgy and Coatings",
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ],
+        [19, "07-004", "2007-12-19", "Advanced Auto Wire", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+    ]
+    sql_query = {"type": "INSERT", "table": "orders"}
+    for values in value_set:
+        entries = {}
+        i = 0
+        while i < len(columns):
+            entries[columns[i]] = values[i]
+            i += 1
+        sql = dbref.sql_query_from_array(sql_query, entries)
+        print(i, sql, entries)
+        dbref.sql_query(sql, entries)
+
+
+# ######################################################
 # Test values for an OrderLine
 
 order_line_values = {
