@@ -89,11 +89,58 @@ def db_close(dbref):
 
 @pytest.fixture
 def db_create(db_open):
-    """create a new database file"""
     dbref = db_open
     for sql in sql_statements:
         dbref.sql_query(sql)
     return dbref
+
+# Directories for Windows and Linux
+directories = [
+    ".config",
+    "Documents",
+    "Documents/parts_tracker",
+]
+
+# a basic empty config file for part_tracker testing.
+test_config = {
+    "settings": {
+        "recent_files": [],
+        "db_file_dir": "",
+        "xls_file_loc": "",
+    }
+}
+
+
+@pytest.fixture
+def filesystem(tmp_path):
+    """
+    Setup a temporary filesystem which will be discarded after the test
+    sequence is run.
+
+    'source' is the directory structure for saving and retrieving data
+    with tow directories: '.config' and 'Documents'. This directory
+    structure will be discarded after the test sequence is run.
+
+    Parameters:
+        tmp_path: pytest fixture to setup a path to a temperary location
+
+    Returns:
+        ( pathlib.Path ) The temparary file paths to use.
+    """
+    source = tmp_path / "source"
+    source.mkdir()
+
+    # make a set of source directories and files
+    for dir in directories:
+        a_dir = source / dir
+        a_dir.mkdir()
+
+    fp = open(source / "Documents/parts_tracker/test_file1.db", "w")
+    fp.close()
+    fp = open(source / "Documents/parts_tracker/test_file2.db", "w")
+    fp.close()
+
+    return source
 
 
 # ######################################################
@@ -426,3 +473,22 @@ def load_sources_table(dbref):
             i += 1
         sql = dbref.sql_query_from_array(sql_query, entries)
         dbref.sql_query(sql, entries)
+
+
+# define a simple form with various qt objects aavailable for testing.
+class A_Form(object):
+    def __init__(self, A_Form):
+        self.setupUi(A_Form)
+
+    def setupUi(self, dialog_form):
+        """Initialize comment."""
+        dialog_form.setObjectName("dialog_form")
+        dialog_form.resize(910, 580)
+        self.record_id_label = QtWidgets.QLabel(parent=dialog_form)
+        self.record_id_label.setGeometry(QtCore.QRect(5, 30, 125, 36))
+        self.record_id_combo = QtWidgets.QComboBox(parent=dialog_form)
+        self.record_id_combo.setGeometry(QtCore.QRect(140, 30, 161, 36))
+        self.remarks_label = QtWidgets.QLabel(parent=dialog_form)
+        self.remarks_label.setGeometry(QtCore.QRect(5, 260, 125, 37))
+        self.remarks_edit = QtWidgets.QLineEdit(parent=dialog_form)
+        self.remarks_edit.setGeometry(QtCore.QRect(140, 260, 271, 37))
