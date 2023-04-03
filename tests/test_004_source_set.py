@@ -12,7 +12,14 @@ import sys
 
 import pytest
 from lbk_library import Dbal, ElementSet
-from test_setup import db_close, db_create, db_open, load_sources_table
+from test_setup import (
+    db_close,
+    db_create,
+    db_open,
+    load_db_table,
+    source_columns,
+    source_value_set,
+)
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -80,7 +87,7 @@ def test_004_07_all_rows_empty(db_create):
 
 def test_004_08_selected_rows(db_create):
     dbref = db_create
-    load_sources_table(dbref)
+    load_db_table(dbref, "sources", source_columns, source_value_set)
     sources_set = SourceSet(dbref, "source", "Victoria British")
     count_result = dbref.sql_query(
         "SELECT COUNT(*) FROM "
