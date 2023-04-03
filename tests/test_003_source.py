@@ -21,28 +21,28 @@ if src_path not in sys.path:
 from elements import Source
 
 
-def test_03_01_constr(db_open):
+def test_003_01_constr(db_open):
     dbref = db_open
     source = Source(dbref)
     assert type(source) == Source
     db_close(dbref)
 
 
-def test_03_02_get_table(db_open):
+def test_003_02_get_table(db_open):
     dbref = db_open
     source = Source(dbref)
     assert source.get_table() == "sources"
     db_close(dbref)
 
 
-def test_03_03_get_dbref(db_open):
+def test_003_03_get_dbref(db_open):
     dbref = db_open
     source = Source(dbref)
     assert source.get_dbref() == dbref
     db_close(dbref)
 
 
-def test_03_04_set_source(db_open):
+def test_003_04_set_source(db_open):
     # set empty Source
     dbref = db_open
     source = Source(dbref)
@@ -61,7 +61,7 @@ def test_03_04_set_source(db_open):
     db_close(dbref)
 
 
-def test_03_05_get_properties_type(db_open):
+def test_003_05_get_properties_type(db_open):
     dbref = db_open
     source = Source(dbref)
     data = source.get_properties()
@@ -69,7 +69,7 @@ def test_03_05_get_properties_type(db_open):
     db_close(dbref)
 
 
-def test_03_06_get_default_property_values(db_open):
+def test_003_06_get_default_property_values(db_open):
     dbref = db_open
     source = Source(dbref)
     defaults = source.get_initial_values()
@@ -78,7 +78,7 @@ def test_03_06_get_default_property_values(db_open):
     db_close(dbref)
 
 
-def test_03_07_set_properties_from_dict(db_open):
+def test_003_07_set_properties_from_dict(db_open):
     # set Source from array
     dbref = db_open
     source = Source(dbref)
@@ -88,7 +88,7 @@ def test_03_07_set_properties_from_dict(db_open):
     db_close(dbref)
 
 
-def test_03_08_get_properties_size(db_open):
+def test_003_08_get_properties_size(db_open):
     dbref = db_open
     source = Source(dbref)
     data = source.get_properties()
@@ -96,7 +96,7 @@ def test_03_08_get_properties_size(db_open):
     db_close(dbref)
 
 
-def test_03_09_source_from_dict(db_open):
+def test_003_09_source_from_dict(db_open):
     dbref = db_open
     source = Source(dbref, source_values)
     assert source_values["record_id"] == source.get_record_id()
@@ -104,7 +104,7 @@ def test_03_09_source_from_dict(db_open):
     db_close(dbref)
 
 
-def test_03_10_item_from__partial_dict(db_open):
+def test_003_10_item_from__partial_dict(db_open):
     dbref = db_open
     values = {"record_id": 15}
     source = Source(dbref, values)
@@ -113,7 +113,7 @@ def test_03_10_item_from__partial_dict(db_open):
     db_close(dbref)
 
 
-def test_03_11_add(db_create):
+def test_003_11_add(db_create):
     dbref = db_create
     source = Source(dbref, source_values)
     record_id = source.add()
@@ -123,7 +123,7 @@ def test_03_11_add(db_create):
     db_close(dbref)
 
 
-def test_03_12_read_db(db_create):
+def test_003_12_read_db(db_create):
     dbref = db_create
     source = Source(dbref)
     source.set_properties(source_values)
@@ -144,7 +144,7 @@ def test_03_12_read_db(db_create):
     db_close(dbref)
 
 
-def test_03_13_update(db_create):
+def test_003_13_update(db_create):
     dbref = db_create
     source = Source(dbref)
     source.set_properties(source_values)
@@ -163,7 +163,7 @@ def test_03_13_update(db_create):
     db_close(dbref)
 
 
-def test_03_14_delete(db_create):
+def test_003_14_delete(db_create):
     dbref = db_create
     source = Source(dbref)
     source.set_properties(source_values)
