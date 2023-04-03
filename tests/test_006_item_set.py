@@ -17,7 +17,14 @@ src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from test_setup import db_close, db_create, db_open, load_items_table
+from test_setup import (
+    db_close,
+    db_create,
+    db_open,
+    item_columns,
+    item_value_set,
+    load_db_table,
+)
 
 from elements import Item, ItemSet
 
@@ -81,7 +88,7 @@ def test_006_07_all_rows_empty(db_create):
 
 def test_006_08_selected_rows(db_create):
     dbref = db_create
-    load_items_table(dbref)
+    load_db_table(dbref, "items", item_columns, item_value_set)
     item_set = ItemSet(dbref, "part_number", "BTB1108")
     count_result = dbref.sql_query(
         "SELECT COUNT(*) FROM "
@@ -95,7 +102,7 @@ def test_006_08_selected_rows(db_create):
 
 def test_006_09_ordered_selected_rows(db_create):
     dbref = db_create
-    load_items_table(dbref)
+    load_db_table(dbref, "items", item_columns, item_value_set)
     item_set = ItemSet(dbref, "part_number", "BTB1108", "assembly")
     count_result = dbref.sql_query(
         "SELECT COUNT(*) FROM "
@@ -114,7 +121,7 @@ def test_006_09_ordered_selected_rows(db_create):
 
 def test_006_10_selected_rows_limit(db_create):
     dbref = db_create
-    load_items_table(dbref)
+    load_db_table(dbref, "items", item_columns, item_value_set)
     limit = 5
     item_set = ItemSet(dbref, None, None, "record_id", limit)
     assert limit == len(item_set.get_property_set())
@@ -124,7 +131,7 @@ def test_006_10_selected_rows_limit(db_create):
 
 def test_006_11_selected_rows_limit_offset(db_create):
     dbref = db_create
-    load_items_table(dbref)
+    load_db_table(dbref, "items", item_columns, item_value_set)
     limit = 5
     offset = 2
     item_set = ItemSet(dbref, None, None, "record_id", limit, offset)
@@ -135,7 +142,7 @@ def test_006_11_selected_rows_limit_offset(db_create):
 
 def test_006_12_iterator(db_create):
     dbref = db_create
-    load_items_table(dbref)
+    load_db_table(dbref, "items", item_columns, item_value_set)
     limit = 5
     item_set = ItemSet(dbref, None, None, "record_id", limit)
     i = 1
