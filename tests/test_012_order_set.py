@@ -12,7 +12,14 @@ import sys
 
 import pytest
 from lbk_library import Dbal, ElementSet
-from test_setup import db_close, db_create, db_open, load_orders_table
+from test_setup import (
+    db_close,
+    db_create,
+    db_open,
+    load_db_table,
+    order_columns,
+    order_value_set,
+)
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -79,7 +86,7 @@ def test_012__07_all_rows_empty(db_create):
 
 def test_012__08_selected_rows(db_create):
     dbref = db_create
-    load_orders_table(dbref)
+    load_db_table(dbref, "orders", order_columns, order_value_set)
     order_set = OrderSet(dbref, "source", "Local Purchase")
     count_result = dbref.sql_query(
         "SELECT COUNT(*) FROM "
