@@ -17,7 +17,14 @@ src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from test_setup import db_close, db_create, db_open, load_order_lines_table
+from test_setup import (
+    db_close,
+    db_create,
+    db_open,
+    load_db_table,
+    order_line_columns,
+    order_line_value_set,
+)
 
 from elements import OrderLine, OrderLineSet
 
@@ -81,7 +88,7 @@ def test_010_07_all_rows_empty(db_create):
 
 def test_010_08_selected_rows(db_create):
     dbref = db_create
-    load_order_lines_table(dbref)
+    load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
     order_line_set = OrderLineSet(dbref, "order_number", "07-001")
     count_result = dbref.sql_query(
         "SELECT COUNT(*) FROM "
