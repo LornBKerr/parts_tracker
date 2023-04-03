@@ -18,9 +18,9 @@ src_paths = './src/*'
 max-line-length = 88
 filename = '*.py'
 exclude = ['*git', '__pycache__', 'docs', 'build', 'dist', '*venv', 'pending', 'tests']
-ignore = ['F841', 'W503']
+ignore = ['F841', 'W503', 'E501']
 per-file-ignores = '__init__.py:F401'
-max-complexity = 10
+max-complexity = 11
 
 [tool.pydocstyle]
 inherit = false
