@@ -10,6 +10,7 @@ License:    MIT, see file License
 
 import pytest
 from lbk_library import Dbal
+from PyQt6 import QtWidgets
 
 # ######################################################
 # Set up and access the database
@@ -94,6 +95,7 @@ def db_create(db_open):
         dbref.sql_query(sql)
     return dbref
 
+
 # Directories for Windows and Linux
 directories = [
     ".config",
@@ -109,6 +111,19 @@ test_config = {
         "xls_file_loc": "",
     }
 }
+
+
+def load_db_table(dbref, table_name, column_names, value_set):
+    """Load one of the database tables with a set of values."""
+    sql_query = {"type": "INSERT", "table": "items"}
+    for values in value_set:
+        entries = {}
+        i = 0
+        while i < len(columns):
+            entries[columns[i]] = values[i]
+            i += 1
+        sql = dbref.sql_query_from_array(sql_query, entries)
+        dbref.sql_query(sql, entries)
 
 
 @pytest.fixture
@@ -152,29 +167,16 @@ condition_values = {
     "condition": "Replace",
 }
 
+condition_columns = ["record_id", "condition"]
+condition_value_set = [
+    [1, "Usable"],
+    [2, "Replace"],
+    [3, "Rebuild"],
+    [4, "Missing"],
+    [5, "New"],
+    [6, "Unknown"],
+]
 
-def load_conditions_table(dbref):
-    columns = ["record_id", "condition"]
-    value_set = [
-        [1, "Usable"],
-        [2, "Replace"],
-        [3, "Rebuild"],
-        [4, "Missing"],
-        [5, "New"],
-        [6, "Unknown"],
-    ]
-    sql_query = {"type": "INSERT", "table": "conditions"}
-    for values in value_set:
-        entries = {}
-        i = 0
-        while i < len(columns):
-            entries[columns[i]] = values[i]
-            i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        dbref.sql_query(sql, entries)
-
-
-# ######################################################
 # Test values for an Item
 
 # Set single item value set and database item table
@@ -189,43 +191,32 @@ item_values = {
     "box": 5,
 }
 
+item_columns = [
+    "record_id",
+    "part_number",
+    "assembly",
+    "quantity",
+    "condition",
+    "installed",
+    "box",
+    "remarks",
+]
+item_value_set = [
+    ["1", "18V672", "A", "1", "Rebuild", "1", "", ""],
+    ["2", "BTB1108", "B", "1", "Usable", "0", "", ""],
+    ["3", "X036", "D", "1", "Usable", "0", "", ""],
+    ["4", "BTB1108", "CA", "1", "Usable", "0", "", ""],
+    ["5", "22H1053", "BB", "1", "Usable", "0", "", ""],
+    ["6", "268-090", "BC", "1", "Usable", "1", "", ""],
+    ["8", "BTB1108", "BD", "1", "Usable", "1", "", ""],
+    ["9", "X055", "EB", "1", "Usable", "1", "", ""],
+    ["56", "BULB-1895", "JCIB", "2", "Replace", "1", "", "License Plate Lamp"],
+    ["59", "158-520", "JCIA", "2", "Replace", "1", "", ""],
+    ["70", "BTB1108", "CX", "1", "Usable", "1", "", ""],
+    ["731", "17005", "CAABA", "4", "New", "1", "0", ""],
+    ["1370", "17005", "ABFCB", "3", "New", "1", "0", ""],
+]
 
-def load_items_table(dbref):
-    columns = [
-        "record_id",
-        "part_number",
-        "assembly",
-        "quantity",
-        "condition",
-        "installed",
-        "box",
-        "remarks",
-    ]
-    value_set = [
-        ["1", "18V672", "A", "1", "Rebuild", "1", "", ""],
-        ["2", "BTB1108", "B", "1", "Usable", "0", "", ""],
-        ["3", "X036", "D", "1", "Usable", "0", "", ""],
-        ["4", "BTB1108", "CA", "1", "Usable", "0", "", ""],
-        ["5", "22H1053", "BB", "1", "Usable", "0", "", ""],
-        ["6", "268-090", "BC", "1", "Usable", "1", "", ""],
-        ["8", "BTB1108", "BD", "1", "Usable", "1", "", ""],
-        ["9", "X055", "EB", "1", "Usable", "1", "", ""],
-        ["56", "BULB-1895", "JCIB", "2", "Replace", "1", "", "License Plate Lamp"],
-        ["59", "158-520", "JCIA", "2", "Replace", "1", "", ""],
-        ["70", "BTB1108", "CX", "1", "Usable", "1", "", ""],
-    ]
-    sql_query = {"type": "INSERT", "table": "items"}
-    for values in value_set:
-        entries = {}
-        i = 0
-        while i < len(columns):
-            entries[columns[i]] = values[i]
-            i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        dbref.sql_query(sql, entries)
-
-
-# ######################################################
 # Test values for an Order
 
 order_values = {
@@ -241,86 +232,73 @@ order_values = {
     "remarks": "From local source",
 }
 
+order_columns = [
+    "record_id",
+    "order_number",
+    "date",
+    "source",
+    "remarks",
+    "subtotal",
+    "shipping",
+    "tax",
+    "discount",
+    "total",
+]
+order_value_set = [
+    [13, "06-013", "2006-08-22", "B-Hive", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+    [14, "06-015", "2006-12-04", "Ebay", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+    [
+        15,
+        "06-016",
+        "2006-05-05",
+        "Local Purchase",
+        "Napa Auto Parts",
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+    ],
+    [
+        16,
+        "07-001",
+        "2007-07-02",
+        "Local Purchase",
+        "From David Deutsch, MG Experience member",
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+    ],
+    [
+        17,
+        "07-002",
+        "2007-09-28",
+        "Local Purchase",
+        "From Steve Adamski, MG Experience member",
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+    ],
+    [
+        18,
+        "07-003",
+        "2007-12-06",
+        "Local Purchase",
+        "Professional Crygenic Metallurgy and Coatings",
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+    ],
+    [19, "07-004", "2007-12-19", "Advanced Auto Wire", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+    [41, "09-012", "2009-08-17", "Fastenal", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+]
 
-def load_orders_table(dbref):
-    columns = [
-        "record_id",
-        "order_number",
-        "date",
-        "source",
-        "remarks",
-        "subtotal",
-        "shipping",
-        "tax",
-        "discount",
-        "total",
-    ]
-    value_set = [
-        [13, "06-013", "2006-08-22", "B-Hive", "", 0.0, 0.0, 0.0, 0.0, 0.0],
-        [14, "06-015", "2006-12-04", "Ebay", "", 0.0, 0.0, 0.0, 0.0, 0.0],
-        [
-            15,
-            "06-016",
-            "2006-05-05",
-            "Local Purchase",
-            "Napa Auto Parts",
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        ],
-        [
-            16,
-            "07-001",
-            "2007-07-02",
-            "Local Purchase",
-            "From David Deutsch, MG Experience member",
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        ],
-        [
-            17,
-            "07-002",
-            "2007-09-28",
-            "Local Purchase",
-            "From Steve Adamski, MG Experience member",
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        ],
-        [
-            18,
-            "07-003",
-            "2007-12-06",
-            "Local Purchase",
-            "Professional Crygenic Metallurgy and Coatings",
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        ],
-        [19, "07-004", "2007-12-19", "Advanced Auto Wire", "", 0.0, 0.0, 0.0, 0.0, 0.0],
-    ]
-    sql_query = {"type": "INSERT", "table": "orders"}
-    for values in value_set:
-        entries = {}
-        i = 0
-        while i < len(columns):
-            entries[columns[i]] = values[i]
-            i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        print(i, sql, entries)
-        dbref.sql_query(sql, entries)
-
-
-# ######################################################
 # Test values for an OrderLine
 
 order_line_values = {
@@ -333,54 +311,42 @@ order_line_values = {
     "remarks": "remarks",
 }
 
+order_line_columns = [
+    "record_id",
+    "order_number",
+    "line",
+    "part_number",
+    "cost_each",
+    "quantity",
+    "remarks",
+]
+order_line_value_set = [
+    [27, "06-015", 1, "373-830", 23.5, 1, ""],
+    [28, "06-015", 2, "Z0033", 91.0, 1, "P/N Replaced by ZE005"],
+    [
+        29,
+        "07-001",
+        1,
+        "267-995",
+        13.0,
+        1,
+        "Used as core for new shocks from NOSIMPORTS",
+    ],
+    [
+        30,
+        "07-001",
+        2,
+        "267-985",
+        13.0,
+        1,
+        "Used as core for new shocks from NOSIMPORTS",
+    ],
+    [31, "07-002", 1, "458-885", 187.5, 1, "includes shipping"],
+    [32, "07-002", 2, "458-875", 187.5, 1, "includes shipping"],
+    [33, "07-003", 1, "X5005", 800.0, 1, ""],
+    [163, "09-012", 5, "17005", 0.141, 11, ""],
+]
 
-def load_order_lines_table(dbref):
-    columns = [
-        "record_id",
-        "order_number",
-        "line",
-        "part_number",
-        "cost_each",
-        "quantity",
-        "remarks",
-    ]
-    value_set = [
-        [27, "06-015", 1, "373-830", 23.5, 1, ""],
-        [28, "06-015", 2, "Z0033", 91.0, 1, "P/N Replaced by ZE005"],
-        [
-            29,
-            "07-001",
-            1,
-            "267-995",
-            13.0,
-            1,
-            "Used as core for new shocks from NOSIMPORTS",
-        ],
-        [
-            30,
-            "07-001",
-            2,
-            "267-985",
-            13.0,
-            1,
-            "Used as core for new shocks from NOSIMPORTS",
-        ],
-        [31, "07-002", 1, "458-885", 187.5, 1, "includes shipping"],
-        [32, "07-002", 2, "458-875", 187.5, 1, "includes shipping"],
-        [33, "07-003", 1, "X5005", 800.0, 1, ""],
-    ]
-    sql_query = {"type": "INSERT", "table": "order_lines"}
-    for values in value_set:
-        entries = {}
-        i = 0
-        while i < len(columns):
-            entries[columns[i]] = values[i]
-            i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        dbref.sql_query(sql, entries)
-
-
-# ######################################################
 # Test values for an Part
 
 # set part values from array of values
@@ -394,46 +360,41 @@ part_values = dict(
     }
 )
 
+part_columns = ["record_id", "part_number", "source", "description", "remarks"]
 
-def load_parts_table(dbref):
-    columns = ["record_id", "part_number", "source", "description", "remarks"]
-    value_set = [
-        [
-            "1786",
-            "X081",
-            "Local Purchase",
-            "Rivet, Pop,1/8",
-            "",
-        ],
-        ["1787", "X080", "None", "Fenders, Rear", ""],
-        ["1788", "X079", "None", "O-Ring Gasket, 1/4 ID, 3/8 ID", ""],
-        ["1789", "453-721", "Moss USA", "Dashboard", ""],
-        ["1790", "15-112-BL", "Victoria British", "Radio Back Panel", ""],
-        ["1791", "472-078", "Moss USA", "Radio Blanking Plate Set", ""],
-        ["1792", "12-1124", "Victoria British", "Screw	Radio Console", ""],
-        ["1793", "12-5304", "Victoria British", "Nut, Spire, Radio Console", ""],
-        ["1794", "281-050", "Moss USA", "Grommet, 1 x 5/16	Choke Cable", ""],
-        [
-            "1795",
-            "282-385",
-            "Moss USA",
-            "Grommet, 9/16x 3/16",
-            "License Plate",
-        ],
-        ["1796", "324-655", "None", "Washer, Flat, 3/8 ID, 1 1/4 OD, 1/8 Thick", ""],
-    ]
-    sql_query = {"type": "INSERT", "table": "parts"}
-    for values in value_set:
-        entries = {}
-        i = 0
-        while i < len(columns):
-            entries[columns[i]] = values[i]
-            i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        dbref.sql_query(sql, entries)
+part_value_set = [
+    [
+        69,
+        "17005",
+        "Fastenal",
+        "Bolt, Hex Cap, 1/4-28 x 1.000, Grade 5, Zinc",
+        "Moss P/N 324-247",
+    ],
+    [
+        1786,
+        "X081",
+        "Local Purchase",
+        "Rivet, Pop,1/8",
+        "",
+    ],
+    [1787, "X080", "None", "Fenders, Rear", ""],
+    [1788, "X079", "None", "O-Ring Gasket, 1/4 ID, 3/8 ID", ""],
+    [1789, "453-721", "Moss USA", "Dashboard", ""],
+    [1790, "15-112-BL", "Victoria British", "Radio Back Panel", ""],
+    [1791, "472-078", "Moss USA", "Radio Blanking Plate Set", ""],
+    [1792, "12-1124", "Victoria British", "Screw	Radio Console", ""],
+    [1793, "12-5304", "Victoria British", "Nut, Spire, Radio Console", ""],
+    [1794, "281-050", "Moss USA", "Grommet, 1 x 5/16	Choke Cable", ""],
+    [
+        1795,
+        "282-385",
+        "Moss USA",
+        "Grommet, 9/16x 3/16",
+        "License Plate",
+    ],
+    [1796, "324-655", "None", "Washer, Flat, 3/8 ID, 1 1/4 OD, 1/8 Thick", ""],
+]
 
-
-# ######################################################
 # Test values for a Source
 
 # set source values from array of values
@@ -445,26 +406,33 @@ source_values = dict(
 )
 
 
-def load_sources_table(dbref):
-    columns = ["record_id", "source"]
-    value_set = [
-        [1, "Moss USA"],
-        [2, "Victoria British"],
-        [3, "B-Hive"],
-        [4, "Moss Europe"],
-        [5, "Roadster Factory"],
-        [6, "McMaster-Carr"],
-        [7, "None"],
-        [8, "Fastenal"],
-        [9, "British Parts Northwest"],
-        [10, "Ebay"],
-        [11, "Advanced Auto Wire"],
-        [12, "Little British Car Co"],
-        [13, "Strapping Lad Suspension"],
-        [14, "Local Purchase"],
-        [15, "Tire Rack"],
-    ]
-    sql_query = {"type": "INSERT", "table": "sources"}
+source_columns = ["record_id", "source"]
+source_value_set = [
+    [1, "Moss USA"],
+    [2, "Victoria British"],
+    [3, "B-Hive"],
+    [4, "Moss Europe"],
+    [5, "Roadster Factory"],
+    [6, "McMaster-Carr"],
+    [7, "None"],
+    [8, "Fastenal"],
+    [9, "British Parts Northwest"],
+    [10, "Ebay"],
+    [11, "Advanced Auto Wire"],
+    [12, "Little British Car Co"],
+    [13, "Strapping Lad Suspension"],
+    [14, "Local Purchase"],
+    [15, "Tire Rack"],
+]
+
+
+# ######################################################
+
+# Load a database table
+
+
+def load_db_table(dbref, table, columns, value_set):
+    sql_query = {"type": "INSERT", "table": table}
     for values in value_set:
         entries = {}
         i = 0
@@ -475,20 +443,23 @@ def load_sources_table(dbref):
         dbref.sql_query(sql, entries)
 
 
-# define a simple form with various qt objects aavailable for testing.
-class A_Form(object):
-    def __init__(self, A_Form):
-        self.setupUi(A_Form)
+# ######################################################
+# define a simple form with various qt objects available for testing.
+
+
+class dialog_form(object):
+    def __init__(self, dialog_form):
+        self.setupUi(dialog_form)
 
     def setupUi(self, dialog_form):
         """Initialize comment."""
         dialog_form.setObjectName("dialog_form")
         dialog_form.resize(910, 580)
         self.record_id_label = QtWidgets.QLabel(parent=dialog_form)
-        self.record_id_label.setGeometry(QtCore.QRect(5, 30, 125, 36))
         self.record_id_combo = QtWidgets.QComboBox(parent=dialog_form)
-        self.record_id_combo.setGeometry(QtCore.QRect(140, 30, 161, 36))
         self.remarks_label = QtWidgets.QLabel(parent=dialog_form)
-        self.remarks_label.setGeometry(QtCore.QRect(5, 260, 125, 37))
         self.remarks_edit = QtWidgets.QLineEdit(parent=dialog_form)
-        self.remarks_edit.setGeometry(QtCore.QRect(140, 260, 271, 37))
+        self.save_new_button = QtWidgets.QPushButton(parent=dialog_form)
+        self.save_done_button = QtWidgets.QPushButton(parent=dialog_form)
+        self.part_number_combo = QtWidgets.QComboBox(parent=dialog_form)
+        self.order_table = QtWidgets.QTableWidget(parent=dialog_form)
