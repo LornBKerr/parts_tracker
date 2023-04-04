@@ -370,6 +370,7 @@ part_value_set = [
         "Bolt, Hex Cap, 1/4-28 x 1.000, Grade 5, Zinc",
         "Moss P/N 324-247",
     ],
+    [427, "267-995", "Moss USA", "Shock, LHS, Rebuilt", ""],
     [
         1786,
         "X081",
