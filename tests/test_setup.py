@@ -126,6 +126,15 @@ def load_db_table(dbref, table_name, column_names, value_set):
         dbref.sql_query(sql, entries)
 
 
+def load_all_db_tables(dbref):
+    load_db_table(dbref, "conditions", condition_columns, condition_value_set)
+    load_db_table(dbref, "items", item_columns, item_value_set)
+    load_db_table(dbref, "parts", part_columns, part_value_set)
+    load_db_table(dbref, "orders", order_columns, order_value_set)
+    load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
+    load_db_table(dbref, "sources", source_columns, source_value_set)
+
+
 @pytest.fixture
 def filesystem(tmp_path):
     """
@@ -181,14 +190,14 @@ condition_value_set = [
 
 # Set single item value set and database item table
 item_values = {
-    "record_id": 9876,
-    "part_number": "13215",
-    "assembly": "P",
+    "record_id": 731,
+    "part_number": "17005",
+    "assembly": "CAABA",
     "quantity": 4,
     "condition": "New",
     "installed": 1,
-    "remarks": "test",
-    "box": 5,
+    "box": 0,
+    "remarks": "",
 }
 
 item_columns = [
@@ -352,11 +361,11 @@ order_line_value_set = [
 # set part values from array of values
 part_values = dict(
     {
-        "record_id": 9876,
-        "part_number": "13215",
-        "source": "Moss",
-        "description": "bolt",
-        "remarks": "From local source",
+        "record_id": 69,
+        "part_number": "17005",
+        "source": "Fastenal",
+        "description": "Bolt, Hex Cap, 1/4-28 x 1.000, Grade 5, Zinc",
+        "remarks": "Moss P/N 324-247",
     }
 )
 

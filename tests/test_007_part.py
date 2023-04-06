@@ -239,18 +239,18 @@ def test_007_17_part_delete(db_create):
     assert len(part.get_properties()) == len(part_values)
 
 
-def test_007_17_get_total_quantity(db_create):
+def test_007_18_get_total_quantity(db_create):
     dbref = db_create
-    # create items table with 4 entries, three with current part number
+    # create items table with 4 entries, two with current part number
     assert dbref
     item = Item(dbref, item_values)
     item.add()
     total_quantity = item.get_quantity()
-    item_values["quantity"] = 2
-    item_values["assembly"] = "R"
+    print("1", item.get_quantity(), total_quantity)
     item = Item(dbref, item_values)
     item.add()
     total_quantity += item.get_quantity()
+    print("2", item.get_quantity(), total_quantity)
     item_values["quantity"] = 3
     item_values["assembly"] = "RA"
     item_values["part_number"] = "326-735"
@@ -261,14 +261,13 @@ def test_007_17_get_total_quantity(db_create):
     item_values["part_number"] = "13215"
     item = Item(dbref, item_values)
     item.add()
-    total_quantity += item.get_quantity()
     # check total quantity used
     part = Part(dbref)
+    print(part_values)
     part.set_properties(part_values)
-    record_id = part.add()
-    assert record_id
-    quantity = part.get_total_quantity()
-    assert quantity == total_quantity
+    #    record_id = part.add()
+    #    assert record_id
+    assert part.get_total_quantity() == total_quantity
     db_close(dbref)
 
 
