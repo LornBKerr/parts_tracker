@@ -160,8 +160,6 @@ class OrderLine(Element):
             line = self.defaults["line"]
         return line
 
-    # end get_line()
-
     def set_line(self, line: int) -> dict[str, Any]:
         """
         Set the line number for this OrderLine.
