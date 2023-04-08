@@ -12,13 +12,28 @@ import sys
 
 import pytest
 from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open, item_values, part_values
+from test_setup import (
+    db_close,
+    db_create,
+    db_open,
+    item_columns,
+    item_value_set,
+    load_db_table,
+)
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from elements import Item, Part
+from elements import ItemSet, Part
+
+part_values = {
+    "record_id": 69,
+    "part_number": "17005",
+    "source": "Fastenal",
+    "description": "Bolt, Hex Cap, 1/4-28 x 1.000, Grade 5, Zinc",
+    "remarks": "Moss P/N 324-247",
+}
 
 
 def test_007_01_constr(db_open):
@@ -241,34 +256,12 @@ def test_007_17_part_delete(db_create):
 
 def test_007_18_get_total_quantity(db_create):
     dbref = db_create
-    # create items table with 4 entries, two with current part number
-    assert dbref
-    item = Item(dbref, item_values)
-    item.add()
-    total_quantity = item.get_quantity()
-    print("1", item.get_quantity(), total_quantity)
-    item = Item(dbref, item_values)
-    item.add()
-    total_quantity += item.get_quantity()
-    print("2", item.get_quantity(), total_quantity)
-    item_values["quantity"] = 3
-    item_values["assembly"] = "RA"
-    item_values["part_number"] = "326-735"
-    item = Item(dbref, item_values)
-    item.add()
-    item_values["quantity"] = 7
-    item_values["assembly"] = "PA"
-    item_values["part_number"] = "13215"
-    item = Item(dbref, item_values)
-    item.add()
+    load_db_table(dbref, "items", item_columns, item_value_set)
+    part = Part(dbref, part_values)
+    item_set = ItemSet(dbref, "part_number", part.get_part_number())
+    total_quantity = 0
+    for item in item_set:
+        total_quantity += item.get_quantity()
     # check total quantity used
-    part = Part(dbref)
-    print(part_values)
-    part.set_properties(part_values)
-    #    record_id = part.add()
-    #    assert record_id
     assert part.get_total_quantity() == total_quantity
     db_close(dbref)
-
-
-# end test_007_part.py
