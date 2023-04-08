@@ -12,13 +12,15 @@ import sys
 
 import pytest
 from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open, source_values
+from test_setup import db_close, db_create, db_open
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from elements import Source
+
+source_values = {"record_id": 15, "source": "Moss USA"}
 
 
 def test_003_01_constr(db_open):

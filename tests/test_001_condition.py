@@ -12,14 +12,15 @@ import sys
 
 import pytest
 from lbk_library import Dbal
-from test_setup import condition_values, db_close, db_create, db_open
+from test_setup import db_close, db_create, db_open  # condition_values,
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-
 from elements import Condition
+
+condition_values = {"record_id": 1, "condition": "Usable"}
 
 
 def test_001_01_constr(db_open):
@@ -48,7 +49,7 @@ def test_001_04_get_set_condition(db_open):
     condition = Condition(dbref)
     defaults = condition.get_initial_values()
     condition._set_property("condition", condition_values["condition"])
-    assert condition_values["condition"] == condition.get_condition()
+    assert condition.get_condition() == condition_values["condition"]
     condition._set_property("condition", None)
     assert condition.defaults["condition"] == condition.get_condition()
     result = condition.set_condition(None)

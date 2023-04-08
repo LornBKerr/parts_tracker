@@ -12,7 +12,7 @@ import sys
 
 import pytest
 from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open, item_values
+from test_setup import db_close, db_create, db_open
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -20,6 +20,17 @@ if src_path not in sys.path:
 
 
 from elements import Item
+
+item_values = {
+    "record_id": 731,
+    "part_number": "17005",
+    "assembly": "CAABA",
+    "quantity": 4,
+    "condition": "New",
+    "installed": 1,
+    "box": 0,
+    "remarks": "",
+}
 
 
 def test_005_01_constr(db_open):

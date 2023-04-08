@@ -12,13 +12,26 @@ import sys
 
 import pytest
 from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open, order_values
+from test_setup import db_close, db_create, db_open
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from elements import Order
+
+order_values = {
+    "record_id": 9876,
+    "order_number": "09-001",
+    "date": "10/02/2009",
+    "source": "Moss",
+    "subtotal": 25.25,
+    "shipping": 2.95,
+    "discount": -1.02,
+    "tax": 1.77,
+    "total": 28.95,
+    "remarks": "From local source",
+}
 
 
 # Test Empty Order

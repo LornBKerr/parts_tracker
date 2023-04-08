@@ -12,7 +12,7 @@ import sys
 
 import pytest
 from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open, order_line_values
+from test_setup import db_close, db_create, db_open
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -20,6 +20,16 @@ if src_path not in sys.path:
 
 
 from elements import OrderLine
+
+order_line_values = {
+    "record_id": 10,
+    "order_number": "09-001",
+    "line": 3,
+    "part_number": "13571",
+    "cost_each": 10.01,
+    "quantity": 3,
+    "remarks": "remarks",
+}
 
 
 def test_009_01_constr(db_open):

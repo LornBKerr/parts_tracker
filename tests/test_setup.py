@@ -1,6 +1,5 @@
 """
-Provide common values and functionallity for the PartsTracker element
-testing
+Provide common values and functionality for the PartsTracker testing.
 
 File:       test_setup_elements.py
 Author:     Lorn B Kerr
@@ -10,7 +9,8 @@ License:    MIT, see file License
 
 import pytest
 from lbk_library import Dbal
-from PyQt6 import QtWidgets
+
+# from PyQt6 import QtWidgets
 
 # ######################################################
 # Set up and access the database
@@ -171,11 +171,6 @@ def filesystem(tmp_path):
 # Test values for a Condition
 
 # set condition values from array of values
-condition_values = {
-    "record_id": 15,
-    "condition": "Replace",
-}
-
 condition_columns = ["record_id", "condition"]
 condition_value_set = [
     [1, "Usable"],
@@ -186,20 +181,8 @@ condition_value_set = [
     [6, "Unknown"],
 ]
 
+
 # Test values for an Item
-
-# Set single item value set and database item table
-item_values = {
-    "record_id": 731,
-    "part_number": "17005",
-    "assembly": "CAABA",
-    "quantity": 4,
-    "condition": "New",
-    "installed": 1,
-    "box": 0,
-    "remarks": "",
-}
-
 item_columns = [
     "record_id",
     "part_number",
@@ -227,20 +210,6 @@ item_value_set = [
 ]
 
 # Test values for an Order
-
-order_values = {
-    "record_id": 9876,
-    "order_number": "09-001",
-    "date": "10/02/2009",
-    "source": "Moss",
-    "subtotal": 25.25,
-    "shipping": 2.95,
-    "discount": -1.02,
-    "tax": 1.77,
-    "total": 28.95,
-    "remarks": "From local source",
-}
-
 order_columns = [
     "record_id",
     "order_number",
@@ -309,17 +278,6 @@ order_value_set = [
 ]
 
 # Test values for an OrderLine
-
-order_line_values = {
-    "record_id": 10,
-    "order_number": "09-001",
-    "line": 3,
-    "part_number": "13571",
-    "cost_each": 10.01,
-    "quantity": 3,
-    "remarks": "remarks",
-}
-
 order_line_columns = [
     "record_id",
     "order_number",
@@ -357,36 +315,17 @@ order_line_value_set = [
 ]
 
 # Test values for an Part
-
-# set part values from array of values
-part_values = dict(
-    {
-        "record_id": 69,
-        "part_number": "17005",
-        "source": "Fastenal",
-        "description": "Bolt, Hex Cap, 1/4-28 x 1.000, Grade 5, Zinc",
-        "remarks": "Moss P/N 324-247",
-    }
-)
-
 part_columns = ["record_id", "part_number", "source", "description", "remarks"]
-
 part_value_set = [
     [
         69,
         "17005",
         "Fastenal",
-        "Bolt, Hex Cap, 1/4-28 x 1.000, Grade 5, Zinc",
+        "Bolt, Hex Cap, 1/4-28 x 1, Grade 5, Zinc",
         "Moss P/N 324-247",
     ],
     [427, "267-995", "Moss USA", "Shock, LHS, Rebuilt", ""],
-    [
-        1786,
-        "X081",
-        "Local Purchase",
-        "Rivet, Pop,1/8",
-        "",
-    ],
+    [1786, "X081", "Local Purchase", "Rivet, Pop,1/8", ""],
     [1787, "X080", "None", "Fenders, Rear", ""],
     [1788, "X079", "None", "O-Ring Gasket, 1/4 ID, 3/8 ID", ""],
     [1789, "453-721", "Moss USA", "Dashboard", ""],
@@ -395,26 +334,11 @@ part_value_set = [
     [1792, "12-1124", "Victoria British", "Screw	Radio Console", ""],
     [1793, "12-5304", "Victoria British", "Nut, Spire, Radio Console", ""],
     [1794, "281-050", "Moss USA", "Grommet, 1 x 5/16	Choke Cable", ""],
-    [
-        1795,
-        "282-385",
-        "Moss USA",
-        "Grommet, 9/16x 3/16",
-        "License Plate",
-    ],
+    [1795, "282-385", "Moss USA", "Grommet, 9/16x 3/16", "License Plate"],
     [1796, "324-655", "None", "Washer, Flat, 3/8 ID, 1 1/4 OD, 1/8 Thick", ""],
 ]
 
 # Test values for a Source
-
-# set source values from array of values
-source_values = dict(
-    {
-        "record_id": 15,
-        "source": "Moss USA",
-    }
-)
-
 
 source_columns = ["record_id", "source"]
 source_value_set = [
@@ -434,7 +358,6 @@ source_value_set = [
     [14, "Local Purchase"],
     [15, "Tire Rack"],
 ]
-
 
 # ######################################################
 
