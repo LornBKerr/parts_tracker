@@ -75,7 +75,7 @@ class Condition(Element):
         acceptable range, with unacceptable values set to default
         values. Properties not part of the element are discarded.
 
-        Parameteres:
+        Parameters:
             properties (dict) the element values; keys must match the
             required keys of the Condition being creates/modified
         """
