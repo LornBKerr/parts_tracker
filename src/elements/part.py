@@ -7,12 +7,13 @@ Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
+
 from copy import deepcopy
-from typing import Any  # , Union
+from typing import Any
 
 from lbk_library import Dbal, Element
 
-from . import ItemSet
+from .item_set import ItemSet
 
 
 class Part(Element):
@@ -259,6 +260,3 @@ class Part(Element):
         for item in item_set:
             quantity += item.get_quantity()
         return quantity
-
-
-# end class Parts
