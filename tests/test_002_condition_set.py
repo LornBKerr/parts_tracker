@@ -10,7 +10,6 @@ License:    MIT, see file License
 import os
 import sys
 
-import pytest
 from lbk_library import Dbal, ElementSet
 from test_setup import (
     condition_columns,
