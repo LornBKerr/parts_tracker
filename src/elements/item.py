@@ -151,8 +151,6 @@ class Item(Element):
         self.update_property_flags("part_number", result["entry"], result["valid"])
         return result
 
-    # end set_part_number()
-
     def get_assembly(self) -> str:
         """
         Get the Item's assembly code.
@@ -165,8 +163,6 @@ class Item(Element):
         if assembly is None:
             assembly = self.defaults["assembly"]
         return assembly
-
-    # end get_assembly()
 
     def set_assembly(self, assembly: str) -> dict[str, Any]:
         """
@@ -198,8 +194,6 @@ class Item(Element):
         self.update_property_flags("assembly", result["entry"], result["valid"])
         return result
 
-    # end set_assembly()
-
     def get_quantity(self) -> int:
         """
         Get the quantity of items represented by this Item.
@@ -211,8 +205,6 @@ class Item(Element):
         if quantity is None:
             quantity = self.defaults["quantity"]
         return quantity
-
-    # end get_quantity()
 
     def set_quantity(self, quantity: int | float | str) -> dict[str, Any]:
         """
@@ -244,8 +236,6 @@ class Item(Element):
         self.update_property_flags("quantity", result["entry"], result["valid"])
         return result
 
-    # end set_quantity()
-
     def get_condition(self) -> str:
         """
         Get the Item's condition.
@@ -258,8 +248,6 @@ class Item(Element):
         if condition is None:
             condition = self.defaults["condition"]
         return condition
-
-    # end get_condition()
 
     def set_condition(self, condition: str) -> dict[str, Any]:
         """
@@ -291,8 +279,6 @@ class Item(Element):
 
         self.update_property_flags("condition", result["entry"], result["valid"])
         return result
-
-    # end set_condition()
 
     def get_installed(self) -> bool:
         """
@@ -337,8 +323,6 @@ class Item(Element):
         self.update_property_flags("installed", result["entry"], result["valid"])
         return result
 
-    # end set_installed()
-
     def get_box(self) -> int:
         """Get the storage box containing this item.
 
@@ -350,8 +334,6 @@ class Item(Element):
         if box is None:
             box = self.defaults["box"]
         return box
-
-    # end get_box()
 
     def set_box(self, box: int = 0) -> dict[str, Any]:
         """
@@ -379,8 +361,3 @@ class Item(Element):
 
         self.update_property_flags("box", result["entry"], result["valid"])
         return result
-
-    # end set_box()
-
-
-# end Item
