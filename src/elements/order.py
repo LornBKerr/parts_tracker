@@ -14,8 +14,6 @@ from typing import Any
 
 from lbk_library import Dbal, Element
 
-# from .order_line_set import OrderLineSet
-
 
 class Order(Element):
     """Implement a single Order in the database."""
