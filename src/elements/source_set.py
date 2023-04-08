@@ -7,11 +7,9 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-from typing import Any
-
 from lbk_library import Dbal, ElementSet
 
-from . import Source
+from .source import Source
 
 
 class SourceSet(ElementSet):
@@ -21,7 +19,7 @@ class SourceSet(ElementSet):
         self,
         dbref: Dbal,
         where_column: str = None,
-        where_value: Any = None,
+        where_value: str | int = None,
         order_by_column: str = None,
     ) -> None:
         """
@@ -46,8 +44,3 @@ class SourceSet(ElementSet):
         super().__init__(
             dbref, table_name, element_type, where_column, where_value, order_by_column
         )
-
-    # end __init__()
-
-
-# end SourceSet
