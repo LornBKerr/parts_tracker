@@ -11,7 +11,7 @@ from typing import Any
 
 from lbk_library import Dbal, ElementSet
 
-from . import OrderLine
+from .order_line import OrderLine
 
 
 class OrderLineSet(ElementSet):
