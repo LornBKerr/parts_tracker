@@ -11,7 +11,7 @@ from typing import Any
 
 from lbk_library import Dbal, ElementSet
 
-from . import Part
+from .part import Part
 
 
 class PartSet(ElementSet):
