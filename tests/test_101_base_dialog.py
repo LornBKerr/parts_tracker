@@ -7,12 +7,15 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
+
 import os
 import sys
 
-# import pytest
-from lbk_library import Dbal, Dialog, Element
-from PyQt6.QtWidgets import QComboBox, QDialog, QMainWindow, QTableWidget
+import pytest
+from lbk_library import Dbal
+from lbk_library.gui import Dialog
+from PyQt6.QtWidgets import QDialog, QMainWindow, QTableWidget
+from pytestqt import qtbot
 from test_setup import (
     db_close,
     db_create,
@@ -27,15 +30,15 @@ from test_setup import (
     part_value_set,
 )
 
-# from pytestqt import qtbot
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from dialogs import BaseDialog
-from elements import Part
 
+# from elements import Part
+#
+#
 # class NewElement(Element):
 #    # define a minimal element for testing purposes
 #    def __init__(self):
@@ -46,12 +49,12 @@ from elements import Part
 #    # define a minimal element for testing purposes
 #    def __init__(self):
 #        pass
-#
-#
+
+
 def test_101_01_class_type(qtbot):
     dbref = Dbal()
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref)
+    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
     qtbot.addWidget(main)
     assert isinstance(dialog, BaseDialog)
     assert isinstance(dialog, Dialog)
@@ -63,7 +66,7 @@ def test_101_02_set_header_names(qtbot):
     column_widths = [30, 50]
     dbref = Dbal()
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref)
+    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
     test_table = QTableWidget(2, 7, dialog)
     test_table.resize(80, 80)
     qtbot.addWidget(main)
@@ -79,7 +82,7 @@ def test_101_02_set_header_names(qtbot):
 def test_101_03_save_buttons_enable(qtbot, db_create):
     dbref = db_create
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref)
+    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
     dialog.form = dialog_form(dialog)
     dialog.save_buttons_enable(False)
     assert not dialog.form.save_new_button.isEnabled()
@@ -95,14 +98,12 @@ def test_101_03_save_buttons_enable(qtbot, db_create):
 def test_101_04_file_order_table_fields(qtbot, db_create):
     dbref = db_create
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref)
+    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
     dialog.form = dialog_form(dialog)
     load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
     load_db_table(dbref, "orders", order_columns, order_value_set)
     load_db_table(dbref, "parts", part_columns, part_value_set)
     dialog.fill_order_table_fields(part_value_set[0][1])
     assert dialog.form.order_table.rowCount() == 1
-    dialog.fill_order_table_fields('')
+    dialog.fill_order_table_fields("")
     assert dialog.form.order_table.rowCount() == 0
-    
-    

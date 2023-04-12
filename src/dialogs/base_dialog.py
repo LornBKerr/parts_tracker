@@ -7,38 +7,11 @@ Copyright:  (c) 2020 - 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-
-# import base64
-# import csv
-# import os
-# from copy import deepcopy
-# from pathlib import Path
-# from typing import Any, Callable, ClassVar, Union
-# from PyQt6.QtCore import Qt
-#
-# from PyQt6.QtGui import QIcon, QPixmap
-# QDialog,, QFileDialog, QLabel, QMessageBox,
-#                             )
-#
-#
-# from common_table_support import RowState, TableSupport
-# from forms import (ChangePartNumberForm, EditStructureForm, ItemForm,
-#                   OrderForm, PartForm, SaveAssyListForm)
-#
-#
 from lbk_library import Dbal, Dialog
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
 
-from elements import Order, OrderLineSet  # , PartSet, SourceSet
-
-#
-#
-# (ConditionSet,, ItemSet, Order, OrderLine,
-#                            OrderLineSet, OrderSet, Part, PartSet, SourceSet)
-# from parts_tracker_constants import OLC
-#
-# from openpyxl import workbook
+from elements import Order, OrderLineSet
 
 
 class BaseDialog(Dialog):
@@ -60,11 +33,11 @@ class BaseDialog(Dialog):
         "Remarks",
     ]
     """ Names of the Order Table columns for the Item and Part dialogs."""
-
+    
     PART_ORDER_COL_WIDTHS = [60, 100, 60, 40, 120, 70, 100, 1]
     """ Widths of the Order Table columns for the Item and Part dialogs."""
 
-    def __init__(self, parent: QMainWindow, dbref: Dbal) -> None:
+    def __init__(self, parent: QMainWindow, dbref: Dbal, operation: int) -> None:
         """
         Initialize the DialogBase.
 
@@ -72,7 +45,7 @@ class BaseDialog(Dialog):
             parent(QMainWindow):  the parent window owning this dialog.
             dbref (Dbal): reference to the database for this item.
         """
-        super().__init__(parent, dbref)
+        super().__init__(parent, dbref, operation)
 
     def set_table_header(
         self,
