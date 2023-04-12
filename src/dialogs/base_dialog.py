@@ -84,58 +84,6 @@ class BaseDialog(Dialog):
         self.form.save_new_button.setEnabled(enable)
         self.form.save_done_button.setEnabled(enable)
 
-    #    def fill_record_id_selections(
-    #        self, entry_list: list[str], record_id: int | None = None
-    #    ) -> None:
-    #        """
-    #        Fill the record id selection box with the given numbers.
-    #
-    #        Select the given record id if not None.
-    #
-    #        Paramters:
-    #            entry_list (list): of valid record_id numbers.
-    #            record_id (integer): (Optional) the record id to be initally
-    #                selected.
-    #        """
-    #        self.form.record_id_combo.clear()
-    #        self.form.record_id_combo.addItems(entry_list)
-    #        self.form.record_id_combo.setCurrentIndex(
-    #            self.form.record_id_combo.findText(str(record_id))
-    #        )
-    #
-    #    def fill_part_number_selections(self, part_number: str = None) -> None:
-    #        """
-    #        Fill the part number selection box with set of part numbers.
-    #
-    #        The given part number, if any, will be displayed.
-    #
-    #        Parameters:
-    #            part_number (str): the selected intial part number (Optional)
-    #        """
-    #        partset = PartSet(self.get_dbref(), None, None, "part_number")
-    #        part_list = partset.build_option_list("part_number")
-    #        self.form.part_number_combo.clear()
-    #        self.form.part_number_combo.addItems(part_list)
-    #        self.form.part_number_combo.setCurrentIndex(
-    #            self.form.part_number_combo.findText(part_number)
-    #        )
-    #
-    #    def fill_source_selections(self, source: str = None) -> None:
-    #        """
-    #        Fill the source selection box with the set of possible sources.
-    #
-    #        The initial source, if not None, will be displayed
-    #
-    #        Parameters:
-    #            source (String) the selected initial condition (Optional)
-    #        """
-    #        sourceset = SourceSet(self.get_dbref(), None, None, "source")
-    #        source_list = sourceset.build_option_list("source")
-    #        self.form.source_combo.clear()
-    #        self.form.source_combo.addItems(source_list)
-    #        index = self.form.source_combo.findText(source)
-    #        self.form.source_combo.setCurrentIndex(index)
-
     def fill_order_table_fields(self, part_number: str) -> None:
         """
         Fill the order listing with the order lines for the current part.
