@@ -7,10 +7,12 @@ Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
 """
 
+import os
+from copy import deepcopy
+
 import pytest
 from lbk_library import Dbal
-
-# from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets
 
 # ######################################################
 # Set up and access the database
@@ -113,6 +115,16 @@ test_config = {
 }
 
 
+# fill the config directory locations
+def build_test_config(base_dir):
+    config = deepcopy(test_config)
+    config["settings"]["db_file_dir"] = os.path.join(base_dir, directories[2])
+    config["settings"]["xls_file_loc"] = os.path.join(
+        base_dir, directories[2], "parts_listings"
+    )
+    return config
+
+
 def load_db_table(dbref, table_name, column_names, value_set):
     """Load one of the database tables with a set of values."""
     sql_query = {"type": "INSERT", "table": "items"}
@@ -170,7 +182,6 @@ def filesystem(tmp_path):
 # ######################################################
 # Test values for a Condition
 
-# set condition values from array of values
 condition_columns = ["record_id", "condition"]
 condition_value_set = [
     [1, "Usable"],
@@ -183,6 +194,7 @@ condition_value_set = [
 
 
 # Test values for an Item
+
 item_columns = [
     "record_id",
     "part_number",
@@ -194,6 +206,7 @@ item_columns = [
     "remarks",
 ]
 item_value_set = [
+    ["731", "17005", "CAABA", "4", "New", "1", "0", ""],
     ["1", "18V672", "A", "1", "Rebuild", "1", "", ""],
     ["2", "BTB1108", "B", "1", "Usable", "0", "", ""],
     ["3", "X036", "D", "1", "Usable", "0", "", ""],
@@ -205,11 +218,11 @@ item_value_set = [
     ["56", "BULB-1895", "JCIB", "2", "Replace", "1", "", "License Plate Lamp"],
     ["59", "158-520", "JCIA", "2", "Replace", "1", "", ""],
     ["70", "BTB1108", "CX", "1", "Usable", "1", "", ""],
-    ["731", "17005", "CAABA", "4", "New", "1", "0", ""],
     ["1370", "17005", "ABFCB", "3", "New", "1", "0", ""],
 ]
 
 # Test values for an Order
+
 order_columns = [
     "record_id",
     "order_number",
@@ -278,6 +291,7 @@ order_value_set = [
 ]
 
 # Test values for an OrderLine
+
 order_line_columns = [
     "record_id",
     "order_number",
@@ -315,6 +329,7 @@ order_line_value_set = [
 ]
 
 # Test values for an Part
+
 part_columns = ["record_id", "part_number", "source", "description", "remarks"]
 part_value_set = [
     [
@@ -377,10 +392,10 @@ def load_db_table(dbref, table, columns, value_set):
 
 
 # ######################################################
-# define a simple form with various qt objects available for testing.
 
 
 class dialog_form(object):
+    # define a simple form with various qt objects available for testing.
     def __init__(self, dialog_form):
         self.setupUi(dialog_form)
 
