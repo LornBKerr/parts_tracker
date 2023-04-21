@@ -22,8 +22,8 @@ from PyQt6.QtWidgets import QFileDialog, QMainWindow
 # from .assembly_tree_page import AssemblyTreePage
 # from .orders_list_page import OrdersListPage
 # from .parts_list_page import PartsListPage
-# from .parts_table_definition import table_definition
-#
+from .parts_table_definition import table_definition
+
 # from dialogs import Dialog, ItemDialog
 
 
@@ -46,45 +46,46 @@ class MainWindow(QMainWindow):
         )
         self.config = self.get_config_file()
         self.form = uic.loadUi("src/forms/main_window.ui", self)
+        self.current_db_file = ""
         self.dbref = self.open_database()
 
         self.configure_window()
 
         # set the actions for the main gui
+        # File Menu Items
 
-    # File Menu Items
-    # self.form.action_file_open.triggered.connect(self.file_open_action)
-    # self.form.action_file_close.triggered.connect(self.file_close_action)
-    #
-    # self.form.action_file_new.triggered.connect(self.file_new_action)
-    # self.form.action_recent_file_1.triggered.connect(self.recent_file_1_action)
-    # self.form.action_recent_file_2.triggered.connect(self.recent_file_2_action)
-    # self.form.action_recent_file_3.triggered.connect(self.recent_file_3_action)
-    # self.form.action_recent_file_4.triggered.connect(self.recent_file_4_action)
-    #
-    # self.form.action_file_exit.triggered.connect(self.close)
-    #
-    # Assemblies/Items Menu Actions
-    # self.form.action_new_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.ADD_ELEMENT))
-    # self.form.action_edit_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.EDIT_ELEMENT))
-    #
-    # self.form.action_edit_assembly_tree.triggered.connect(self.edit_assembly_tree_action)
-    # self.form.action_save_assembly_list.triggered.connect(self.save_assembly_list_action)
-    # self.form.action_update_assemby_tree.triggered.connect(self.update_assembly_tree_action)
-    #
-    #     # Parts Menu Actions
-    # self.form.action_new_part.triggered.connect(lambda: self.part_dialog_action(None, ADD_ELEMENT))
-    # self.form.action_edit_part.triggered.connect(lambda: self.part_dialog_action(None, EDIT_ELEMENT))
-    # self.form.action_change_part_number.triggered.connect(self.part_change_pn_dialog_action)
-    # self.form.action_update_part_list_table.triggered.connect(self.update_part_list_table_action)
-    #
-    #     # Orders Menu Actions
-    # self.form.action_new_order.triggered.connect(lambda: self.order_dialog_action(None, ADD_ELEMENT))
-    # self.form.action_edit_order.triggered.connect(lambda: self.order_dialog_action(None, EDIT_ELEMENT))
-    # self.form.action_update_order_table.triggered.connect(lambda: (self.order_list.update_table()))
-    #
-    # show the window
-    # self.show()
+        self.form.action_file_open.triggered.connect(self.file_open_action)
+        self.form.action_file_close.triggered.connect(self.file_close_action)
+        self.form.action_file_new.triggered.connect(self.file_new_action)
+
+        self.form.action_recent_file_1.triggered.connect(self.recent_file_1_action)
+        self.form.action_recent_file_2.triggered.connect(self.recent_file_2_action)
+        # self.form.action_recent_file_3.triggered.connect(self.recent_file_3_action)
+        # self.form.action_recent_file_4.triggered.connect(self.recent_file_4_action)
+        #
+        # self.form.action_file_exit.triggered.connect(self.close)
+        #
+        # Assemblies/Items Menu Actions
+        # self.form.action_new_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.ADD_ELEMENT))
+        # self.form.action_edit_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.EDIT_ELEMENT))
+        #
+        # self.form.action_edit_assembly_tree.triggered.connect(self.edit_assembly_tree_action)
+        # self.form.action_save_assembly_list.triggered.connect(self.save_assembly_list_action)
+        # self.form.action_update_assemby_tree.triggered.connect(self.update_assembly_tree_action)
+        #
+        #     # Parts Menu Actions
+        # self.form.action_new_part.triggered.connect(lambda: self.part_dialog_action(None, ADD_ELEMENT))
+        # self.form.action_edit_part.triggered.connect(lambda: self.part_dialog_action(None, EDIT_ELEMENT))
+        # self.form.action_change_part_number.triggered.connect(self.part_change_pn_dialog_action)
+        # self.form.action_update_part_list_table.triggered.connect(self.update_part_list_table_action)
+        #
+        #     # Orders Menu Actions
+        # self.form.action_new_order.triggered.connect(lambda: self.order_dialog_action(None, ADD_ELEMENT))
+        # self.form.action_edit_order.triggered.connect(lambda: self.order_dialog_action(None, EDIT_ELEMENT))
+        # self.form.action_update_order_table.triggered.connect(lambda: (self.order_list.update_table()))
+
+        # show the window
+        self.show()
 
     def get_config_file(self) -> dict[str, Any]:
         """
@@ -170,8 +171,10 @@ class MainWindow(QMainWindow):
         dbref = Dbal()
         if len(self.config["settings"]["recent_files"]):
             # use first filename to open the parts file
-            dbref.sql_connect(self.config["settings"]["recent_files"][0])
+            self.current_db_file = self.config["settings"]["recent_files"][0]
+            dbref.sql_connect(self.current_db_file)
             self.set_menus_enabled(True)
+
         else:
             self.set_menus_enabled(False)
         return dbref
@@ -272,6 +275,7 @@ class MainWindow(QMainWindow):
 
         # add to beginning of list
         self.config["settings"]["recent_files"].insert(0, filepath)
+        self.current_db_file = self.config["settings"]["recent_files"][0]
         # drop 5th entry if exists
         if len(self.config["settings"]["recent_files"]) > 4:
             del self.config["settings"]["recent_files"][4]
@@ -289,91 +293,81 @@ class MainWindow(QMainWindow):
         if self.dbref.sql_is_connected():
             self.set_menus_enabled(True)
 
+    #            self.assembly_tree.update_tree()
+    #            self.part_list.update_table()
+    #            self.order_list.update_table()
+    #            self.form.tab_widget.setCurrentIndex(0)
 
-#            self.assembly_tree.update_tree()
-#            self.part_list.update_table()
-#            self.order_list.update_table()
-#            self.form.tab_widget.setCurrentIndex(0)
+    def file_open_action(self) -> None:
+        """
+        Open a Parts file.
 
-#    def file_open_action(self) -> None:
-#        """
-#        Open a Parts file.
-#
-#        Open a parts file, add the file to the recent files list, and
-#        update the display with the the new dataset.
-#        """
-#        filepath = self.get_existing_filename()
-#        self.load_file(filepath)
-#
-#    def exit_app_action(self) -> None:
-#        """Save the config file, close database, then Exit."""
-#        self.config_handler.write_config(self.config)
-#        if self.dbref.sql_is_connected():
-#            self.dbref.sql_close()
-#
-#    def file_open_action(self) -> None:
-#        """
-#        Open a Parts file.
-#
-#        Open a parts file, add the file to the recent files list, and
-#        update the display with the the new dataset.
-#        """
-#        filepath = self.get_existing_filename()
-#        self.load_file(filepath)
-#
-#    def file_close_action(self, not_used) -> None:
-#        """Close the current database file"""
-#        # if a file is open, then close it
-#       if self.dbref.sql_is_connected():
-#            self.dbref.sql_close()
-#
-#        self.set_menus_enabled(False)
-#
-#        # save the configuration file
-#        self.save_config_file(self.config)
-#
-#        # update the display
-#        self.assembly_tree.clear_tree()
-#        self.part_list.clear_table()
-#        self.order_list.clear_table()
-#        self.form.tab_widget.setCurrentIndex(0)
-#
-#    def file_new_action(self) -> None:
-#        """
-#        Create and load a new PartsTracker File.
-#
-#        The database is created with new, empty tables. The file already
-#        exists, it is deleted first, then recreated.
-#        """
-#        table_definition = parts_table_sql.sql
-#        file_name = QFileDialog.getSaveFileName(
-#            None, "New File", "../", "Parts Files (*.db)"
-#        )[0]
-#        if Path(file_name).is_file():
-#            os.remove(file_name)
-#        new_file = Dbal.new_file(file_name, table_definition)
-#        self.load_file(file_name)
-#
-#    def recent_file_1_action(self) -> None:
-#        """Open the first most recent file."""
-#        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 0:
-#            self.load_file(self.config['settings']['recent_files'][0])
-#
-#    def recent_file_2_action(self) -> None:
-#        """Open the second most recent file."""
-#        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 1:
-#            self.load_file(self.config['settings']['recent_files'][1])
-#
-#    def recent_file_3_action(self) -> None:
-#        """Open the third most recent file.""""
-#        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 2:
-#            self.load_file(self.config['settings']['recent_files'][2])
-#
-#    def recent_file_4_action(self) -> None:
-#        """Open the fourth most recent file."""
-#        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 3:
-#            self.load_file(self.config['settings']['recent_files'][3])
-#
+        Open a parts file, add the file to the recent files list, and
+        update the display with the the new dataset.
+        """
+        filepath = self.get_existing_filename()
+        self.load_file(filepath)
+
+    def file_close_action(self) -> None:
+        """Close the current database file."""
+        # if a file is open, then close it
+        if self.dbref.sql_is_connected():
+            self.dbref.sql_close()
+        self.current_db_file = ''
+        self.set_menus_enabled(False)
+        self.save_config_file(self.config)
+
+        # update the display
+        #        self.assembly_tree.clear_tree()
+        #        self.part_list.clear_table()
+        #        self.order_list.clear_table()
+        self.form.tab_widget.setCurrentIndex(0)
+
+    def file_new_action(self) -> None:
+        """
+        Create and load a new PartsTracker File.
+
+        The database is created with new, empty tables. The file already
+        exists, it is deleted first, then recreated.
+        """
+        file_name = self.get_new_filename()
+        if Path(file_name).is_file():
+            os.remove(file_name)
+        new_file = Dbal.new_file(file_name, table_definition)
+        self.load_file(file_name)
+
+    def recent_file_1_action(self) -> None:
+        """Open the first most recent file."""
+        if (
+            self.config["settings"]["recent_files"]
+            and len(self.config["settings"]["recent_files"]) > 0
+        ):
+            self.load_file(self.config["settings"]["recent_files"][0])
+
+    def recent_file_2_action(self) -> None:
+        """Open the second most recent file."""
+        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 1:
+            self.load_file(self.config['settings']['recent_files'][1])
+
+    #    def recent_file_3_action(self) -> None:
+    #        """Open the third most recent file.""""
+    #        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 2:
+    #            self.load_file(self.config['settings']['recent_files'][2])
+    #
+    #    def recent_file_4_action(self) -> None:
+    #        """Open the fourth most recent file."""
+    #        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 3:
+    #            self.load_file(self.config['settings']['recent_files'][3])
+    #
+
+    def exit_app_action(self) -> None:
+        """Save the config file, close database, then Exit."""
+        pass
+        #        self.config_handler.write_config(self.config)
+        #        if self.dbref.sql_is_connected():
+        #            self.dbref.sql_close()
+
+
 #    def item_dialog_action(self, entry_index: int, add_item: int) -> None:
 #        """
 #        Activate the Item Editing form.
