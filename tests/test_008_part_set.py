@@ -90,19 +90,17 @@ def test_008_07_all_rows_empty(db_create):
 def test_008_08_selected_rows(db_create):
     dbref = db_create
     load_db_table(dbref, "parts", part_columns, part_value_set)
-    part_set = PartSet(dbref, "source", "Victoria British")
+    part_set = PartSet(dbref, "source", "None")
     count_result = dbref.sql_query(
-        "SELECT COUNT(*) FROM "
-        + part_set.get_table()
-        + " WHERE source = 'Victoria British'"
+        "SELECT COUNT(*) FROM " + part_set.get_table() + " WHERE source = 'None'"
     )
     count = dbref.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(part_set.get_property_set())
-    assert count == 3
+    assert count == 6
     db_close(dbref)
 
 
-def test_002__09_ordered_selected_rows(db_create):
+def test_008_09_ordered_selected_rows(db_create):
     dbref = db_create
     load_db_table(dbref, "parts", part_columns, part_value_set)
     part_set = PartSet(dbref, "part_number", "BTB1108")
@@ -121,7 +119,7 @@ def test_002__09_ordered_selected_rows(db_create):
     db_close(dbref)
 
 
-def test_002__10_selected_rows_limit(db_create):
+def test_008_10_selected_rows_limit(db_create):
     dbref = db_create
     load_db_table(dbref, "parts", part_columns, part_value_set)
     limit = 5
@@ -131,7 +129,7 @@ def test_002__10_selected_rows_limit(db_create):
     db_close(dbref)
 
 
-def test_002__11_selected_rows_limit_offset(db_create):
+def test_008_11_selected_rows_limit_offset(db_create):
     dbref = db_create
     load_db_table(dbref, "parts", part_columns, part_value_set)
     limit = 5
@@ -142,7 +140,7 @@ def test_002__11_selected_rows_limit_offset(db_create):
     db_close(dbref)
 
 
-def test_002__12_iterator(db_create):
+def test_008_12_iterator(db_create):
     dbref = db_create
     load_db_table(dbref, "parts", part_columns, part_value_set)
     limit = 5
