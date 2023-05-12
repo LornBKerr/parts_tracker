@@ -1,0 +1,731 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ItemDialog</class>
+ <widget class="QDialog" name="ItemDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>910</width>
+    <height>580</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Edit an Item</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
+  </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
+  <widget class="QGroupBox" name="group_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>525</y>
+     <width>890</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <widget class="QPushButton" name="cancel_button">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>10</y>
+      <width>100</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Close the form, optionally saving any changed information</string>
+    </property>
+    <property name="text">
+     <string>Cancel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_new_button">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>10</y>
+      <width>100</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Save the current item, then clear the form</string>
+    </property>
+    <property name="text">
+     <string>Save / New</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_done_button">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>10</y>
+      <width>100</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Save the current item, then close the form</string>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Save / Done</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="delete_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>100</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Permanently DELETE the current item and all the order lines</string>
+    </property>
+    <property name="text">
+     <string>Delete Item</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="group_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>315</y>
+     <width>890</width>
+     <height>210</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Item Orders</string>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <widget class="QTableWidget" name="order_table">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>870</width>
+      <height>170</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
+    </property>
+    <property name="sortingEnabled">
+     <bool>false</bool>
+    </property>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="group_1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>5</y>
+     <width>431</width>
+     <height>305</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="title">
+    <string>Item Info</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <widget class="QLabel" name="entry_index_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>30</y>
+      <width>125</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="toolTip">
+     <string>Required: Select the Item index.</string>
+    </property>
+    <property name="text">
+     <string>Item ID Number:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="assembly_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>70</y>
+      <width>125</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Assembly:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="condition_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>110</y>
+      <width>125</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Condition:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="quantity_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>150</y>
+      <width>125</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Quantity Required:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="record_id_combo">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>30</y>
+      <width>161</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Required: Select the Item index</string>
+    </property>
+    <property name="placeholderText">
+     <string>To Be Assigned</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="assembly_edit">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>70</y>
+      <width>126</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Required: Enter the Assembly, 1 to 15 Characters</string>
+    </property>
+    <property name="whatsThis">
+     <string>Required: Enter the Assembly, 1 to 15 Characters</string>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="condition_combo">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>110</y>
+      <width>126</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="whatsThis">
+     <string>Required: Select the Item Condition</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="quantity_edit">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>150</y>
+      <width>91</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="toolTip">
+     <string>Required: Enter quantity, 0 to  999, 0 defaul</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="installed_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>190</y>
+      <width>125</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Installed:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="installed_chkbox">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>190</y>
+      <width>97</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="toolTip">
+     <string>Check if Item is installed</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="storage_box_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>220</y>
+      <width>125</width>
+      <height>37</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Storage Box:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="storage_box_edit">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>220</y>
+      <width>80</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Optional: Enter Storage box if stored, 0 to 99</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="remarks_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>260</y>
+      <width>125</width>
+      <height>37</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Remarks:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="remarks_edit">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>260</y>
+      <width>271</width>
+      <height>37</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="toolTip">
+     <string>Optional: up to 255 characters</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="group_2">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>5</y>
+     <width>420</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="title">
+    <string>Part Info</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+   <widget class="QLabel" name="part_number_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>30</y>
+      <width>150</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Part Number:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="source_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>70</y>
+      <width>150</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="text">
+     <string>Part Source:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="description_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>110</y>
+      <width>150</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Description:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="part_remarks_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>150</y>
+      <width>150</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Parts Remarks:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_qty_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>190</y>
+      <width>150</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Total Quantity In Car:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="part_number_combo">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>30</y>
+      <width>235</width>
+      <height>37</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="toolTip">
+     <string>Select Part Number, Required</string>
+    </property>
+    <property name="maxVisibleItems">
+     <number>20</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="source_text">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>70</y>
+      <width>235</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="description_text">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>110</y>
+      <width>235</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="remarks_text">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>150</y>
+      <width>235</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_qty_text">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>190</y>
+      <width>235</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>record_id_combo</tabstop>
+  <tabstop>assembly_edit</tabstop>
+  <tabstop>condition_combo</tabstop>
+  <tabstop>quantity_edit</tabstop>
+  <tabstop>installed_chkbox</tabstop>
+  <tabstop>storage_box_edit</tabstop>
+  <tabstop>remarks_edit</tabstop>
+  <tabstop>delete_button</tabstop>
+  <tabstop>cancel_button</tabstop>
+  <tabstop>save_new_button</tabstop>
+  <tabstop>save_done_button</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

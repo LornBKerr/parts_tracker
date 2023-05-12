@@ -18,5 +18,6 @@ License:    MIT, see file License
 #   EditStructureDialog(BaseDialog) - Change the Assembly structure.
 
 from .base_dialog import BaseDialog
-#from .item_dialog import ItemDialog
-#from .part_dialog import PartDialog
+from .item_dialog import ItemDialog
+
+# from .part_dialog import PartDialog

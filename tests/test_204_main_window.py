@@ -244,7 +244,7 @@ def test_204_09_load_file(filesystem, qtbot):
 
 
 def test_204_10_file_open_action(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
     file_path = source / "Documents/parts_tracker/test_file1.db"
 
     mocker.patch.object(MainWindow, "get_existing_filename")
@@ -268,7 +268,7 @@ def test_204_10_file_open_action(qtbot, filesystem, mocker):
 
 
 def test_204_11_action_file_open(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
     file_path = source / "Documents/parts_tracker/test_file1.db"
 
     mocker.patch.object(MainWindow, "get_existing_filename")
@@ -281,7 +281,7 @@ def test_204_11_action_file_open(qtbot, filesystem, mocker):
 
 
 def test_204_12_file_close_action(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
     file_path = source / "Documents/parts_tracker/test_file1.db"
 
     mocker.patch.object(MainWindow, "get_existing_filename")
@@ -301,7 +301,7 @@ def test_204_12_file_close_action(qtbot, filesystem, mocker):
 
 
 def test_204_13_action_file_close(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
     file_path = source / "Documents/parts_tracker/test_file1.db"
 
     mocker.patch.object(MainWindow, "get_existing_filename")
@@ -321,7 +321,7 @@ def test_204_13_action_file_close(qtbot, filesystem, mocker):
 
 
 def test_204_14_file_new_action(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
     file_path = source / "Documents/parts_tracker/test_file1.db"
 
     mocker.patch.object(MainWindow, "get_new_filename")
@@ -336,7 +336,7 @@ def test_204_14_file_new_action(qtbot, filesystem, mocker):
 
 
 def test_204_15_action_file_new(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
     file_path = source / "Documents/parts_tracker/test_file1.db"
 
     mocker.patch.object(MainWindow, "get_new_filename")
@@ -351,7 +351,7 @@ def test_204_15_action_file_new(qtbot, filesystem, mocker):
 
 
 def test_204_16_recent_file_1_action(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
 
     db_file0_path = str(source / "Documents/parts_tracker/test_file1.db")
     db_file1_path = str(source / "Documents/parts_tracker/test_file2.db")
@@ -360,17 +360,17 @@ def test_204_16_recent_file_1_action(qtbot, filesystem, mocker):
     db_file4_path = str(source / "Documents/parts_tracker/test_file5.db")
 
     main.recent_file_1_action()
-    assert len(main.get_config_file()['settings']['recent_files']) == 0
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 0
     assert not main.form.menu_file_recent.isEnabled()
 
     main.load_file(db_file0_path)
     main.file_close_action()
-    assert len(main.get_config_file()['settings']['recent_files']) == 1
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 1
     assert main.form.menu_file_recent.isEnabled()
-    assert main.current_db_file == ''
+    assert main.current_db_file == ""
 
     main.recent_file_1_action()
-    assert len(main.get_config_file()['settings']['recent_files']) == 1
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 1
     assert main.form.menu_assembly_listing.isEnabled()
     assert main.form.menu_parts.isEnabled()
     assert main.form.menu_orders.isEnabled()
@@ -379,7 +379,7 @@ def test_204_16_recent_file_1_action(qtbot, filesystem, mocker):
 
 
 def test_204_17_action_recent_file_1(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
 
     db_file0_path = str(source / "Documents/parts_tracker/test_file1.db")
     db_file1_path = str(source / "Documents/parts_tracker/test_file2.db")
@@ -388,17 +388,17 @@ def test_204_17_action_recent_file_1(qtbot, filesystem, mocker):
     db_file4_path = str(source / "Documents/parts_tracker/test_file5.db")
 
     main.action_recent_file_1.trigger()
-    assert len(main.get_config_file()['settings']['recent_files']) == 0
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 0
     assert not main.form.menu_file_recent.isEnabled()
 
     main.load_file(db_file0_path)
     main.file_close_action()
-    assert len(main.get_config_file()['settings']['recent_files']) == 1
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 1
     assert main.form.menu_file_recent.isEnabled()
-    assert main.current_db_file == ''
+    assert main.current_db_file == ""
 
     main.action_recent_file_1.trigger()
-    assert len(main.get_config_file()['settings']['recent_files']) == 1
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 1
     assert main.form.menu_assembly_listing.isEnabled()
     assert main.form.menu_parts.isEnabled()
     assert main.form.menu_orders.isEnabled()
@@ -407,7 +407,7 @@ def test_204_17_action_recent_file_1(qtbot, filesystem, mocker):
 
 
 def test_204_18_recent_file_2_action(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
 
     db_file0_path = str(source / "Documents/parts_tracker/test_file1.db")
     db_file1_path = str(source / "Documents/parts_tracker/test_file2.db")
@@ -416,28 +416,28 @@ def test_204_18_recent_file_2_action(qtbot, filesystem, mocker):
     db_file4_path = str(source / "Documents/parts_tracker/test_file5.db")
 
     main.recent_file_2_action()
-    assert len(main.get_config_file()['settings']['recent_files']) == 0
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 0
     assert not main.form.menu_file_recent.isEnabled()
 
     main.load_file(db_file0_path)
     main.file_close_action()
     main.load_file(db_file1_path)
     main.file_close_action()
-    assert len(main.get_config_file()['settings']['recent_files']) == 2
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 2
     assert main.form.menu_file_recent.isEnabled()
-    assert main.current_db_file == ''
-    assert main.get_config_file()['settings']['recent_files'][0] == db_file1_path
-    assert main.get_config_file()['settings']['recent_files'][1] == db_file0_path
+    assert main.current_db_file == ""
+    assert main.get_config_file()["settings"]["recent_files"][0] == db_file1_path
+    assert main.get_config_file()["settings"]["recent_files"][1] == db_file0_path
 
     main.recent_file_2_action()
     assert main.current_db_file == db_file0_path
-    assert len(main.get_config_file()['settings']['recent_files']) == 2
-    assert main.get_config_file()['settings']['recent_files'][1] == db_file1_path
-    assert main.get_config_file()['settings']['recent_files'][0] == db_file0_path
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 2
+    assert main.get_config_file()["settings"]["recent_files"][1] == db_file1_path
+    assert main.get_config_file()["settings"]["recent_files"][0] == db_file0_path
 
 
 def test_204_19_action_recent_file_2(qtbot, filesystem, mocker):
-    main, source, db_file_path = set_environment(filesystem,qtbot)
+    main, source, db_file_path = set_environment(filesystem, qtbot)
 
     db_file0_path = str(source / "Documents/parts_tracker/test_file1.db")
     db_file1_path = str(source / "Documents/parts_tracker/test_file2.db")
@@ -446,24 +446,26 @@ def test_204_19_action_recent_file_2(qtbot, filesystem, mocker):
     db_file4_path = str(source / "Documents/parts_tracker/test_file5.db")
 
     main.action_recent_file_2.trigger()
-    assert len(main.get_config_file()['settings']['recent_files']) == 0
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 0
     assert not main.form.menu_file_recent.isEnabled()
 
     main.load_file(db_file0_path)
     main.file_close_action()
     main.load_file(db_file1_path)
     main.file_close_action()
-    assert len(main.get_config_file()['settings']['recent_files']) == 2
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 2
     assert main.form.menu_file_recent.isEnabled()
-    assert main.current_db_file == ''
-    assert main.get_config_file()['settings']['recent_files'][0] == db_file1_path
-    assert main.get_config_file()['settings']['recent_files'][1] == db_file0_path
+    assert main.current_db_file == ""
+    assert main.get_config_file()["settings"]["recent_files"][0] == db_file1_path
+    assert main.get_config_file()["settings"]["recent_files"][1] == db_file0_path
 
     main.action_recent_file_2.trigger()
     assert main.current_db_file == db_file0_path
-    assert len(main.get_config_file()['settings']['recent_files']) == 2
-    assert main.get_config_file()['settings']['recent_files'][1] == db_file1_path
-    assert main.get_config_file()['settings']['recent_files'][0] == db_file0_path
+    assert len(main.get_config_file()["settings"]["recent_files"]) == 2
+    assert main.get_config_file()["settings"]["recent_files"][1] == db_file1_path
+    assert main.get_config_file()["settings"]["recent_files"][0] == db_file0_path
+
+
 #
 #
 #

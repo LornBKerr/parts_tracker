@@ -18,8 +18,8 @@ from lbk_library import Dbal, IniFileParser
 from PyQt6 import uic
 from PyQt6.QtWidgets import QFileDialog, QMainWindow
 
-#
-# from .assembly_tree_page import AssemblyTreePage
+from .assembly_tree_page import AssemblyTreePage
+
 # from .orders_list_page import OrdersListPage
 # from .parts_list_page import PartsListPage
 from .parts_table_definition import table_definition
@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         # self.assembly_tree: AssemblyTreePage
 
+        # TODO Change this to use QSettings object
         self.config_handler = IniFileParser(
             "parts_tracker.ini", "parts_tracker", test_config_dir
         )
@@ -52,20 +53,20 @@ class MainWindow(QMainWindow):
         self.configure_window()
 
         # set the actions for the main gui
-        # File Menu Items
 
+        #  -- File Menu Items --
         self.form.action_file_open.triggered.connect(self.file_open_action)
         self.form.action_file_close.triggered.connect(self.file_close_action)
         self.form.action_file_new.triggered.connect(self.file_new_action)
 
         self.form.action_recent_file_1.triggered.connect(self.recent_file_1_action)
         self.form.action_recent_file_2.triggered.connect(self.recent_file_2_action)
-        # self.form.action_recent_file_3.triggered.connect(self.recent_file_3_action)
-        # self.form.action_recent_file_4.triggered.connect(self.recent_file_4_action)
-        #
-        # self.form.action_file_exit.triggered.connect(self.close)
-        #
-        # Assemblies/Items Menu Actions
+        self.form.action_recent_file_3.triggered.connect(self.recent_file_3_action)
+        self.form.action_recent_file_4.triggered.connect(self.recent_file_4_action)
+
+        self.form.action_file_exit.triggered.connect(self.close)
+
+        # -- Assemblies/Items Menu Actions --
         # self.form.action_new_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.ADD_ELEMENT))
         # self.form.action_edit_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.EDIT_ELEMENT))
         #
@@ -87,6 +88,7 @@ class MainWindow(QMainWindow):
         # show the window
         self.show()
 
+    # TODO Change this to use QSettings object
     def get_config_file(self) -> dict[str, Any]:
         """
         Get the stored configuration.
@@ -191,7 +193,7 @@ class MainWindow(QMainWindow):
         self.set_recent_files_menu()
 
         # Load the display widgets
-        # self.assembly_tree = AssemblyTreePage(self.form, self.dbref)
+        self.assembly_tree = AssemblyTreePage(self.form, self.dbref)
         # self.part_list = PartsListPage(self.form, self.dbref)
         # self.order_list = OrdersListPage(self.form, self.dbref)
         # self.form.tab_widget.setCurrentIndex(0)
@@ -293,10 +295,10 @@ class MainWindow(QMainWindow):
         if self.dbref.sql_is_connected():
             self.set_menus_enabled(True)
 
-    #            self.assembly_tree.update_tree()
-    #            self.part_list.update_table()
-    #            self.order_list.update_table()
-    #            self.form.tab_widget.setCurrentIndex(0)
+            # self.assembly_tree.update_tree()
+            # self.part_list.update_table()
+            # self.order_list.update_table()
+            # self.form.tab_widget.setCurrentIndex(0)
 
     def file_open_action(self) -> None:
         """
@@ -313,14 +315,14 @@ class MainWindow(QMainWindow):
         # if a file is open, then close it
         if self.dbref.sql_is_connected():
             self.dbref.sql_close()
-        self.current_db_file = ''
+        self.current_db_file = ""
         self.set_menus_enabled(False)
         self.save_config_file(self.config)
 
         # update the display
-        #        self.assembly_tree.clear_tree()
-        #        self.part_list.clear_table()
-        #        self.order_list.clear_table()
+        # self.assembly_tree.clear_tree()
+        # self.part_list.clear_table()
+        # self.order_list.clear_table()
         self.form.tab_widget.setCurrentIndex(0)
 
     def file_new_action(self) -> None:
@@ -346,85 +348,91 @@ class MainWindow(QMainWindow):
 
     def recent_file_2_action(self) -> None:
         """Open the second most recent file."""
-        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 1:
-            self.load_file(self.config['settings']['recent_files'][1])
+        if (
+            self.config["settings"]["recent_files"]
+            and len(self.config["settings"]["recent_files"]) > 1
+        ):
+            self.load_file(self.config["settings"]["recent_files"][1])
 
-    #    def recent_file_3_action(self) -> None:
-    #        """Open the third most recent file.""""
-    #        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 2:
-    #            self.load_file(self.config['settings']['recent_files'][2])
-    #
-    #    def recent_file_4_action(self) -> None:
-    #        """Open the fourth most recent file."""
-    #        if self.config['settings']['recent_files'] and len(self.config['settings']['recent_files']) > 3:
-    #            self.load_file(self.config['settings']['recent_files'][3])
-    #
+    def recent_file_3_action(self) -> None:
+        """Open the third most recent file."""
+        if (
+            self.config["settings"]["recent_files"]
+            and len(self.config["settings"]["recent_files"]) > 2
+        ):
+            self.load_file(self.config["settings"]["recent_files"][2])
+
+    def recent_file_4_action(self) -> None:
+        """Open the fourth most recent file."""
+        if (
+            self.config["settings"]["recent_files"]
+            and len(self.config["settings"]["recent_files"]) > 3
+        ):
+            self.load_file(self.config["settings"]["recent_files"][3])
 
     def exit_app_action(self) -> None:
         """Save the config file, close database, then Exit."""
-        pass
-        #        self.config_handler.write_config(self.config)
-        #        if self.dbref.sql_is_connected():
-        #            self.dbref.sql_close()
+        self.config_handler.write_config(self.config)
+        if self.dbref.sql_is_connected():
+            self.dbref.sql_close()
+            self.current_db_file = ""
+
+        #    def item_dialog_action(self, entry_index: int, add_item: int) -> None:
+        #        """
+        #        Activate the Item Editing form.
+        #
+        #        Parameters:
+        #            record_id (int): the index into the database for the item to
+        #                be edited, default is None.
+        #            add_item (int): The constant Dialog.ADD_ELEMENT if a new item is
+        #                to be aded, Dialog.EDIT_ELEMENT for editing an existing item.
+        #        """
+        #        ItemDialog(self, self.dbref, entry_index, Dialog.ADD_ELEMENT).exec()
+        #        self.assembly_tree.update_tree()
+        #
+        #    def edit_assembly_tree_action(self) -> None:
+        #        """Revise the assembly structure of the tree."""
+        #        print('calling edit sturcture dialog')
+        #        EditStructureDialog(self, self.dbref, self.update_assembly_tree_action).exec()
+        #
+        #    def save_assembly_list_action(self) -> None:
+        #        """Save list of items (assembly order) to csv file or xlsx file."""
+        #         SaveAssyListDialog(self, self.dbref, self.config).exec()
+        #
+        #    def update_assembly_tree_action(self) -> None:
+        #        """Update the assembly tree display, showing collapsed view."""
+        #        self.assembly_tree.update_tree()
+        #
+        #    def part_dialog_action(self, entry_index: int, add_part: int) -> None:
+        #        """
+        #        Activate the Part Editing form.
+        #
+        #        Parameters:
+        #            parent (QMainWindow) the parent window owning this dialog.
+        #            dbref (Dbal) reference to the database for this item.
+        #            entry_index (integer) the index into the database for the
+        #                part to be edited.
+        #            add_part (int) The constant Dialog.ADD_ELEMENT if a new part
+        #                is to be aded, Dialog.EDIT_ELEMENT for editing an
+        #                existing part
+        #        """
+        #        PartDialog(self, self.dbref, entry_index, add_part).exec()
+        #        self.part_list.update_table()
+        #
+        #
+        #    #
+        #    # Change a part number throughout the database.
+        #    #
+        #    # @param parent (QMainWindow) the parent window owning this dialog.
+        #    # @param dbref (Dbal) reference to the database for this item.
+        #    #
+        #    def part_change_pn_dialog_action(self) -> None:
+        #       ChangePartNumberDialog(self, self.dbref).exec()
+        #       self.assembly_tree.update_tree()
+        #       self.parts_list.update_table()
+        #       self.order_list.update_table()
 
 
-#    def item_dialog_action(self, entry_index: int, add_item: int) -> None:
-#        """
-#        Activate the Item Editing form.
-#
-#        Parameters:
-#            record_id (int): the index into the database for the item to
-#                be edited, default is None.
-#            add_item (int): The constant Dialog.ADD_ELEMENT if a new item is
-#                to be aded, Dialog.EDIT_ELEMENT for editing an existing item.
-#        """
-#        ItemDialog(self, self.dbref, entry_index, Dialog.ADD_ELEMENT).exec()
-#        self.assembly_tree.update_tree()
-#
-#    def edit_assembly_tree_action(self) -> None:
-#        """Revise the assembly structure of the tree."""
-#        print('calling edit sturcture dialog')
-#        EditStructureDialog(self, self.dbref, self.update_assembly_tree_action).exec()
-#
-#    def save_assembly_list_action(self) -> None:
-#        """Save list of items (assembly order) to csv file or xlsx file."""
-#         SaveAssyListDialog(self, self.dbref, self.config).exec()
-#
-#    def update_assembly_tree_action(self) -> None:
-#        """Update the assembly tree display, showing collapsed view."""
-#        self.assembly_tree.update_tree()
-#
-#    def part_dialog_action(self, entry_index: int, add_part: int) -> None:
-#        """
-#        Activate the Part Editing form.
-#
-#        Parameters:
-#            parent (QMainWindow) the parent window owning this dialog.
-#            dbref (Dbal) reference to the database for this item.
-#            entry_index (integer) the index into the database for the
-#                part to be edited.
-#            add_part (int) The constant Dialog.ADD_ELEMENT if a new part
-#                is to be aded, Dialog.EDIT_ELEMENT for editing an
-#                existing part
-#        """
-#        PartDialog(self, self.dbref, entry_index, add_part).exec()
-#        self.part_list.update_table()
-#
-#
-#    #
-#    # Change a part number throughout the database.
-#    #
-#    # @param parent (QMainWindow) the parent window owning this dialog.
-#    # @param dbref (Dbal) reference to the database for this item.
-#    #
-#    def part_change_pn_dialog_action(self) -> None:
-# ChangePartNumberDialog(self, self.dbref).exec()
-# self.assembly_tree.update_tree()
-# self.part_list.update_table()
-# self.order_list.update_table()
-#    # end part_change_pn_dialog_action()
-#
-#
 #    #
 #    # Update the Parts list table after some change.
 #    #

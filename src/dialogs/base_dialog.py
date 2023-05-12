@@ -33,7 +33,7 @@ class BaseDialog(Dialog):
         "Remarks",
     ]
     """ Names of the Order Table columns for the Item and Part dialogs."""
-    
+
     PART_ORDER_COL_WIDTHS = [60, 100, 60, 40, 120, 70, 100, 1]
     """ Widths of the Order Table columns for the Item and Part dialogs."""
 

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PartForm</class>
+ <widget class="QDialog" name="PartForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>910</width>
+    <height>626</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Part Editing</string>
+  </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
+  <widget class="QGroupBox" name="groupBox_1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>5</y>
+     <width>435</width>
+     <height>261</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="title">
+    <string>Part Info</string>
+   </property>
+   <widget class="QLabel" name="part_number_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>30</y>
+      <width>100</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Part Number</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="source_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>70</y>
+      <width>100</width>
+      <height>37</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Source</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="description_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>110</y>
+      <width>100</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Description</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="remarks_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>150</y>
+      <width>100</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Parts Remarks</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="FocusComboBox" name="part_number_combo">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>30</y>
+      <width>200</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Select Part Number, Required</string>
+    </property>
+   </widget>
+   <widget class="FocusComboBox" name="source_combo">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>70</y>
+      <width>200</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Select a Source, Required</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="description_edit">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>110</y>
+      <width>300</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Description of the part, Required, up to 255 characters</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="remarks_edit">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>150</y>
+      <width>300</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Remarks about this part, Optional, up to 255 characters</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="record_id_edit">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>190</y>
+      <width>150</width>
+      <height>36</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="part_number_edit">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>30</y>
+      <width>200</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Select Part Number, Required</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>445</x>
+     <y>5</y>
+     <width>420</width>
+     <height>330</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Item Info</string>
+   </property>
+   <widget class="QTableWidget" name="item_table">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>400</width>
+      <height>250</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_qty_text">
+    <property name="geometry">
+     <rect>
+      <x>165</x>
+      <y>290</y>
+      <width>150</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="total_qty_label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>290</y>
+      <width>143</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TeTotal Quantity In Car:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>350</y>
+     <width>890</width>
+     <height>210</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Part Orders</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+   <widget class="QTableWidget" name="order_table">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>870</width>
+      <height>170</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderHighlightSections">
+     <bool>false</bool>
+    </attribute>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="button_bar">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>560</y>
+     <width>890</width>
+     <height>56</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+   <widget class="QPushButton" name="cancel_button">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>10</y>
+      <width>104</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Close the form, optionally saving any changed information</string>
+    </property>
+    <property name="text">
+     <string>Cancel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_new_button">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>10</y>
+      <width>104</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Save the current part, then clear the form</string>
+    </property>
+    <property name="text">
+     <string>Save | New</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_done_button">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>10</y>
+      <width>104</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Save the current part, then close the form</string>
+    </property>
+    <property name="text">
+     <string>Save | Done</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="delete_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>103</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Permanently Delete the part from the database.</string>
+    </property>
+    <property name="text">
+     <string>Delete Part</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FocusComboBox</class>
+   <extends>QComboBox</extends>
+   <header>focuscombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>part_number_combo</tabstop>
+  <tabstop>part_number_edit</tabstop>
+  <tabstop>source_combo</tabstop>
+  <tabstop>description_edit</tabstop>
+  <tabstop>remarks_edit</tabstop>
+  <tabstop>record_id_edit</tabstop>
+  <tabstop>cancel_button</tabstop>
+  <tabstop>save_new_button</tabstop>
+  <tabstop>save_done_button</tabstop>
+  <tabstop>delete_button</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
