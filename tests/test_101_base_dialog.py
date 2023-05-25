@@ -63,7 +63,7 @@ def test_101_01_class_type(qtbot):
 
 def test_101_02_set_header_names(qtbot):
     column_names = ["col1", "col2"]
-    column_widths = [30, 50]
+    column_widths = [40, 50]
     dbref = Dbal()
     main = QMainWindow()
     dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
