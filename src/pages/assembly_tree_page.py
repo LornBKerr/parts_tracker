@@ -240,7 +240,7 @@ class AssemblyTreePage:
         automatically stretch or shrink to fill remaining space.
         """
         i = 0
-        while i < len(AssemblyTreePage.COL_NAMES) - 1:
+        while i < len(AssemblyTreePage.COL_NAMES) - 2:
             self.tree.resizeColumnToContents(i)
             i += 1
 

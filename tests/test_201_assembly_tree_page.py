@@ -206,7 +206,7 @@ def test_201_12_action_expand(db_create, qtbot):
     page.tree.expandAll()
     expanded_width = page.tree.columnWidth(0)
     assert expanded_width >= collapsed_width
-    
+
     page.tree.clear()
     page.fill_tree_widget(item_set)
     page.form.button_expand_tree.click()
@@ -219,7 +219,7 @@ def test_201_13_action_collapse(db_create, qtbot):
     item_set = ItemSet(dbref, None, None, "assembly")
     page.fill_tree_widget(item_set)
     collapsed_width = page.tree.columnWidth(0)
-    
+
     page.form.button_expand_tree.click()
     expanded_width = page.tree.columnWidth(0)
     assert expanded_width >= collapsed_width
@@ -227,7 +227,6 @@ def test_201_13_action_collapse(db_create, qtbot):
     page.tree.collapseAll()
     new_width = page.tree.columnWidth(0)
     assert not new_width == collapsed_width
-    
+
     page.form.button_collapse_tree.click()
     recollapsed_width = page.tree.columnWidth(0)
-
