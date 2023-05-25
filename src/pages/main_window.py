@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
                 purposes only; not used for normal running.
         """
         super().__init__()
-        # self.assembly_tree: AssemblyTreePage
+        self.assembly_tree: AssemblyTreePage
 
         # TODO Change this to use QSettings object
         self.config_handler = IniFileParser(
@@ -295,7 +295,7 @@ class MainWindow(QMainWindow):
         if self.dbref.sql_is_connected():
             self.set_menus_enabled(True)
 
-            # self.assembly_tree.update_tree()
+            self.assembly_tree.update_tree()
             # self.part_list.update_table()
             # self.order_list.update_table()
             # self.form.tab_widget.setCurrentIndex(0)
@@ -320,7 +320,7 @@ class MainWindow(QMainWindow):
         self.save_config_file(self.config)
 
         # update the display
-        # self.assembly_tree.clear_tree()
+        self.assembly_tree.clear_tree()
         # self.part_list.clear_table()
         # self.order_list.clear_table()
         self.form.tab_widget.setCurrentIndex(0)

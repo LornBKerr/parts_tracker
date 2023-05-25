@@ -466,9 +466,6 @@ def test_204_19_action_recent_file_2(qtbot, filesystem, mocker):
     assert main.get_config_file()["settings"]["recent_files"][0] == db_file0_path
 
 
-#
-#
-#
 # def test_204_07_exit_app_action(qtbot, filesystem):
 #    # set up new test filesystem
 #    source = filesystem
