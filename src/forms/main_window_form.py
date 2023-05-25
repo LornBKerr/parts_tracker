@@ -22,7 +22,8 @@ class PartsTracker(object):
         PartsTracker.setObjectName("PartsTracker")
         PartsTracker.resize(1237, 908)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Preferred,
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -162,7 +163,7 @@ class PartsTracker(object):
         self.horizontalLayout.addWidget(self.tab_widget)
         PartsTracker.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=PartsTracker)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1237, 29))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1237, 22))
         self.menubar.setNativeMenuBar(False)
         self.menubar.setObjectName("menubar")
         self.menu_assembly_listing = QtWidgets.QMenu(parent=self.menubar)
