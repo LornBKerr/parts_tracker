@@ -292,7 +292,7 @@ class AssemblyTreePage:
         dialog_type = type(dialog)
         dialog.exec()
         self.update_tree()
-        return dialog_type
+        return dialog
 
     def get_dbref(self):
         """
