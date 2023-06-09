@@ -88,11 +88,11 @@ def test_004_07_all_rows_empty(db_create):
 def test_004_08_selected_rows(db_create):
     dbref = db_create
     load_db_table(dbref, "sources", source_columns, source_value_set)
-    sources_set = SourceSet(dbref, "source", "Victoria British")
+    sources_set = SourceSet(dbref, "source", "British Car Parts")
     count_result = dbref.sql_query(
         "SELECT COUNT(*) FROM "
         + sources_set.get_table()
-        + " WHERE source = 'Victoria British'"
+        + " WHERE source = 'British Car Parts'"
     )
     count = dbref.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(sources_set.get_property_set())
