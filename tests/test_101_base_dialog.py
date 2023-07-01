@@ -11,13 +11,11 @@ License:    MIT, see file License
 import os
 import sys
 
-import pytest
 from lbk_library import Dbal
 from lbk_library.gui import Dialog
-from PyQt6.QtWidgets import QDialog, QMainWindow, QTableWidget
-from pytestqt import qtbot
+
+from PyQt6.QtWidgets import QDialog, QMainWindow, QTableWidget, QWidget
 from test_setup import (
-    db_close,
     db_create,
     db_open,
     dialog_form,
