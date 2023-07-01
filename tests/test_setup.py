@@ -14,7 +14,13 @@ import pytest
 from lbk_library import Dbal
 from PyQt6 import QtWidgets
 
-# ######################################################
+# set some test strings
+test_string = "This is a string"
+
+long_string = ""
+while len(long_string) < 255:
+    long_string = long_string + ", " + test_string
+
 # Set up and access the database
 
 # name of test database
