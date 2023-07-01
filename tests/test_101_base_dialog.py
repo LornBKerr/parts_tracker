@@ -36,20 +36,6 @@ if src_path not in sys.path:
 
 from dialogs import BaseDialog
 
-# from elements import Part
-#
-#
-# class NewElement(Element):
-#    # define a minimal element for testing purposes
-#    def __init__(self):
-#        pass
-#
-#
-# class BetterElement(Element):
-#    # define a minimal element for testing purposes
-#    def __init__(self):
-#        pass
-
 
 def test_101_01_class_type(qtbot):
     dbref = Dbal()
