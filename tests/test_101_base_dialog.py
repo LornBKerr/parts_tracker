@@ -13,7 +13,6 @@ import sys
 
 from lbk_library import Dbal
 from lbk_library.gui import Dialog
-
 from PyQt6.QtWidgets import QDialog, QMainWindow, QTableWidget, QWidget
 from test_setup import (
     db_create,

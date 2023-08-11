@@ -273,7 +273,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QComboBox" name="record_id_combo">
+   <widget class="FocusComboBox" name="record_id_combo">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -308,7 +308,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QComboBox" name="condition_combo">
+   <widget class="FocusComboBox" name="condition_combo">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -592,7 +592,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QComboBox" name="part_number_combo">
+   <widget class="FocusComboBox" name="part_number_combo">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -713,6 +713,13 @@
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FocusComboBox</class>
+   <extends>QComboBox</extends>
+   <header>lbk_library/gui/</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>record_id_combo</tabstop>
   <tabstop>assembly_edit</tabstop>
