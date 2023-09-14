@@ -13,18 +13,17 @@ from pathlib import Path
 from typing import Any
 
 from lbk_library import Dbal, IniFileParser
+from lbk_library.gui.dialog import Dialog
 
-# from lbk_library.gui.dialog import Dialog
-from PyQt6 import uic
 from PyQt6.QtWidgets import QFileDialog, QMainWindow
+from PyQt6 import uic
 
-from .assembly_tree_page import AssemblyTreePage
+from dialogs import ItemDialog
 
-# from .orders_list_page import OrdersListPage
-# from .parts_list_page import PartsListPage
-from .parts_table_definition import table_definition
-
-# from dialogs import Dialog, ItemDialog
+from . import AssemblyTreePage
+# from . import OrdersListPage
+# from . import PartsListPage
+from . import table_definition
 
 
 class MainWindow(QMainWindow):
@@ -67,8 +66,10 @@ class MainWindow(QMainWindow):
         self.form.action_file_exit.triggered.connect(self.close)
 
         # -- Assemblies/Items Menu Actions --
-        # self.form.action_new_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.ADD_ELEMENT))
-        # self.form.action_edit_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.EDIT_ELEMENT))
+        self.form.action_new_item.triggered.connect(
+            lambda: self.item_dialog_action(None, Dialog.ADD_ELEMENT)
+        )
+        self.form.action_edit_item.triggered.connect(lambda: self.item_dialog_action(None, Dialog.EDIT_ELEMENT))
         #
         # self.form.action_edit_assembly_tree.triggered.connect(self.edit_assembly_tree_action)
         # self.form.action_save_assembly_list.triggered.connect(self.save_assembly_list_action)
@@ -372,93 +373,93 @@ class MainWindow(QMainWindow):
 
     def exit_app_action(self) -> None:
         """Save the config file, close database, then Exit."""
-        self.config_handler.write_config(self.config)
-        if self.dbref.sql_is_connected():
-            self.dbref.sql_close()
-            self.current_db_file = ""
+        pass
 
-        #    def item_dialog_action(self, entry_index: int, add_item: int) -> None:
-        #        """
-        #        Activate the Item Editing form.
-        #
-        #        Parameters:
-        #            record_id (int): the index into the database for the item to
-        #                be edited, default is None.
-        #            add_item (int): The constant Dialog.ADD_ELEMENT if a new item is
-        #                to be aded, Dialog.EDIT_ELEMENT for editing an existing item.
-        #        """
-        #        ItemDialog(self, self.dbref, entry_index, Dialog.ADD_ELEMENT).exec()
-        #        self.assembly_tree.update_tree()
-        #
-        #    def edit_assembly_tree_action(self) -> None:
-        #        """Revise the assembly structure of the tree."""
-        #        print('calling edit sturcture dialog')
-        #        EditStructureDialog(self, self.dbref, self.update_assembly_tree_action).exec()
-        #
-        #    def save_assembly_list_action(self) -> None:
-        #        """Save list of items (assembly order) to csv file or xlsx file."""
-        #         SaveAssyListDialog(self, self.dbref, self.config).exec()
-        #
-        #    def update_assembly_tree_action(self) -> None:
-        #        """Update the assembly tree display, showing collapsed view."""
-        #        self.assembly_tree.update_tree()
-        #
-        #    def part_dialog_action(self, entry_index: int, add_part: int) -> None:
-        #        """
-        #        Activate the Part Editing form.
-        #
-        #        Parameters:
-        #            parent (QMainWindow) the parent window owning this dialog.
-        #            dbref (Dbal) reference to the database for this item.
-        #            entry_index (integer) the index into the database for the
-        #                part to be edited.
-        #            add_part (int) The constant Dialog.ADD_ELEMENT if a new part
-        #                is to be aded, Dialog.EDIT_ELEMENT for editing an
-        #                existing part
-        #        """
-        #        PartDialog(self, self.dbref, entry_index, add_part).exec()
-        #        self.part_list.update_table()
-        #
-        #
-        #    #
-        #    # Change a part number throughout the database.
-        #    #
-        #    # @param parent (QMainWindow) the parent window owning this dialog.
-        #    # @param dbref (Dbal) reference to the database for this item.
-        #    #
-        #    def part_change_pn_dialog_action(self) -> None:
-        #       ChangePartNumberDialog(self, self.dbref).exec()
-        #       self.assembly_tree.update_tree()
-        #       self.parts_list.update_table()
-        #       self.order_list.update_table()
+    # self.config_handler.write_config(self.config)
+    # if self.dbref.sql_is_connected():
+    #     self.dbref.sql_close()
+    #     self.current_db_file = ""
+
+    def item_dialog_action(self, entry_index: int, add_item: int) -> None:
+        """
+        Activate the Item Editing form.
+
+        Parameters:
+            record_id (int): the index into the database for the item to
+                be edited, default is None.
+            add_item (int): The constant Dialog.ADD_ELEMENT if a new item is
+                to be aded, Dialog.EDIT_ELEMENT for editing an existing item.
+        """
+        ItemDialog(self, self.dbref, entry_index, Dialog.ADD_ELEMENT).exec()
+        # self.assembly_tree.update_tree()
+
+    #    def edit_assembly_tree_action(self) -> None:
+    #        """Revise the assembly structure of the tree."""
+    #        print('calling edit sturcture dialog')
+    #        EditStructureDialog(self, self.dbref, self.update_assembly_tree_action).exec()
+    #
+    #    def save_assembly_list_action(self) -> None:
+    #        """Save list of items (assembly order) to csv file or xlsx file."""
+    #         SaveAssyListDialog(self, self.dbref, self.config).exec()
+    #
+    #    def update_assembly_tree_action(self) -> None:
+    #        """Update the assembly tree display, showing collapsed view."""
+    #        self.assembly_tree.update_tree()
+    #
+    #    def part_dialog_action(self, entry_index: int, add_part: int) -> None:
+    #        """
+    #        Activate the Part Editing form.
+    #
+    #        Parameters:
+    #            parent (QMainWindow) the parent window owning this dialog.
+    #            dbref (Dbal) reference to the database for this item.
+    #            entry_index (integer) the index into the database for the
+    #                part to be edited.
+    #            add_part (int) The constant Dialog.ADD_ELEMENT if a new part
+    #                is to be aded, Dialog.EDIT_ELEMENT for editing an
+    #                existing part
+    #        """
+    #        PartDialog(self, self.dbref, entry_index, add_part).exec()
+    #        self.part_list.update_table()
+    #
+    #
+    #    #
+    #    # Change a part number throughout the database.
+    #    #
+    #    # @param parent (QMainWindow) the parent window owning this dialog.
+    #    # @param dbref (Dbal) reference to the database for this item.
+    #    #
+    #    def part_change_pn_dialog_action(self) -> None:
+    #       ChangePartNumberDialog(self, self.dbref).exec()
+    #       self.assembly_tree.update_tree()
+    #       self.parts_list.update_table()
+    #       self.order_list.update_table()
 
 
-#    #
-#    # Update the Parts list table after some change.
-#    #
-#    # @param dbref (Dbal) reference to the database for this item.
-#    #
-#    def update_part_list_table_action(self, dbref):
-# self.part_list.update_table()
-#     # end update_part_list_table_action()
-#
-#
-#    #
-#    # Activate the Order Editing form
-#    #
-#    # @param parent (QMainWindow) the parent window owning this dialog.
-#    # @param dbref (Dbal) reference to the database for this order.
-#    # @param resources (AppResources) reference to the app resources for this dialog.
-#    # @param entry_index (integer) the index into the database for the order to be
-#    #   edited, default is None
-#    # @param add_order (int) The constant Dialog.ADD_ELEMENT if a new order is
-#       to be aded, Dialog.EDIT_ELEMENT for editing an existing order
-#    #
-#    def order_dialog_action(self, entry_index: int, add_order: int) -> None:
-# OrderDialog(self, self.dbref, entry_index, add_order).exec()
-# self.order_list.update_table()
-#    # end order_dialog_action()
-#
-#
-#
-#
+    #
+    # Update the Parts list table after some change.
+    #
+    # @param dbref (Dbal) reference to the database for this item.
+    #
+    # def update_part_list_table_action(self, dbref):
+    #     self.part_list.update_table()
+    # end update_part_list_table_action()
+
+
+    #
+    # Activate the Order Editing form
+    #
+    # @param parent (QMainWindow) the parent window owning this dialog.
+    # @param dbref (Dbal) reference to the database for this order.
+    # @param resources (AppResources) reference to the app resources for this dialog.
+    # @param entry_index (integer) the index into the database for the order to be
+    #   edited, default is None
+    # @param add_order (int) The constant Dialog.ADD_ELEMENT if a new order is
+    #       to be aded, Dialog.EDIT_ELEMENT for editing an existing order
+    #
+    # def order_dialog_action(self, entry_index: int, add_order: int) -> None:
+    #    OrderDialog(self, self.dbref, entry_index, add_order).exec()
+    #    self.order_list.update_table()
+    # end order_dialog_action()
+
+# end
