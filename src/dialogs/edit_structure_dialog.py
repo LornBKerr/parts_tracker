@@ -12,7 +12,7 @@ from typing import Callable
 from lbk_library import Dbal
 from lbk_library.gui import Dialog
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 from elements import Item
 
@@ -51,7 +51,7 @@ class EditStructureDialog(BaseDialog):
                 update_tree() method.
         """
         super().__init__(None, dbref, operation)
-        print(update_tree)   
+        print(update_tree)
         self.closed = False  # used to suppport testing
         """Indicate the dialog is closed."""
         self.fields_valid = {"old_assy": False, "new_assy": False}
@@ -61,7 +61,7 @@ class EditStructureDialog(BaseDialog):
 
         self.form = uic.loadUi("./src/forms/edit_structure.ui", self)
         self.form.change_button.setEnabled(False)
-        
+
         self.form.old_assy_edit.editingFinished.connect(self.action_old_assy_changed)
         self.form.new_assy_edit.editingFinished.connect(self.action_new_assy_changed)
         self.form.close_button.clicked.connect(self.action_close)
@@ -109,7 +109,7 @@ class EditStructureDialog(BaseDialog):
             self.form.change_button.setEnabled(True)
         else:
             self.form.change_button.setEnabled(False)
-            
+
         return result
 
     def action_new_assy_changed(self) -> None:
@@ -213,7 +213,7 @@ class EditStructureDialog(BaseDialog):
         for item in itemset:
             assy = item.get_assembly()
             new_assy = new + assy[old_len:]
-            print(assy, '->', new_assy)
+            print(assy, "->", new_assy)
             item.set_assembly(new_assy)
             valid = item.update()
             if valid:
@@ -225,7 +225,7 @@ class EditStructureDialog(BaseDialog):
                     )
                 )
                 break
-        print('updated', number_items_updated, 'items')
+        print("updated", number_items_updated, "items")
         if valid:
             update_tree()
             action = self.message_box_exec(
@@ -280,10 +280,9 @@ class EditStructureDialog(BaseDialog):
 
         return itemset
 
+
 #    def set_error_state(self, error_state: bool = False) -> None:
 #        """ Set the internal error state clearin error indicators."""
 #        self.form.old_assy_edit.set_error_frame(self.form.old_assy_frame)
 #        self.form.old_assy_edit.error = error_state
 #        self.form.new_assy_edit.error = error_state
-        
-
