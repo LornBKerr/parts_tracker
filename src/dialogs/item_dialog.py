@@ -11,8 +11,8 @@ from copy import deepcopy
 
 from lbk_library import Dbal
 from lbk_library.gui import Dialog
-from PyQt6 import uic
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt5 import uic
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from elements import ConditionSet, Item, ItemSet, Part, PartSet
 
@@ -191,7 +191,6 @@ class ItemDialog(BaseDialog):
             result = self.message_box_exec(self.message_question_changed("Item Number"))
 
             if result == QMessageBox.StandardButton.Yes:
-                print("yes")
                 # save item with previous item number, then change to new item number
                 save_result = item.update()
                 if save_result:

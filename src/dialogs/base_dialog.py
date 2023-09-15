@@ -8,8 +8,8 @@ License:    MIT, see file License
 """
 
 from lbk_library import Dbal, Dialog
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
 
 from elements import Order, OrderLineSet
 

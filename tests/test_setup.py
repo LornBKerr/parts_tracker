@@ -12,7 +12,7 @@ from copy import deepcopy
 
 import pytest
 from lbk_library import Dbal
-from PyQt6 import QtWidgets
+from PyQt5 import QtWidgets
 
 # set some test strings
 test_string = "This is a string"

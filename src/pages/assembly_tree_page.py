@@ -11,8 +11,8 @@ License:    MIT, see file License
 from typing import Any
 
 from lbk_library import Dbal, Dialog
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMainWindow, QTreeWidgetItem  # , QTreeWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMainWindow, QTreeWidgetItem  # , QTreeWidget
 
 from dialogs import ItemDialog
 from elements import Item, ItemSet, Part

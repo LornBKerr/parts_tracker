@@ -9,7 +9,7 @@ License:    MIT, see file License
 
 
 from lbk_library import Dbal
-from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 
 # from elements import OrderSet
 
