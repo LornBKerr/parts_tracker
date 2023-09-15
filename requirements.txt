@@ -13,10 +13,10 @@
 --extra-index-url https://test.pypi.org/simple/
 
 # local project library
-lbk_library
+-e ../lbk_library/
 
 # General Requirements
-PyQt6
+PyQt5
 
 # Testing Requirements
 black
