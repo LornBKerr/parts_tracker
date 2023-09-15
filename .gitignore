@@ -5,6 +5,7 @@ enviroment_list.*
 github_token
 *~
 *.bak
+*.db
 
 pending*/
 *.p
