@@ -51,7 +51,7 @@ class EditStructureDialog(BaseDialog):
                 update_tree() method.
         """
         super().__init__(None, dbref, operation)
-        print(update_tree)
+        
         self.closed = False  # used to suppport testing
         """Indicate the dialog is closed."""
         self.fields_valid = {"old_assy": False, "new_assy": False}
@@ -150,7 +150,7 @@ class EditStructureDialog(BaseDialog):
 
         return result
 
-    def action_change(self, update_tree: Callable, dbref: Dbal) -> None:
+    def action_change(self, update_tree: Callable, dbref: Dbal) -> int:
         """
         Change the Assembly Id throughout from start prefix to end prefix.
 
@@ -168,7 +168,7 @@ class EditStructureDialog(BaseDialog):
         if self.fields_valid["old_assy"] and self.fields_valid["new_assy"]:
             if self.form.old_assy_edit.text() == self.form.new_assy_edit.text():
                 msg_text = (
-                    "Old Assembly ID and New AssemblyID are the Same.\nNothing to do."
+                    "Old Assembly ID and New Assembly ID are the Same.\nNothing to do."
                 )
                 self.fields_valid["old_assy"] = False
                 self.old_assy_frame.error = True
@@ -179,7 +179,7 @@ class EditStructureDialog(BaseDialog):
             self.form.change_button.setEnabled(False)
             self.message_box_exec(self.message_warning_invalid(msg_text))
         else:
-            self.change_assembly_ids(update_tree, dbref)
+            return self.change_assembly_ids(update_tree, dbref)
 
     def change_assembly_ids(self, update_tree: Callable, dbref: Dbal) -> None:
         """
@@ -213,7 +213,6 @@ class EditStructureDialog(BaseDialog):
         for item in itemset:
             assy = item.get_assembly()
             new_assy = new + assy[old_len:]
-            print(assy, "->", new_assy)
             item.set_assembly(new_assy)
             valid = item.update()
             if valid:
@@ -225,7 +224,7 @@ class EditStructureDialog(BaseDialog):
                     )
                 )
                 break
-        print("updated", number_items_updated, "items")
+
         if valid:
             update_tree()
             action = self.message_box_exec(
