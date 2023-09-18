@@ -23,12 +23,8 @@ if src_path not in sys.path:
 
 from test_setup import db_close, db_create, db_open, item_value_set, load_all_db_tables
 
-from dialogs import BaseDialog, EditStructureDialog
+from dialogs import EditStructureDialog
 from elements import Item
-
-# condition_value_set,  item_columns, item_value_set, load_db_table, long_string,
-# part_columns,part_value_set, test_string,
-
 
 # dummy function to represent the assembly tree page updating.
 def assy_tree_update_tree():
@@ -49,7 +45,6 @@ def test_103_01_class_type(qtbot, db_create):
     dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
 
     assert isinstance(dialog, EditStructureDialog)
-    assert isinstance(dialog, BaseDialog)
     assert isinstance(dialog, Dialog)
     assert isinstance(dialog, QDialog)
     db_close(dbref)
@@ -77,28 +72,19 @@ def test_103_03_action_old_assy_changed(qtbot, db_create):
     dialog.form.old_assy_edit.editingFinished.emit()
     assert dialog.form.old_assy_edit.text() == test_value.upper()
     assert dialog.form.old_assy_edit.toolTip() == dialog.TOOLTIPS["old_assy_edit"]
-    assert dialog.fields_valid["old_assy"]
-    assert not dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
     assert dialog.form.old_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["old_assy_edit"]
-    assert dialog.form.old_assy_frame.error == False
+    assert not dialog.form.old_assy_edit.error
+    assert not dialog.form.old_assy_frame.error
 
     test_value = "abcdefghijklmno"  # valid test: 15 characters
     dialog.form.old_assy_edit.setText(test_value)
-    result = dialog.action_old_assy_changed()
-    assert result["valid"]
+    dialog.form.old_assy_edit.editingFinished.emit()
     assert dialog.form.old_assy_edit.text() == test_value.upper()
     assert dialog.form.old_assy_edit.toolTip() == dialog.TOOLTIPS["old_assy_edit"]
-    assert dialog.fields_valid["old_assy"]
-    assert not dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
-    
-    dialog.fields_valid["new_assy"] = True
-    dialog.form.old_assy_edit.editingFinished.emit()
-    assert dialog.form.change_button.isEnabled()
+    assert dialog.form.old_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["old_assy_edit"]
+    assert not dialog.form.old_assy_edit.error
+    assert not dialog.form.old_assy_frame.error
 
-
-    dialog.fields_valid["new_assy"] = False
     test_value = "aabcdefghijklmno"  # invalid test: 16 characters
     dialog.form.old_assy_edit.setText(test_value)
     result = dialog.action_old_assy_changed()
@@ -106,22 +92,19 @@ def test_103_03_action_old_assy_changed(qtbot, db_create):
     assert dialog.form.old_assy_edit.text() == test_value.upper()
     assert result["msg"] in dialog.form.old_assy_edit.toolTip()
     assert dialog.TOOLTIPS["old_assy_edit"] in dialog.form.old_assy_edit.toolTip()
-    assert not dialog.fields_valid["old_assy"]
-    assert not dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
-    assert EditStructureDialog.TOOLTIPS["old_assy_edit"] in dialog.form.old_assy_edit.toolTip()
-    assert result['msg'] in dialog.form.old_assy_edit.toolTip()
-    assert dialog.form.old_assy_frame.error == True
+    assert dialog.form.old_assy_edit.error
+    assert dialog.form.old_assy_frame.error
 
     test_value = ""  # invalid test: 0 characters
+    test_value = "aabcdefghijklmno"  # invalid test: 16 characters
     dialog.form.old_assy_edit.setText(test_value)
     result = dialog.action_old_assy_changed()
     assert not result["valid"]
+    assert dialog.form.old_assy_edit.text() == test_value.upper()
     assert result["msg"] in dialog.form.old_assy_edit.toolTip()
     assert dialog.TOOLTIPS["old_assy_edit"] in dialog.form.old_assy_edit.toolTip()
-    assert not dialog.fields_valid["old_assy"]
-    assert not dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
+    assert dialog.form.old_assy_edit.error
+    assert dialog.form.old_assy_frame.error
 
 
 def test_103_04_action_new_assy_changed(qtbot, db_create):
@@ -132,28 +115,19 @@ def test_103_04_action_new_assy_changed(qtbot, db_create):
     dialog.form.new_assy_edit.editingFinished.emit()
     assert dialog.form.new_assy_edit.text() == test_value.upper()
     assert dialog.form.new_assy_edit.toolTip() == dialog.TOOLTIPS["new_assy_edit"]
-    assert not dialog.fields_valid["old_assy"]
-    assert dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
     assert dialog.form.new_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["new_assy_edit"]
-    assert dialog.form.new_assy_frame.error == False
+    assert not dialog.form.new_assy_edit.error
+    assert not dialog.form.new_assy_frame.error
 
     test_value = "abcdefghijklmno"  # valid test: 15 characters
     dialog.form.new_assy_edit.setText(test_value)
-    result = dialog.action_new_assy_changed()
-    assert result["valid"]
+    dialog.form.new_assy_edit.editingFinished.emit()
     assert dialog.form.new_assy_edit.text() == test_value.upper()
     assert dialog.form.new_assy_edit.toolTip() == dialog.TOOLTIPS["new_assy_edit"]
-    assert not dialog.fields_valid["old_assy"]
-    assert dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
-    
-    dialog.fields_valid["old_assy"] = True
-    dialog.form.new_assy_edit.editingFinished.emit()
-    assert dialog.form.change_button.isEnabled()
+    assert dialog.form.new_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["new_assy_edit"]
+    assert not dialog.form.new_assy_edit.error
+    assert not dialog.form.new_assy_frame.error
 
-
-    dialog.fields_valid["old_assy"] = False
     test_value = "aabcdefghijklmno"  # invalid test: 16 characters
     dialog.form.new_assy_edit.setText(test_value)
     result = dialog.action_new_assy_changed()
@@ -161,19 +135,19 @@ def test_103_04_action_new_assy_changed(qtbot, db_create):
     assert dialog.form.new_assy_edit.text() == test_value.upper()
     assert result["msg"] in dialog.form.new_assy_edit.toolTip()
     assert dialog.TOOLTIPS["new_assy_edit"] in dialog.form.new_assy_edit.toolTip()
-    assert not dialog.fields_valid["old_assy"]
-    assert not dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
+    assert dialog.form.new_assy_edit.error
+    assert dialog.form.new_assy_frame.error
 
     test_value = ""  # invalid test: 0 characters
+    test_value = "aabcdefghijklmno"  # invalid test: 16 characters
     dialog.form.new_assy_edit.setText(test_value)
     result = dialog.action_new_assy_changed()
     assert not result["valid"]
+    assert dialog.form.new_assy_edit.text() == test_value.upper()
     assert result["msg"] in dialog.form.new_assy_edit.toolTip()
     assert dialog.TOOLTIPS["new_assy_edit"] in dialog.form.new_assy_edit.toolTip()
-    assert not dialog.fields_valid["old_assy"]
-    assert not dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
+    assert dialog.form.new_assy_edit.error
+    assert dialog.form.new_assy_frame.error
 
 
 def test_103_05_get_itemset(qtbot, db_create):
@@ -258,23 +232,41 @@ def test_103_07_action_change(qtbot, db_create, mocker):
 
     mocker.patch.object(Dialog, "message_box_exec")
     dialog.message_box_exec.return_value = QMessageBox.StandardButton.Ok
+    
+    # same value in both assy edits -> invalid
     dialog.form.old_assy_edit.setText("Q")
     dialog.form.old_assy_edit.editingFinished.emit()
     dialog.form.new_assy_edit.setText("Q")
     dialog.form.new_assy_edit.editingFinished.emit()
     dialog.form.change_button.click()
-    assert not dialog.fields_valid["old_assy"]
-    assert not dialog.fields_valid["new_assy"]
-    assert not dialog.form.change_button.isEnabled()
+    assert dialog.old_assy_edit.error
+    assert dialog.new_assy_edit.error
+
+    # new assy -> invalid
+    dialog.form.old_assy_edit.setText("Q")
+    dialog.form.old_assy_edit.editingFinished.emit()
+    dialog.form.new_assy_edit.setText("")
+    dialog.form.new_assy_edit.editingFinished.emit()
+    dialog.form.change_button.click()
+    assert not dialog.old_assy_edit.error
+    assert dialog.new_assy_edit.error
+
+    # old assy -> invalid
+    dialog.form.old_assy_edit.setText("")
+    dialog.form.old_assy_edit.editingFinished.emit()
+    dialog.form.new_assy_edit.setText("Q")
+    dialog.form.new_assy_edit.editingFinished.emit()
+    dialog.form.change_button.click()
+    assert dialog.old_assy_edit.error
+    assert not dialog.new_assy_edit.error
     
     # move "Q" to 'P', "Q doesn't exist so number of items should be 0
     dialog.form.old_assy_edit.setText("Q")
     dialog.form.old_assy_edit.editingFinished.emit()
     dialog.form.new_assy_edit.setText("p")
     dialog.form.new_assy_edit.editingFinished.emit()
-    assert dialog.fields_valid["old_assy"]
-    assert dialog.fields_valid["new_assy"]
-    assert dialog.form.change_button.isEnabled()
+    assert not dialog.old_assy_edit.error
+    assert not dialog.new_assy_edit.error
     number_items_changed = dialog.action_change(assy_tree_update_tree, dbref)
     assert number_items_changed == 0
     
@@ -287,26 +279,4 @@ def test_103_07_action_change(qtbot, db_create, mocker):
     assert number_items_changed == b_len
     assert number_items_changed == len(dialog.get_itemset('P', 'P' + "ZZZZ", dbref))
     assert len(dialog.get_itemset('B', 'B' + "ZZZZ", dbref)) == 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

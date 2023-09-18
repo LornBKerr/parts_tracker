@@ -12,14 +12,12 @@ from typing import Callable
 from lbk_library import Dbal
 from lbk_library.gui import Dialog
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFrame, QMessageBox
 
 from elements import Item
 
-from . import BaseDialog
 
-
-class EditStructureDialog(BaseDialog):
+class EditStructureDialog(Dialog):
     """
     Change the Assembly structure.
 
@@ -54,13 +52,11 @@ class EditStructureDialog(BaseDialog):
         
         self.closed = False  # used to suppport testing
         """Indicate the dialog is closed."""
-        self.fields_valid = {"old_assy": False, "new_assy": False}
-        """Valid status of each field."""
         self.set_element(Item(dbref))
         """Start with empty item."""
 
         self.form = uic.loadUi("./src/forms/edit_structure.ui", self)
-        self.form.change_button.setEnabled(False)
+        self.set_error_frames()
 
         self.form.old_assy_edit.editingFinished.connect(self.action_old_assy_changed)
         self.form.new_assy_edit.editingFinished.connect(self.action_new_assy_changed)
@@ -87,29 +83,19 @@ class EditStructureDialog(BaseDialog):
                 ['valid'] - (bool) True if the entered value is valid,
                     False otherwise
                 ['msg'] - (str) Error message if not valid
-                ['is_valid_ind'] - (bool) True if the entry is valid and
-                     accepted, False if not.
         """
         self.form.old_assy_edit.setText(self.form.old_assy_edit.text().upper())
         result = self.get_element().set_assembly(self.form.old_assy_edit.text())
         if result["valid"]:
-            self.form.old_assy_frame.error = False
-            self.fields_valid["old_assy"] = True
+            self.form.old_assy_edit.error = False
             self.form.old_assy_edit.setToolTip(
                 EditStructureDialog.TOOLTIPS["old_assy_edit"]
             )
         else:
-            self.form.old_assy_frame.error = True
-            self.fields_valid["old_assy"] = False
+            self.form.old_assy_edit.error = True
             self.form.old_assy_edit.setToolTip(
                 result["msg"] + ";\n" + EditStructureDialog.TOOLTIPS["old_assy_edit"]
             )
-
-        if self.fields_valid["old_assy"] and self.fields_valid["new_assy"]:
-            self.form.change_button.setEnabled(True)
-        else:
-            self.form.change_button.setEnabled(False)
-
         return result
 
     def action_new_assy_changed(self) -> None:
@@ -125,29 +111,19 @@ class EditStructureDialog(BaseDialog):
                 ['valid'] - (bool) True if the entered value is valid,
                     False otherwise
                 ['msg'] - (str) Error message if not valid
-                ['is_valid_ind'] - (bool) True if the entry is valid and
-                     accepted, False if not.
         """
         self.form.new_assy_edit.setText(self.form.new_assy_edit.text().upper())
         result = self.get_element().set_assembly(self.form.new_assy_edit.text())
         if result["valid"]:
-            self.form.new_assy_frame.error = False
-            self.fields_valid["new_assy"] = True
+            self.form.new_assy_edit.error = False
             self.form.new_assy_edit.setToolTip(
                 EditStructureDialog.TOOLTIPS["new_assy_edit"]
             )
         else:
-            self.form.new_assy_frame.error = True
-            self.fields_valid["new_assy"] = False
+            self.form.new_assy_edit.error = True
             self.form.new_assy_edit.setToolTip(
                 result["msg"] + ";\n" + EditStructureDialog.TOOLTIPS["new_assy_edit"]
             )
-
-        if self.fields_valid["old_assy"] and self.fields_valid["new_assy"]:
-            self.form.change_button.setEnabled(True)
-        else:
-            self.form.change_button.setEnabled(False)
-
         return result
 
     def action_change(self, update_tree: Callable, dbref: Dbal) -> int:
@@ -163,23 +139,27 @@ class EditStructureDialog(BaseDialog):
                 AssemblyTreePage.update_tree() method
             dbref (Dbal): reference to the current open database
         """
-        msg_text = ""
+        error = False
+        msg_1 = "Old Assembly ID and New Assembly ID are the Same.\nNothing to do."
+        msg_2 = "Assembly ID is invalid."
+        msg_text = ''
 
-        if self.fields_valid["old_assy"] and self.fields_valid["new_assy"]:
-            if self.form.old_assy_edit.text() == self.form.new_assy_edit.text():
-                msg_text = (
-                    "Old Assembly ID and New Assembly ID are the Same.\nNothing to do."
-                )
-                self.fields_valid["old_assy"] = False
-                self.old_assy_frame.error = True
-                self.fields_valid["new_assy"] = False
-                self.new_assy_frame.error = True
+        if self.form.old_assy_edit.error:
+            error = True
+            msg_text = "Old " + msg_2
+        elif self.form.new_assy_edit.error:
+            error = True
+            msg_text = "New " + msg_2
+        elif self.form.old_assy_edit.text() == self.form.new_assy_edit.text():
+            error = True
+            msg_text = msg_1
+            self.old_assy_edit.error = True
+            self.new_assy_edit.error = True
 
-        if not (self.fields_valid["old_assy"] and self.fields_valid["new_assy"]):
-            self.form.change_button.setEnabled(False)
-            self.message_box_exec(self.message_warning_invalid(msg_text))
-        else:
+        if not error:
             return self.change_assembly_ids(update_tree, dbref)
+        else:
+            self.message_box_exec(self.message_warning_invalid(msg_text))
 
     def change_assembly_ids(self, update_tree: Callable, dbref: Dbal) -> None:
         """
@@ -279,9 +259,8 @@ class EditStructureDialog(BaseDialog):
 
         return itemset
 
+    def set_error_frames(self) -> None:
+        """Attach and initialize the errorframes."""
+        self.form.old_assy_edit.set_frame(self.form.old_assy_frame)
+        self.form.new_assy_edit.set_frame(self.form.new_assy_frame)
 
-#    def set_error_state(self, error_state: bool = False) -> None:
-#        """ Set the internal error state clearin error indicators."""
-#        self.form.old_assy_edit.set_error_frame(self.form.old_assy_frame)
-#        self.form.old_assy_edit.error = error_state
-#        self.form.new_assy_edit.error = error_state
