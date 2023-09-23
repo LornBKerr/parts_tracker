@@ -260,7 +260,7 @@ class EditStructureDialog(Dialog):
         return itemset
 
     def set_error_frames(self) -> None:
-        """Attach and initialize the errorframes."""
+        """Attach and initialize the error_frames."""
         self.form.old_assy_edit.set_frame(self.form.old_assy_frame)
         self.form.new_assy_edit.set_frame(self.form.new_assy_frame)
 
