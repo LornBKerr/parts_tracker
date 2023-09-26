@@ -349,6 +349,8 @@ class ItemDialog(BaseDialog):
         """
         item = self.get_element()
         new_index = self.form.record_id_combo.currentText()
+        if new_index == '':
+            new_index = -1
 
         # Are there unsaved edits
         if not item.have_values_changed():
