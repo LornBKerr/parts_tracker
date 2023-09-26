@@ -28,102 +28,7 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <widget class="QGroupBox" name="group_4">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>525</y>
-     <width>890</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="autoFillBackground">
-    <bool>true</bool>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
-   <widget class="QPushButton" name="cancel_button">
-    <property name="geometry">
-     <rect>
-      <x>560</x>
-      <y>10</y>
-      <width>100</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Close the form, optionally saving any changed information</string>
-    </property>
-    <property name="text">
-     <string>Cancel</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="save_new_button">
-    <property name="geometry">
-     <rect>
-      <x>670</x>
-      <y>10</y>
-      <width>100</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Save the current item, then clear the form</string>
-    </property>
-    <property name="text">
-     <string>Save / New</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="save_done_button">
-    <property name="geometry">
-     <rect>
-      <x>780</x>
-      <y>10</y>
-      <width>100</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Save the current item, then close the form</string>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="text">
-     <string>Save / Done</string>
-    </property>
-    <property name="flat">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="delete_button">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>100</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Permanently DELETE the current item and all the order lines</string>
-    </property>
-    <property name="text">
-     <string>Delete Item</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="group_3">
+  <widget class="QGroupBox" name="item_orders">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -161,11 +66,11 @@
     </attribute>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="group_1">
+  <widget class="QGroupBox" name="item_info">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>5</y>
+     <y>0</y>
      <width>431</width>
      <height>305</height>
     </rect>
@@ -188,7 +93,7 @@
    <property name="flat">
     <bool>false</bool>
    </property>
-   <widget class="QLabel" name="entry_index_label">
+   <widget class="QLabel" name="record_id_label">
     <property name="geometry">
      <rect>
       <x>5</x>
@@ -273,73 +178,6 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="FocusComboBox" name="record_id_combo">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>30</y>
-      <width>161</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Required: Select the Item index</string>
-    </property>
-    <property name="placeholderText">
-     <string>To Be Assigned</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="assembly_edit">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>70</y>
-      <width>126</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Required: Enter the Assembly, 1 to 15 Characters</string>
-    </property>
-    <property name="whatsThis">
-     <string>Required: Enter the Assembly, 1 to 15 Characters</string>
-    </property>
-    <property name="placeholderText">
-     <string/>
-    </property>
-   </widget>
-   <widget class="FocusComboBox" name="condition_combo">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>110</y>
-      <width>126</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="whatsThis">
-     <string>Required: Select the Item Condition</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="quantity_edit">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>150</y>
-      <width>91</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="toolTip">
-     <string>Required: Enter quantity, 0 to  999, 0 defaul</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="installed_label">
     <property name="geometry">
      <rect>
@@ -400,19 +238,6 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="storage_box_edit">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>220</y>
-      <width>80</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Optional: Enter Storage box if stored, 0 to 99</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="remarks_label">
     <property name="geometry">
      <rect>
@@ -435,27 +260,191 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="remarks_edit">
+   <widget class="ErrorFrame" name="record_id_frame">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>260</y>
-      <width>271</width>
-      <height>37</height>
+      <x>138</x>
+      <y>30</y>
+      <width>165</width>
+      <height>40</height>
      </rect>
     </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
-    <property name="toolTip">
-     <string>Optional: up to 255 characters</string>
+    <widget class="ComboBox" name="record_id_combo">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>161</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Required: Select the Item index</string>
+     </property>
+     <property name="placeholderText">
+      <string>To Be Assigned</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="ErrorFrame" name="assembly_frame">
+    <property name="geometry">
+     <rect>
+      <x>138</x>
+      <y>68</y>
+      <width>130</width>
+      <height>40</height>
+     </rect>
     </property>
+    <widget class="LineEdit" name="assembly_edit">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>126</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Required: Enter the Assembly, 1 to 15 Characters</string>
+     </property>
+     <property name="whatsThis">
+      <string>Required: Enter the Assembly, 1 to 15 Characters</string>
+     </property>
+     <property name="placeholderText">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="ErrorFrame" name="condition_frame">
+    <property name="geometry">
+     <rect>
+      <x>138</x>
+      <y>108</y>
+      <width>130</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <widget class="ComboBox" name="condition_combo">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>126</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>Required: Select the Item Condition</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="ErrorFrame" name="quantity_frame">
+    <property name="geometry">
+     <rect>
+      <x>138</x>
+      <y>148</y>
+      <width>95</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <widget class="LineEdit" name="quantity_edit">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>91</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Required: Enter quantity, 0 to  999, 0 defaul</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="ErrorFrame" name="storage_box_frame">
+    <property name="geometry">
+     <rect>
+      <x>138</x>
+      <y>218</y>
+      <width>84</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <widget class="LineEdit" name="storage_box_edit">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>80</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Optional: Enter Storage box if stored, 0 to 99</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="ErrorFrame" name="remarks_frame">
+    <property name="geometry">
+     <rect>
+      <x>138</x>
+      <y>260</y>
+      <width>274</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLineEdit" name="remarks_edit">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>270</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Optional: up to 255 characters</string>
+     </property>
+    </widget>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="group_2">
+  <widget class="QGroupBox" name="part_info">
    <property name="geometry">
     <rect>
      <x>480</x>
@@ -592,28 +581,6 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="FocusComboBox" name="part_number_combo">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>30</y>
-      <width>235</width>
-      <height>37</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="toolTip">
-     <string>Select Part Number, Required</string>
-    </property>
-    <property name="maxVisibleItems">
-     <number>20</number>
-    </property>
-   </widget>
    <widget class="QLabel" name="source_text">
     <property name="geometry">
      <rect>
@@ -711,13 +678,132 @@
      <string/>
     </property>
    </widget>
+   <widget class="ErrorFrame" name="part_number_frame">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>30</y>
+      <width>239</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <widget class="ComboBox" name="part_number_combo">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>235</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Select Part Number, Required</string>
+     </property>
+     <property name="maxVisibleItems">
+      <number>20</number>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="delete_button">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>535</y>
+     <width>100</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Permanently DELETE the current item and all the order lines</string>
+   </property>
+   <property name="text">
+    <string>Delete Item</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancel_button">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>535</y>
+     <width>100</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Close the form, optionally saving any changed information</string>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="save_new_button">
+   <property name="geometry">
+    <rect>
+     <x>690</x>
+     <y>535</y>
+     <width>100</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Save the current item, then clear the form</string>
+   </property>
+   <property name="text">
+    <string>Save / New</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="save_done_button">
+   <property name="geometry">
+    <rect>
+     <x>800</x>
+     <y>535</y>
+     <width>100</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Save the current item, then close the form</string>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::RightToLeft</enum>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save / Done</string>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
   </widget>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FocusComboBox</class>
+   <class>ComboBox</class>
    <extends>QComboBox</extends>
    <header>lbk_library/gui/</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lbk_library/gui/line_edit</header>
+  </customwidget>
+  <customwidget>
+   <class>ErrorFrame</class>
+   <extends>QFrame</extends>
+   <header>lbk_library/gui/error_frame</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
