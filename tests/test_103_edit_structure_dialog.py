@@ -26,6 +26,7 @@ from test_setup import db_close, db_create, db_open, item_value_set, load_all_db
 from dialogs import EditStructureDialog
 from elements import Item
 
+
 # dummy function to represent the assembly tree page updating.
 def assy_tree_update_tree():
     return
@@ -72,7 +73,10 @@ def test_103_03_action_old_assy_changed(qtbot, db_create):
     dialog.form.old_assy_edit.editingFinished.emit()
     assert dialog.form.old_assy_edit.text() == test_value.upper()
     assert dialog.form.old_assy_edit.toolTip() == dialog.TOOLTIPS["old_assy_edit"]
-    assert dialog.form.old_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["old_assy_edit"]
+    assert (
+        dialog.form.old_assy_edit.toolTip()
+        == EditStructureDialog.TOOLTIPS["old_assy_edit"]
+    )
     assert not dialog.form.old_assy_edit.error
     assert not dialog.form.old_assy_frame.error
 
@@ -81,7 +85,10 @@ def test_103_03_action_old_assy_changed(qtbot, db_create):
     dialog.form.old_assy_edit.editingFinished.emit()
     assert dialog.form.old_assy_edit.text() == test_value.upper()
     assert dialog.form.old_assy_edit.toolTip() == dialog.TOOLTIPS["old_assy_edit"]
-    assert dialog.form.old_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["old_assy_edit"]
+    assert (
+        dialog.form.old_assy_edit.toolTip()
+        == EditStructureDialog.TOOLTIPS["old_assy_edit"]
+    )
     assert not dialog.form.old_assy_edit.error
     assert not dialog.form.old_assy_frame.error
 
@@ -115,7 +122,10 @@ def test_103_04_action_new_assy_changed(qtbot, db_create):
     dialog.form.new_assy_edit.editingFinished.emit()
     assert dialog.form.new_assy_edit.text() == test_value.upper()
     assert dialog.form.new_assy_edit.toolTip() == dialog.TOOLTIPS["new_assy_edit"]
-    assert dialog.form.new_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["new_assy_edit"]
+    assert (
+        dialog.form.new_assy_edit.toolTip()
+        == EditStructureDialog.TOOLTIPS["new_assy_edit"]
+    )
     assert not dialog.form.new_assy_edit.error
     assert not dialog.form.new_assy_frame.error
 
@@ -124,7 +134,10 @@ def test_103_04_action_new_assy_changed(qtbot, db_create):
     dialog.form.new_assy_edit.editingFinished.emit()
     assert dialog.form.new_assy_edit.text() == test_value.upper()
     assert dialog.form.new_assy_edit.toolTip() == dialog.TOOLTIPS["new_assy_edit"]
-    assert dialog.form.new_assy_edit.toolTip() == EditStructureDialog.TOOLTIPS["new_assy_edit"]
+    assert (
+        dialog.form.new_assy_edit.toolTip()
+        == EditStructureDialog.TOOLTIPS["new_assy_edit"]
+    )
     assert not dialog.form.new_assy_edit.error
     assert not dialog.form.new_assy_frame.error
 
@@ -232,7 +245,7 @@ def test_103_07_action_change(qtbot, db_create, mocker):
 
     mocker.patch.object(Dialog, "message_box_exec")
     dialog.message_box_exec.return_value = QMessageBox.StandardButton.Ok
-    
+
     # same value in both assy edits -> invalid
     dialog.form.old_assy_edit.setText("Q")
     dialog.form.old_assy_edit.editingFinished.emit()
@@ -259,7 +272,7 @@ def test_103_07_action_change(qtbot, db_create, mocker):
     dialog.form.change_button.click()
     assert dialog.old_assy_edit.error
     assert not dialog.new_assy_edit.error
-    
+
     # move "Q" to 'P', "Q doesn't exist so number of items should be 0
     dialog.form.old_assy_edit.setText("Q")
     dialog.form.old_assy_edit.editingFinished.emit()
@@ -269,14 +282,13 @@ def test_103_07_action_change(qtbot, db_create, mocker):
     assert not dialog.new_assy_edit.error
     number_items_changed = dialog.action_change(assy_tree_update_tree, dbref)
     assert number_items_changed == 0
-    
+
     # move 'B' to 'P', number of items in 'P' should equal number of
-    # items in 'B' and 'B' should result in len 0. 
-    b_len = len(dialog.get_itemset('B', 'B' + "ZZZZ", dbref))
+    # items in 'B' and 'B' should result in len 0.
+    b_len = len(dialog.get_itemset("B", "B" + "ZZZZ", dbref))
     dialog.form.old_assy_edit.setText("B")
     dialog.form.old_assy_edit.editingFinished.emit()
     number_items_changed = dialog.action_change(assy_tree_update_tree, dbref)
     assert number_items_changed == b_len
-    assert number_items_changed == len(dialog.get_itemset('P', 'P' + "ZZZZ", dbref))
-    assert len(dialog.get_itemset('B', 'B' + "ZZZZ", dbref)) == 0
-
+    assert number_items_changed == len(dialog.get_itemset("P", "P" + "ZZZZ", dbref))
+    assert len(dialog.get_itemset("B", "B" + "ZZZZ", dbref)) == 0

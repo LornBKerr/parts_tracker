@@ -80,10 +80,7 @@ def test_102_03_set_visible_add_edit_elements(qtbot, db_create):
     dialog.set_visible_add_edit_elements()
     assert not dialog.form.record_id_combo.isEnabled()
     assert not dialog.form.record_id_combo.toolTip() == dialog.TOOLTIPS["record_id"]
-    assert (
-        dialog.form.record_id_combo.toolTip()
-        == dialog.TOOLTIPS["record_id_tbd"]
-    )
+    assert dialog.form.record_id_combo.toolTip() == dialog.TOOLTIPS["record_id_tbd"]
 
 
 def test_102_04_action_assembly_changed(qtbot, db_create):
@@ -113,11 +110,13 @@ def test_102_05_action_condition_changed(qtbot, db_create):
         dialog.form.condition_combo,
         ConditionSet(dbref).build_option_list("condition"),
         None,
-        )
+    )
 
     test_value = condition_value_set[0][1]
     dialog.form.condition_combo.setCurrentText(test_value)
-    dialog.form.condition_combo.activated.emit(dialog.form.condition_combo.currentIndex())
+    dialog.form.condition_combo.activated.emit(
+        dialog.form.condition_combo.currentIndex()
+    )
     assert not dialog.form.condition_combo.error
     assert dialog.form.condition_combo.currentText() == test_value
     assert dialog.form.condition_combo.toolTip() == dialog.TOOLTIPS["condition"]
@@ -239,7 +238,7 @@ def test_102_10_fill_part_fields(qtbot, db_create):
         dialog.form.part_number_combo,
         PartSet(dbref).build_option_list("part_number"),
         None,
-        )
+    )
 
     dialog.fill_part_fields()
     assert dialog.form.part_number_combo.currentText() == ""
@@ -264,12 +263,14 @@ def test_102_11_action_part_number_changed(qtbot, db_create):
         dialog.form.part_number_combo,
         PartSet(dbref).build_option_list("part_number"),
         None,
-        )
+    )
 
     part = Part(dbref, part_value_set[1][1], "part_number")
     dialog.form.part_number_combo.setCurrentText(part_value_set[1][1])
     assert dialog.form.part_number_combo.currentText() == part.get_part_number()
-    dialog.form.part_number_combo.activated.emit(dialog.form.part_number_combo.currentIndex())
+    dialog.form.part_number_combo.activated.emit(
+        dialog.form.part_number_combo.currentIndex()
+    )
     assert dialog.form.source_text.text() == part.get_source()
     assert dialog.form.description_text.text() == part.get_description()
     assert dialog.form.remarks_text.text() == part.get_remarks()

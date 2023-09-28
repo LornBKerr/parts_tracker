@@ -49,7 +49,7 @@ class EditStructureDialog(Dialog):
                 update_tree() method.
         """
         super().__init__(None, dbref, operation)
-        
+
         self.closed = False  # used to suppport testing
         """Indicate the dialog is closed."""
         self.set_element(Item(dbref))
@@ -142,7 +142,7 @@ class EditStructureDialog(Dialog):
         error = False
         msg_1 = "Old Assembly ID and New Assembly ID are the Same.\nNothing to do."
         msg_2 = "Assembly ID is invalid."
-        msg_text = ''
+        msg_text = ""
 
         if self.form.old_assy_edit.error:
             error = True
@@ -263,4 +263,3 @@ class EditStructureDialog(Dialog):
         """Attach and initialize the error_frames."""
         self.form.old_assy_edit.set_frame(self.form.old_assy_frame)
         self.form.new_assy_edit.set_frame(self.form.new_assy_frame)
-

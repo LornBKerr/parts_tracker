@@ -20,5 +20,6 @@ License:    MIT, see file License
 from .base_dialog import BaseDialog
 from .edit_structure_dialog import EditStructureDialog
 from .item_dialog import ItemDialog
+from .save_assy_list_dialog import SaveAssyListDialog
 
 # from .part_dialog import PartDialog

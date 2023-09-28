@@ -89,7 +89,7 @@ class ItemDialog(BaseDialog):
         self.form.save_new_button.clicked.connect(
             lambda: self.action_save(Dialog.SAVE_NEW)
         )
-        
+
         # set dialog element actions
         self.form.assembly_edit.editingFinished.connect(self.action_assembly_changed)
         self.form.condition_combo.activated.connect(self.action_condition_changed)
@@ -98,7 +98,9 @@ class ItemDialog(BaseDialog):
         self.form.quantity_edit.editingFinished.connect(self.action_quantity_changed)
         self.form.record_id_combo.activated.connect(self.action_record_id_changed)
         self.form.remarks_edit.editingFinished.connect(self.action_remarks_changed)
-        self.form.storage_box_edit.editingFinished.connect(self.action_storage_box_changed)
+        self.form.storage_box_edit.editingFinished.connect(
+            self.action_storage_box_changed
+        )
 
     def action_delete(self) -> None:
         """
@@ -349,7 +351,7 @@ class ItemDialog(BaseDialog):
         """
         item = self.get_element()
         new_index = self.form.record_id_combo.currentText()
-        if new_index == '':
+        if new_index == "":
             new_index = -1
 
         # Are there unsaved edits
@@ -485,9 +487,7 @@ class ItemDialog(BaseDialog):
         """Set the visible dialog elements depending on operation flag."""
         if self.get_operation() == Dialog.ADD_ELEMENT:
             self.form.record_id_combo.setEnabled(False)
-            self.form.record_id_combo.setToolTip(
-                self.TOOLTIPS["record_id_tbd"]
-            )
+            self.form.record_id_combo.setToolTip(self.TOOLTIPS["record_id_tbd"])
             self.get_element().set_value_valid_flag("record_id", True)
         else:
             self.form.record_id_combo.setEnabled(True)
