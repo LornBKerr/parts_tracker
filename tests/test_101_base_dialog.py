@@ -15,6 +15,7 @@ from lbk_library import Dbal
 from lbk_library.gui import Dialog
 from PyQt5.QtWidgets import QDialog, QMainWindow, QTableWidget, QWidget
 from test_setup import (
+    db_close,
     db_create,
     db_open,
     dialog_form,
@@ -76,6 +77,7 @@ def test_101_03_save_buttons_enable(qtbot, db_create):
     dialog.save_buttons_enable(False)
     assert not dialog.form.save_new_button.isEnabled()
     assert not dialog.form.save_done_button.isEnabled()
+    db_close(dbref)
 
 
 def test_101_04_file_order_table_fields(qtbot, db_create):
@@ -90,3 +92,5 @@ def test_101_04_file_order_table_fields(qtbot, db_create):
     assert dialog.form.order_table.rowCount() == 1
     dialog.fill_order_table_fields("")
     assert dialog.form.order_table.rowCount() == 0
+    db_close(dbref)
+
