@@ -5,6 +5,44 @@ File:       test_setup_elements.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
+
+This module provides a number of values and functions to help setup the
+test environment for the parts tracker program. All test modules draw on
+a varying selection of these values.
+
+Values Available:
+    test_string - A string for testing whereever a string is needed.
+    long_string - A string exceeding the base 255 character upper limit.
+
+    condition_columns, condition_value_set: columns andv values for the
+        'condition' db table.
+    item_columns, item_value_set: columns and values for the 
+        'item' table.
+    order_columns, order_value_set: columns and values for the
+        'order' table.
+    order_line_columns, order_line_value_set: columns and values for the
+        'order_line' table.
+    part_columns, part_value_set: columns and values for the 'part' table.
+    source_columns, source_value_set: : columns and values for the
+        'source' table.
+
+Database Handling:
+    db_open(tmp_path): Pytest fixture to open a database in temporary 
+        storage returning a reference to the database.
+    db_create(db_open): Pytest fixture to create a new database returning
+        a reference to the new database.
+
+    db_close(dbref: Dbal): function to close the open database
+    load_db_table(dbref, table_name, column_names, value_set): Funcion
+        to load a specific database table.
+    load_all_db_tables(dbref)  : Function to load all db tables  
+
+Filesystem, Directories and associated files:
+    build_test_config(base_dir): fill a cofig file
+    directories (list): List of directories for the filesystem
+    filesystem(tmp_path): Pytest fixture to generate a temporary
+        filesystem. 
+    test_config (dict): an empty configuration setup
 """
 
 import os
@@ -14,19 +52,47 @@ import pytest
 from lbk_library import Dbal
 from PyQt5 import QtWidgets
 
-# set some test strings
+# some test strings
 test_string = "This is a string"
 
 long_string = ""
 while len(long_string) < 255:
     long_string = long_string + ", " + test_string
 
+# open the test database
 # Set up and access the database
+__db_name = "parts_test.db"
 
-# name of test database
-db_name = "parts_test.db"
+@pytest.fixture
+def db_open(tmp_path):
+    """
+    Open a detabase.
 
-sql_statements = [
+    Parameters:
+        tmp_path (pathlib.Path): pytest fixture to create a temporary pth
+
+    Returns:
+        (Dbal) reference to an open, empty database.
+    """
+    path = tmp_path / __db_name
+    dbref = Dbal()
+    dbref.sql_connect(path)
+    return dbref
+
+
+# close database
+def db_close(dbref):
+    """
+    Close an open database.
+
+    Parameters:
+        dbref (Dbal): The open database to be closed.
+    """
+    dbref.sql_close()
+
+# Create a new Database
+# Sql statements to create a test database reflecting the parts database.
+__sql_statements = [
     (
         'CREATE TABLE IF NOT EXISTS "items" ('
         '"record_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, '
@@ -81,54 +147,13 @@ sql_statements = [
     ),
 ]
 
-
-# open the test database
-@pytest.fixture
-def db_open(tmp_path):
-    path = tmp_path / db_name
-    dbref = Dbal()
-    dbref.sql_connect(path)
-    return dbref
-
-
-# close database
-def db_close(dbref):
-    dbref.sql_close()
-
-
 @pytest.fixture
 def db_create(db_open):
     dbref = db_open
-    for sql in sql_statements:
+    for sql in __sql_statements:
         dbref.sql_query(sql)
     return dbref
 
-
-# Directories for Windows and Linux
-directories = [
-    ".config",
-    "Documents",
-    "Documents/parts_tracker",
-]
-
-# a basic empty config file for part_tracker testing.
-test_config = {
-    "settings": {
-        "recent_files": [],
-        "db_file_dir": "",
-        "xls_file_loc": "",
-    }
-}
-
-
-# fill the config directory locations
-def build_test_config(base_dir):
-    config = deepcopy(test_config)
-    config["settings"]["db_file_dir"] = os.path.join(base_dir, directories[2])
-    config["settings"]["xls_file_loc"] = os.path.join(
-        base_dir, directories[2], "parts_listings"
-    )
-    return config
 
 
 def load_db_table(dbref, table_name, column_names, value_set):
@@ -152,6 +177,31 @@ def load_all_db_tables(dbref):
     load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
     load_db_table(dbref, "sources", source_columns, source_value_set)
 
+# Directories for Windows and Linux
+directories = [
+    ".config",
+    "Documents",
+    "Documents/parts_tracker",
+]
+
+# a basic empty config file for part_tracker testing.
+test_config = {
+    "settings": {
+        "recent_files": [],
+        "db_file_dir": "",
+        "assy_list_dir": "",
+    }
+}
+
+
+# fill the config directory locations
+def build_test_config(base_dir):
+    config = deepcopy(test_config)
+    config["settings"]["db_file_dir"] = os.path.join(base_dir, directories[2])
+    config["settings"]["assy_list_dir"] = os.path.join(
+        base_dir, directories[2], "parts_listings"
+    )
+    return config
 
 @pytest.fixture
 def filesystem(tmp_path):
@@ -160,7 +210,7 @@ def filesystem(tmp_path):
     sequence is run.
 
     'source' is the directory structure for saving and retrieving data
-    with tow directories: '.config' and 'Documents'. This directory
+    with two directories: '.config' and 'Documents'. This directory
     structure will be discarded after the test sequence is run.
 
     Parameters:
@@ -425,24 +475,6 @@ source_value_set = [
 ]
 
 # ######################################################
-
-# Load a database table
-
-
-def load_db_table(dbref, table, columns, value_set):
-    sql_query = {"type": "INSERT", "table": table}
-    for values in value_set:
-        entries = {}
-        i = 0
-        while i < len(columns):
-            entries[columns[i]] = values[i]
-            i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        dbref.sql_query(sql, entries)
-
-
-# ######################################################
-
 
 class dialog_form(object):
     # define a simple form with various qt objects available for testing.
