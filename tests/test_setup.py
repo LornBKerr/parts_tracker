@@ -63,6 +63,7 @@ while len(long_string) < 255:
 # Set up and access the database
 __db_name = "parts_test.db"
 
+
 @pytest.fixture
 def db_open(tmp_path):
     """
@@ -89,6 +90,7 @@ def db_close(dbref):
         dbref (Dbal): The open database to be closed.
     """
     dbref.sql_close()
+
 
 # Create a new Database
 # Sql statements to create a test database reflecting the parts database.
@@ -147,6 +149,7 @@ __sql_statements = [
     ),
 ]
 
+
 @pytest.fixture
 def db_create(db_open):
     dbref = db_open
@@ -155,15 +158,14 @@ def db_create(db_open):
     return dbref
 
 
-
 def load_db_table(dbref, table_name, column_names, value_set):
     """Load one of the database tables with a set of values."""
-    sql_query = {"type": "INSERT", "table": "items"}
+    sql_query = {"type": "INSERT", "table": table_name}
     for values in value_set:
         entries = {}
         i = 0
-        while i < len(columns):
-            entries[columns[i]] = values[i]
+        while i < len(column_names):
+            entries[column_names[i]] = values[i]
             i += 1
         sql = dbref.sql_query_from_array(sql_query, entries)
         dbref.sql_query(sql, entries)
@@ -176,6 +178,7 @@ def load_all_db_tables(dbref):
     load_db_table(dbref, "orders", order_columns, order_value_set)
     load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
     load_db_table(dbref, "sources", source_columns, source_value_set)
+
 
 # Directories for Windows and Linux
 directories = [
@@ -202,6 +205,7 @@ def build_test_config(base_dir):
         base_dir, directories[2], "parts_listings"
     )
     return config
+
 
 @pytest.fixture
 def filesystem(tmp_path):
@@ -475,6 +479,7 @@ source_value_set = [
 ]
 
 # ######################################################
+
 
 class dialog_form(object):
     # define a simple form with various qt objects available for testing.
