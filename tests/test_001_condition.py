@@ -12,7 +12,14 @@ import sys
 
 import pytest
 from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open
+from test_setup import (
+    condition_columns,
+    condition_value_set,
+    db_close,
+    db_create,
+    db_open,
+    filesystem,
+)
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -23,29 +30,33 @@ from elements import Condition
 condition_values = {"record_id": 1, "condition": "Usable"}
 
 
-def test_001_01_constr(db_open):
-    dbref = db_open
+def test_001_01_constr(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     condition = Condition(dbref)
     assert type(condition) == Condition
     db_close(dbref)
 
 
-def test_001_02_get_table(db_open):
-    dbref = db_open
+def test_001_02_get_table(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     condition = Condition(dbref)
     assert condition.get_table() == "conditions"
     db_close(dbref)
 
 
-def test_001_03_get_dbref(db_open):
-    dbref = db_open
+def test_001_03_get_dbref(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     condition = Condition(dbref)
     assert condition.get_dbref() == dbref
     db_close(dbref)
 
 
-def test_001_04_get_set_condition(db_open):
-    dbref = db_open
+def test_001_04_get_set_condition(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     condition = Condition(dbref)
     defaults = condition.get_initial_values()
     condition._set_property("condition", condition_values["condition"])
@@ -62,16 +73,18 @@ def test_001_04_get_set_condition(db_open):
     db_close(dbref)
 
 
-def test_001_05_get_properties_type(db_open):
-    dbref = db_open
+def test_001_05_get_properties_type(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     condition = Condition(dbref)
     data = condition.get_properties()
     assert type(data) == dict
     db_close(dbref)
 
 
-def test_001_06_get_default_property_values(db_open):
-    dbref = db_open
+def test_001_06_get_default_property_values(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     condition = Condition(dbref)
     defaults = condition.get_initial_values()
     assert condition.get_record_id() == defaults["record_id"]
@@ -79,9 +92,9 @@ def test_001_06_get_default_property_values(db_open):
     db_close(dbref)
 
 
-def test_001_07_set_properties_from_dict(db_open):
-    # set Condition from array
-    dbref = db_open
+def test_001_07_set_properties_from_dict(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
@@ -89,24 +102,28 @@ def test_001_07_set_properties_from_dict(db_open):
     db_close(dbref)
 
 
-def test_001_08_get_properties_size(db_open):
-    dbref = db_open
+def test_001_08_get_properties_size(filesystem):
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     condition = Condition(dbref)
     data = condition.get_properties()
     assert len(data) == 2
     db_close(dbref)
 
 
-def test_001_09_condition_from_dict(db_open):
-    dbref = db_open
+def test_001_09_condition_from_dict(filesystem):
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     condition = Condition(dbref, condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
     db_close(dbref)
 
 
-def test_001_10_item_from__partial_dict(db_open):
-    dbref = db_open
+def test_001_10_item_from__partial_dict(filesystem):
+    fs_base = filesystem
+    dbref = db_create(fs_base)
+    condition = Condition(dbref, condition_values)
     values = {"record_id": 15}
     condition = Condition(dbref, values)
     assert values["record_id"] == condition.get_record_id()
@@ -114,8 +131,10 @@ def test_001_10_item_from__partial_dict(db_open):
     db_close(dbref)
 
 
-def test_001_11_add(db_create):
-    dbref = db_create
+def test_001_11_add(filesystem):
+    fs_base = filesystem
+    dbref = db_create(fs_base)
+    condition = Condition(dbref, condition_values)
     condition = Condition(dbref, condition_values)
     record_id = condition.add()
     assert record_id == 1
@@ -124,8 +143,10 @@ def test_001_11_add(db_create):
     db_close(dbref)
 
 
-def test_001_12_read_db(db_create):
-    dbref = db_create
+def test_001_12_read_db(filesystem):
+    fs_base = filesystem
+    dbref = db_create(fs_base)
+    condition = Condition(dbref, condition_values)
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
@@ -145,8 +166,10 @@ def test_001_12_read_db(db_create):
     db_close(dbref)
 
 
-def test_001_13_update(db_create):
-    dbref = db_create
+def test_001_13_update(filesystem):
+    fs_base = filesystem
+    dbref = db_create(fs_base)
+    condition = Condition(dbref, condition_values)
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
@@ -163,8 +186,10 @@ def test_001_13_update(db_create):
     db_close(dbref)
 
 
-def test_001_14_delete(db_create):
-    dbref = db_create
+def test_001_14_delete(filesystem):
+    fs_base = filesystem
+    dbref = db_create(fs_base)
+    condition = Condition(dbref, condition_values)
     condition = Condition(dbref)
     condition.set_properties(condition_values)
     record_id = condition.add()
