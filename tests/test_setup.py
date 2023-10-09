@@ -26,23 +26,22 @@ Values Available:
     source_columns, source_value_set: : columns and values for the
         'source' table.
 
+Filesystem, Directories and associated files:
+    build_test_config(fs_base): fill a cofig file
+    directories (list): List of directories for the filesystem
+    filesystem(tmp_path): Pytest fixture to generate a temporary
+        filesystem.
+    test_config (dict): an empty configuration setup
+
 Database Handling:
-    db_open(tmp_path): Pytest fixture to open a database in temporary 
-        storage returning a reference to the database.
+    db_open(fs_base): Pytest fixture to open a database in temporary 
+        file system returning a reference to the database.
     db_create(db_open): Pytest fixture to create a new database returning
         a reference to the new database.
-
-    db_close(dbref: Dbal): function to close the open database
+    db_close(dbref): function to close the open database
     load_db_table(dbref, table_name, column_names, value_set): Funcion
         to load a specific database table.
     load_all_db_tables(dbref)  : Function to load all db tables  
-
-Filesystem, Directories and associated files:
-    build_test_config(base_dir): fill a cofig file
-    directories (list): List of directories for the filesystem
-    filesystem(tmp_path): Pytest fixture to generate a temporary
-        filesystem. 
-    test_config (dict): an empty configuration setup
 """
 
 import os
@@ -64,8 +63,7 @@ while len(long_string) < 255:
 __db_name = "parts_test.db"
 
 
-@pytest.fixture
-def db_open(tmp_path):
+def db_open(fs_base):
     """
     Open a detabase.
 
@@ -75,7 +73,7 @@ def db_open(tmp_path):
     Returns:
         (Dbal) reference to an open, empty database.
     """
-    path = tmp_path / __db_name
+    path = fs_base / __db_name
     dbref = Dbal()
     dbref.sql_connect(path)
     return dbref
@@ -150,9 +148,8 @@ __sql_statements = [
 ]
 
 
-@pytest.fixture
-def db_create(db_open):
-    dbref = db_open
+def db_create(fs_base):
+    dbref = db_open(fs_base)
     for sql in __sql_statements:
         dbref.sql_query(sql)
     return dbref
@@ -198,11 +195,11 @@ test_config = {
 
 
 # fill the config directory locations
-def build_test_config(base_dir):
+def build_test_config(fs_base):
     config = deepcopy(test_config)
-    config["settings"]["db_file_dir"] = os.path.join(base_dir, directories[2])
+    config["settings"]["db_file_dir"] = os.path.join(fs_base, directories[2])
     config["settings"]["assy_list_dir"] = os.path.join(
-        base_dir, directories[2], "parts_listings"
+        fs_base, directories[2], "parts_listings"
     )
     return config
 
@@ -213,7 +210,7 @@ def filesystem(tmp_path):
     Setup a temporary filesystem which will be discarded after the test
     sequence is run.
 
-    'source' is the directory structure for saving and retrieving data
+    'fs_base' is the directory structure for saving and retrieving data
     with two directories: '.config' and 'Documents'. This directory
     structure will be discarded after the test sequence is run.
 
@@ -223,20 +220,20 @@ def filesystem(tmp_path):
     Returns:
         ( pathlib.Path ) The temparary file paths to use.
     """
-    source = tmp_path / "source"
-    source.mkdir()
+    fs_base = tmp_path / "fs_base"
+    fs_base.mkdir()
 
-    # make a set of source directories and files
+    # make a set of fs_base directories and files
     for dir in directories:
-        a_dir = source / dir
+        a_dir = fs_base / dir
         a_dir.mkdir()
 
-    fp = open(source / "Documents/parts_tracker/test_file1.db", "w")
+    fp = open(fs_base / "Documents/parts_tracker/test_file1.db", "w")
     fp.close()
-    fp = open(source / "Documents/parts_tracker/test_file2.db", "w")
+    fp = open(fs_base / "Documents/parts_tracker/test_file2.db", "w")
     fp.close()
 
-    return source
+    return fs_base
 
 
 # ######################################################
