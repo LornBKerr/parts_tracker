@@ -14,7 +14,11 @@ from lbk_library import Dbal, Element
 
 
 class Source(Element):
-    """Build a single Source in the database."""
+    """
+    Implement a single Source in the database.
+
+    A source is where a part is bought.
+    """
 
     def __init__(self, dbref: Dbal, source_key: str = None) -> None:
         """
