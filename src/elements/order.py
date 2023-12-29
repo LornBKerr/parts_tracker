@@ -96,9 +96,6 @@ class Order(Element):
 
         self.set_properties(order_key)
         self.set_initial_values(self.get_properties())
-        #        self.order_lines = OrderLineSet(
-        #            self.get_dbref(), "order_number", self.get_order_number()
-        #        )
         self.clear_value_changed_flags()
 
     def set_properties(self, properties: dict) -> None:
