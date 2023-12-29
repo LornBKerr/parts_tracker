@@ -10,9 +10,8 @@ License:    MIT, see file License
 import os
 import sys
 
-import pytest
 from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open
+from test_setup import db_close, db_create, db_open, filesystem
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -32,29 +31,58 @@ order_line_values = {
 }
 
 
-def test_009_01_constr(db_open):
-    dbref = db_open
+def test_009_01_constr(filesystem):
+    """
+    OrderLine Extends Element.
+
+    Check the types of class variables and default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     assert type(order_line) == OrderLine
+    # default values.
+    assert isinstance(order_line.defaults, dict)
+    assert len(order_line.defaults) == 7
+    assert order_line.defaults["record_id"] == 0
+    assert order_line.defaults["order_number"] == ""
+    assert order_line.defaults["line"] == 0
+    assert order_line.defaults["part_number"] == ""
+    assert order_line.defaults["cost_each"] == 0.0
+    assert order_line.defaults["quantity"] == 0
+    assert order_line.defaults["remarks"] == ""
     db_close(dbref)
 
 
-def test_009_02_get_table(db_open):
-    dbref = db_open
-    order_line = OrderLine(dbref)
-    assert order_line.get_table() == "order_lines"
-    db_close(dbref)
-
-
-def test_009_03_get_dbref(db_open):
-    dbref = db_open
+def test_009_02_get_dbref(filesystem):
+    """OrderLine needs correct database."""
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     assert order_line.get_dbref() == dbref
     db_close(dbref)
 
 
-def test_009_04_get_set_order_number(db_open):
-    dbref = db_open
+def test_009_03_get_table(filesystem):
+    """OrderLine needs the database table 'order_lines'."""
+    fs_base = filesystem
+    dbref = db_open(fs_base)
+    order_line = OrderLine(dbref)
+    assert order_line.get_table() == "order_lines"
+    db_close(dbref)
+
+
+def test_009_04_get_set_order_number(filesystem):
+    """
+    Get and set the order_number property.
+
+    The property 'order_number' is required and is a string matching the
+    regular exression 'yy-nnn' where the yy is the two digit year and
+    the nnn is a three digit sequential number starting at '001' for the
+    next order in the year.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     defaults = order_line.get_initial_values()
     order_line._set_property("order_number", None)
@@ -89,8 +117,17 @@ def test_009_04_get_set_order_number(db_open):
     db_close(dbref)
 
 
-def test_009_05_get_set_line(db_open):
-    dbref = db_open
+def test_009_05_get_set_line(filesystem):
+    """
+    Get and set the line property.
+
+    The property 'line', the sequence number of this order line in the
+    overall order, is required and is a number btween 1 and the maximum
+    integer available. It will normally be a small interger int the
+    range of 1 to less than 100.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     defaults = order_line.get_initial_values()
     result = order_line._set_property("line", None)
@@ -131,8 +168,15 @@ def test_009_05_get_set_line(db_open):
     db_close(dbref)
 
 
-def test_009_06_get_set_part_number(db_open):
-    dbref = db_open
+def test_009_06_get_set_part_number(filesystem):
+    """
+    Get and set the part_number property.
+
+    The property 'part_number' is required and is a string between 1 and
+    30 characters long.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     defaults = order_line.get_initial_values()
     order_line._set_property("part_number", order_line_values["part_number"])
@@ -149,8 +193,13 @@ def test_009_06_get_set_part_number(db_open):
     db_close(dbref)
 
 
-def test_009_07_get_set_cost_ea(db_open):
-    dbref = db_open
+def test_009_07_get_set_cost_ea(filesystem):
+    """
+    Get and set the cost each in dollars and cents. Thi is a float and
+    is 0.0 to max float number.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     order_line._set_property("cost_each", None)
     defaults = order_line.get_initial_values()
@@ -168,8 +217,14 @@ def test_009_07_get_set_cost_ea(db_open):
     assert result["entry"] == order_line.get_cost_each()
 
 
-def test_009_08_get_set_quantity(db_open):
-    dbref = db_open
+def test_009_08_get_set_quantity(filesystem):
+    """
+    Get and set the quantity for this Order Line. The quantity is a
+    small integer from 0 to max integer, normally 1 or greater. Zero
+    indicates the order line was cancelled or returned.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     defaults = order_line.get_initial_values()
     result = order_line._set_property("quantity", None)
@@ -211,8 +266,14 @@ def test_009_08_get_set_quantity(db_open):
     db_close(dbref)
 
 
-def test_009_10_get_line_cost(db_open):
-    dbref = db_open
+def test_009_09_get_line_cost(filesystem):
+    """
+    Get the line cost for the order line. The line cost is a dynamically
+    calculated number from the cost each value and quantity value. It is
+    not stored in the database.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     defaults = order_line.get_initial_values()
     print(order_line.get_properties())
@@ -235,16 +296,15 @@ def test_009_10_get_line_cost(db_open):
     )
 
 
-def test_009_11_get_properties_type(db_open):
-    dbref = db_open
-    order_line = OrderLine(dbref)
-    data = order_line.get_properties()
-    assert isinstance(data, dict)
-    db_close(dbref)
+def test_009_10_get_default_property_values(filesystem):
+    """
+    Check the default values.
 
-
-def test_009_12_get_default_property_values(db_open):
-    dbref = db_open
+    With no properties given to constructor, the initial values should
+    be the default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     defaults = order_line.get_initial_values()
     assert order_line.get_record_id() == defaults["record_id"]
@@ -257,8 +317,14 @@ def test_009_12_get_default_property_values(db_open):
     db_close(dbref)
 
 
-def test_009_13_set_properties_from_dict(db_open):
-    dbref = db_open
+def test_009_11_set_properties_from_dict(filesystem):
+    """
+    Check the 'set_properties' function.
+
+    The inital values can be set from a dict input.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     order_line.set_properties(order_line_values)
     assert order_line_values["record_id"] == order_line.get_record_id()
@@ -271,29 +337,29 @@ def test_009_13_set_properties_from_dict(db_open):
     db_close(dbref)
 
 
-def test_009_14_get_properties_size(db_open):
-    dbref = db_open
+def test_009_12_get_properties_size(filesystem):
+    """
+    Check the size of the properties dict.
+
+    There should be 7 members.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     order_line = OrderLine(dbref)
     data = order_line.get_properties()
     assert len(data) == len(order_line_values)
     db_close(dbref)
 
 
-def test_009_15_set_from_dict(db_open):
-    dbref = db_open
-    order_line = OrderLine(dbref, order_line_values)
-    assert order_line_values["record_id"] == order_line.get_record_id()
-    assert order_line_values["order_number"] == order_line.get_order_number()
-    assert order_line_values["line"] == order_line.get_line()
-    assert order_line_values["part_number"] == order_line.get_part_number()
-    assert order_line_values["cost_each"] == order_line.get_cost_each()
-    assert order_line_values["quantity"] == order_line.get_quantity()
-    assert order_line_values["remarks"] == order_line.get_remarks()
-    db_close(dbref)
+def test_009_13_set_from_partial_dict(filesystem):
+    """
+    Initialize a new OrderLine with a sparse dict of values.
 
-
-def test_009_16_set_from_partial_dict(db_open):
-    dbref = db_open
+    The resulting properties should mach the input values with the
+    missing values replaced with default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     del order_line_values["part_number"]
     order_line = OrderLine(dbref, order_line_values)
     assert order_line_values["record_id"] == order_line.get_record_id()
@@ -306,81 +372,29 @@ def test_009_16_set_from_partial_dict(db_open):
     db_close(dbref)
 
 
-def test_009_17_add(db_create):
-    dbref = db_create
+def test_001_16_get_properties_from_database(filesystem):
+    """
+    Access the database for the order_line properties.
+
+    Add an OrderLine to the database, then access it with the
+    record_id key. The actual read and write funtions are in the
+    base class "Element".
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     order_line = OrderLine(dbref, order_line_values)
     record_id = order_line.add()
     assert record_id == 1
     assert record_id == order_line.get_record_id()
-    assert order_line_values["order_number"] == order_line.get_order_number()
-    assert order_line_values["line"] == order_line.get_line()
-    assert order_line_values["part_number"] == ""
-    assert order_line_values["cost_each"] == order_line.get_cost_each()
-    assert order_line_values["quantity"] == order_line.get_quantity()
-    assert order_line_values["remarks"] == order_line.get_remarks()
-    db_close(dbref)
-    db_close(dbref)
 
+    order_line = OrderLine(dbref, record_id)
+    assert not order_line.get_record_id() == order_line_values["record_id"]
+    assert order_line.get_record_id() == 1
+    assert order_line.get_part_number() == order_line_values["part_number"]
+    assert order_line.get_order_number() == order_line_values["order_number"]
+    assert order_line.get_quantity() == order_line_values["quantity"]
+    assert order_line.get_line() == order_line_values["line"]
+    assert order_line.get_cost_each() == order_line_values["cost_each"]
+    assert order_line.get_remarks() == order_line_values["remarks"]
 
-def test_009_18_read_db(db_create):
-    dbref = db_create
-    order_line = OrderLine(dbref)
-    defaults = order_line.get_initial_values()
-    order_line.set_properties(order_line_values)
-    record_id = order_line.add()
-    assert record_id == 1
-    # read db for existing part
-    order2 = OrderLine(dbref, record_id)
-    assert order2 is not None
-    assert order2.get_properties() is not None
-    assert record_id == order2.get_record_id()
-    assert order_line_values["order_number"] == order2.get_order_number()
-    assert order_line_values["line"] == order2.get_line()
-    assert order_line_values["part_number"] == order2.get_part_number()
-    assert order_line_values["remarks"] == order2.get_remarks()
-    # read db for non-existing part
-    order3 = OrderLine(dbref, 5)
-    assert len(order3.get_properties()) == len(order_line_values)
-    assert defaults["record_id"] == order3.get_record_id()
-    assert defaults["order_number"] == order3.get_order_number()
-    assert defaults["line"] == order3.get_line()
-    assert defaults["part_number"] == order3.get_part_number()
-    assert defaults["remarks"] == order3.get_remarks()
-    # Try direct read thru Element
-    order2.set_properties(order2.get_properties_from_db(None, None))
-    assert len(order2.get_properties()) == 0
-    db_close(dbref)
-
-
-def test_009_19_update(db_create):
-    dbref = db_create
-    order_line = OrderLine(dbref)
-    defaults = order_line.get_initial_values()
-    order_line.set_properties(order_line_values)
-    assert order_line.get_record_id() == order_line_values["record_id"]
-    assert order_line_values["quantity"] == order_line.get_quantity()
-    # update order_line quantity
-    order_line.set_quantity(6)
-    result = order_line.update()
-    assert result
-    assert order_line.get_properties() is not None
-    assert order_line.get_record_id() == order_line_values["record_id"]
-    assert order_line_values["part_number"] == order_line.get_part_number()
-    assert not order_line_values["quantity"] == order_line.get_quantity()
-    assert order_line.get_quantity() == 6
-    db_close(dbref)
-
-
-def test_009_15_delete(db_create):
-    dbref = db_create
-    order_line = OrderLine(dbref)
-    order_line.set_properties(order_line_values)
-    order_line.add()
-    # delete orderline
-    result = order_line.delete()
-    assert result
-    # make sure it is really gone
-    order_line2 = OrderLine(dbref, 1)
-    assert isinstance(order_line2.get_properties(), dict)
-    assert len(order_line2.get_properties()) == len(order_line_values)
     db_close(dbref)

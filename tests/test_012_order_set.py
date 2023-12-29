@@ -10,12 +10,12 @@ License:    MIT, see file License
 import os
 import sys
 
-import pytest
 from lbk_library import Dbal, ElementSet
 from test_setup import (
     db_close,
     db_create,
     db_open,
+    filesystem,
     load_db_table,
     order_columns,
     order_value_set,
@@ -28,55 +28,35 @@ if src_path not in sys.path:
 from elements import Order, OrderSet
 
 
-def test_012__01_constr(db_create):
-    dbref = db_create
+def test_012_01_constr(filesystem):
+    """
+    OrderSet Extends ElementSet.
+
+    The 'table' must be "orders" and 'dbref' needs to be the
+    initializing dbref.
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     order_set = OrderSet(dbref)
     assert isinstance(order_set, OrderSet)
-    db_close(dbref)
-
-
-def test_012__02_get_dbref(db_create):
-    dbref = db_create
-    order_set = OrderSet(dbref)
+    assert isinstance(order_set, ElementSet)
+    assert order_set.get_table() == "orders"
     assert order_set.get_dbref() == dbref
     db_close(dbref)
 
 
-def test_012__03_get_table(db_create):
-    dbref = db_create
-    order_set = OrderSet(dbref)
-    assert order_set.get_table() == "orders"
-    db_close(dbref)
-
-
-def test_012__04_set_table(db_create):
-    dbref = db_create
-    order_set = OrderSet(dbref)
-    order_set.set_table("orders")
-    assert order_set.get_table() == "orders"
-    db_close(dbref)
-
-
-def test_012__05_get_property_set(db_create):
-    dbref = db_create
-    order_set = OrderSet(dbref)
-    assert isinstance(order_set.get_property_set(), list)
-    db_close(dbref)
-
-
-def test_012__06_set_property_set_none(db_create):
-    dbref = db_create
+def test_012_02_set_property_set_empty(filesystem):
+    """
+    The 'property_set', a list of 'Orders'", is empty when set to
+    None or when the table is empty.
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     order_set = OrderSet(dbref)
     assert isinstance(order_set.get_property_set(), list)
     order_set.set_property_set(None)
     assert isinstance(order_set.get_property_set(), list)
     assert len(order_set.get_property_set()) == 0
-    db_close(dbref)
-
-
-def test_012__07_all_rows_empty(db_create):
-    dbref = db_create
-    order_set = OrderSet(dbref)
     count_result = dbref.sql_query("SELECT COUNT(*) FROM " + order_set.get_table())
     count = dbref.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(order_set.get_property_set())
@@ -84,20 +64,52 @@ def test_012__07_all_rows_empty(db_create):
     db_close(dbref)
 
 
-def test_012__08_selected_rows(db_create):
-    dbref = db_create
+def test_012_03_selected_rows(filesystem):
+    """
+    The 'property_set', a list of 'Orders', should contain the
+    requested subset of Orders.
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     load_db_table(dbref, "orders", order_columns, order_value_set)
-    order_set = OrderSet(dbref, "source", "Local Purchase")
+    order_set = OrderSet(dbref, "source", "Ebay")
     count_result = dbref.sql_query(
-        "SELECT COUNT(*) FROM "
-        + order_set.get_table()
-        + " WHERE source = 'Local Purchase'"
+        "SELECT COUNT(*) FROM " + order_set.get_table() + " WHERE source = 'Ebay'"
     )
     count = dbref.sql_fetchrow(count_result)["COUNT(*)"]
-    print("count =", count)
-    selected_set = order_set.get_property_set()
-    print("collected set =")
-    print(selected_set)
-    assert count == len(selected_set)
-    assert count == 4
+    assert count == len(order_set.get_property_set())
+    assert count == 1
+    db_close(dbref)
+
+
+def test_012_04_selected_rows_limit(filesystem):
+    """
+    The 'property_set', a list of 'Orders', should contain the
+    requested subset of Orders ordered by record_id and the number of
+    rows given by 'limit'.
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
+    load_db_table(dbref, "orders", order_columns, order_value_set)
+    limit = 5
+    order_set = OrderSet(dbref, None, None, "record_id", limit)
+    assert limit == len(order_set.get_property_set())
+    assert order_set.get_property_set()[0].get_record_id() == order_value_set[0][0]
+    db_close(dbref)
+
+
+def test_012_05_selected_rows_limit_offset(filesystem):
+    """
+    The 'property_set', a list of 'Orders', should contain the
+    requested subset of Items ordered by record_id and the number of
+    rows given by 'limit' starting at 'offset' number of records.
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
+    load_db_table(dbref, "orders", order_columns, order_value_set)
+    limit = 5
+    offset = 2
+    order_set = OrderSet(dbref, None, None, "record_id", limit, offset)
+    assert limit == len(order_set.get_property_set())
+    assert order_set.get_property_set()[0].get_record_id() == order_value_set[2][0]
     db_close(dbref)
