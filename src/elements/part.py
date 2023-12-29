@@ -46,9 +46,9 @@ class Part(Element):
             part_key (Mixed): the specific key of the Part being
                 constructed or an dict object of the values for an Part
                 for direct insertion into the properties array.
-                If a specific key, must be either an record_id or part
-                number value and must be consistent with the type given
-                by the column name.
+                If a specific key, it must be either an record_id or
+                part_number value and must be consistent with the type
+                given by the column name.
             column (String): Either 'record_id' or 'part_number',
                 default is None. Column name and part value must be
                 consistent.
