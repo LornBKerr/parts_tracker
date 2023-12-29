@@ -10,14 +10,12 @@ License:    MIT, see file License
 import os
 import sys
 
-import pytest
-from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open
+from lbk_library import Dbal, Element
+from test_setup import db_close, db_create, db_open, filesystem
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
-
 
 from elements import Item
 
@@ -33,29 +31,58 @@ item_values = {
 }
 
 
-def test_005_01_constr(db_open):
-    dbref = db_open
+def test_005_01_constr(filesystem):
+    """
+    Item Extends Element.
+
+    Check the types of class variables and default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     assert isinstance(item, Item)
+    assert isinstance(item, Element)
+    # default values.
+    assert isinstance(item.defaults, dict)
+    assert len(item.defaults) == 8
+    assert item.defaults["record_id"] == 0
+    assert item.defaults["part_number"] == ""
+    assert item.defaults["assembly"] == ""
+    assert item.defaults["quantity"] == 0
+    assert item.defaults["condition"] == ""
+    assert item.defaults["installed"] == False
+    assert item.defaults["remarks"] == ""
+    assert item.defaults["box"] == 0
     db_close(dbref)
 
 
-def test_005_02_get_table(db_open):
-    dbref = db_open
-    item = Item(dbref)
-    assert item.get_table() == "items"
-    db_close(dbref)
-
-
-def test_005_03_get_dbref(db_open):
-    dbref = db_open
+def test_005_02_get_dbref(filesystem):
+    """Item needs correct database."""
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     assert item.get_dbref() == dbref
     db_close(dbref)
 
 
-def test_005_04_get_set_part_number(db_open):
-    dbref = db_open
+def test_005_03_get_table(filesystem):
+    """Item needs the database table 'items'."""
+    fs_base = filesystem
+    dbref = db_open(fs_base)
+    item = Item(dbref)
+    assert item.get_table() == "items"
+    db_close(dbref)
+
+
+def test_005_04_get_set_part_number(filesystem):
+    """
+    Get and set the part_number property.
+
+    The property 'part_number' is required and is a string between 1 and
+    30 characters long.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     defaults = item.get_initial_values()
     item._set_property("part_number", item_values["part_number"])
@@ -72,8 +99,15 @@ def test_005_04_get_set_part_number(db_open):
     db_close(dbref)
 
 
-def test_005_05_get_set_assembly(db_open):
-    dbref = db_open
+def test_005_05_get_set_assembly(filesystem):
+    """
+    Get and set the assembly property.
+
+    The property 'assembly' is required and is a string between 1 and
+    15 characters long. It is forced to all uppercase.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     defaults = item.get_initial_values()
     item._set_property("assembly", item_values["assembly"])
@@ -90,8 +124,15 @@ def test_005_05_get_set_assembly(db_open):
     db_close(dbref)
 
 
-def test_005_06_get_set_quantity(db_open):
-    dbref = db_open
+def test_005_06_get_set_quantity(filesystem):
+    """
+    Get and set the quantity property.
+
+    The property 'quantity' is required and is a integer between 0 and
+    999.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     defaults = item.get_initial_values()
     item._set_property("quantity", item_values["quantity"])
@@ -111,8 +152,15 @@ def test_005_06_get_set_quantity(db_open):
     db_close(dbref)
 
 
-def test_005_07_get_set_condition(db_open):
-    dbref = db_open
+def test_005_07_get_set_condition(filesystem):
+    """
+    Get and set the condition property.
+
+    The property 'condition' is required and is a string selected from
+    one of the values held in the "condtions' database table.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     defaults = item.get_initial_values()
     item._set_property("condition", item_values["condition"])
@@ -129,8 +177,15 @@ def test_005_07_get_set_condition(db_open):
     db_close(dbref)
 
 
-def test_005_08_get_set_installed(db_open):
-    dbref = db_open
+def test_005_08_get_set_installed(filesystem):
+    """
+    Get and set the installed property.
+
+    The property 'installed' is required and is a boolean value. If the
+    item is installed in the car, it is True, otherwise False.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     defaults = item.get_initial_values()
     item._set_property("installed", item_values["installed"])
@@ -150,8 +205,17 @@ def test_005_08_get_set_installed(db_open):
     db_close(dbref)
 
 
-def test_005_09_get_set_box(db_open):
-    dbref = db_open
+def test_005_09_get_set_box(filesystem):
+    """
+    Get and set the storage box property.
+
+    The property 'box' is required and is an integer value. The value is
+    zero if the item is installed in the car or stored as a stand-alone
+    item not in storage box.If it is stored in a box,then the values can
+    be between 1 and 99.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     defaults = item.get_initial_values()
     item._set_property("box", item_values["box"])
@@ -171,18 +235,18 @@ def test_005_09_get_set_box(db_open):
     db_close(dbref)
 
 
-def test_005_10_get_properties_type(db_open):
-    dbref = db_open
-    item = Item(dbref)
-    data = item.get_properties()
-    assert isinstance(data, dict)
-    db_close(dbref)
+def test_005_10_get_default_property_values(filesystem):
+    """
+    Check the default values.
 
-
-def test_005_11_get_default_property_values(db_open):
-    dbref = db_open
+    With no properties given to constructor, the initial values should
+    be the default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     defaults = item.get_initial_values()
+    assert item.get_record_id() == defaults["record_id"]
     assert item.get_remarks() == defaults["remarks"]
     assert item.get_part_number() == defaults["part_number"]
     assert item.get_assembly() == defaults["assembly"]
@@ -193,9 +257,14 @@ def test_005_11_get_default_property_values(db_open):
     db_close(dbref)
 
 
-def test_005_12_set_properties_from_dict(db_open):
-    # set Item from array
-    dbref = db_open
+def test_005_11_set_properties_from_dict(filesystem):
+    """
+    Check the 'set_properties' function.
+
+    The inital values can be set from a dict input.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     item.set_properties(item_values)
     assert item_values["record_id"] == item.get_record_id()
@@ -209,36 +278,35 @@ def test_005_12_set_properties_from_dict(db_open):
     db_close(dbref)
 
 
-def test_005_13_item_get_properties_size(db_open):
-    dbref = db_open
+def test_005_12_item_get_properties_size(filesystem):
+    """
+    Check the size of the properties dict.
+
+    There should be 8 members.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     item = Item(dbref)
     assert len(item.get_properties()) == len(item_values)
     db_close(dbref)
 
 
-def test_005_14_item_from_dict(db_open):
-    dbref = db_open
-    item = Item(dbref, item_values)
-    assert item_values["record_id"] == item.get_record_id()
-    assert item_values["part_number"] == item.get_part_number()
-    assert item_values["assembly"] == item.get_assembly()
-    assert item_values["quantity"] == item.get_quantity()
-    assert item_values["condition"] == item.get_condition()
-    assert item_values["installed"] == item.get_installed()
-    assert item_values["remarks"] == item.get_remarks()
-    assert item_values["box"] == item.get_box()
-    db_close(dbref)
+def test_005_13_item_from_partial_dict(filesystem):
+    """
+    Initialize a new Item with a sparse dict of values.
 
-
-def test_005_15_item_from__partial_dict(db_open):
-    dbref = db_open
+    The resulting properties should mach the input values with the
+    missing values replaced with default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     assembly = item_values["assembly"]
     del item_values["assembly"]
     item = Item(dbref, item_values)
     item_values["assembly"] = assembly
     assert item_values["record_id"] == item.get_record_id()
     assert item_values["part_number"] == item.get_part_number()
-    assert "" == item.get_assembly()
+    assert item.get_assembly() == ""
     assert item_values["quantity"] == item.get_quantity()
     assert item_values["condition"] == item.get_condition()
     assert item_values["installed"] == item.get_installed()
@@ -247,84 +315,30 @@ def test_005_15_item_from__partial_dict(db_open):
     db_close(dbref)
 
 
-def test_005_16_item_add(db_create):
-    dbref = db_create
+def test_001_14_get_properties_from_database(filesystem):
+    """
+    Access the database for the item properties.
+
+    Add an item to the database, then access it with the
+    record_id key. The actual read and write funtions are in the
+    base class "Element".
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     item = Item(dbref, item_values)
-    item_id = item.add()
-    assert item_id == 1
-    assert item_id == item.get_record_id()
-    assert item_values["part_number"] == item.get_part_number()
-    assert item_values["assembly"] == item.get_assembly()
-    assert item_values["quantity"] == item.get_quantity()
-    assert item_values["condition"] == item.get_condition()
-    assert item_values["installed"] == item.get_installed()
-    assert item_values["remarks"] == item.get_remarks()
-    assert item_values["box"] == item.get_box()
-    db_close(dbref)
+    record_id = item.add()
+    assert record_id == 1
+    assert record_id == item.get_record_id()
 
-
-def test_005_17_item_read_db(db_create):
-    dbref = db_create
-    item = Item(dbref, item_values)
-    item_id = item.add()
-    assert item_id == 1
-    # read db for existing item
-    item2 = Item(dbref, 1)
-    assert not item2 is None
-    assert not item2.get_properties() is None
-    assert item2.get_record_id() == 1
-    assert item_values["part_number"] == item2.get_part_number()
-    assert item_values["assembly"] == item2.get_assembly()
-    assert item_values["quantity"] == item2.get_quantity()
-    assert item_values["condition"] == item2.get_condition()
-    assert item_values["installed"] == item2.get_installed()
-    assert item_values["remarks"] == item2.get_remarks()
-    assert item_values["box"] == item2.get_box()
-    # read db for non-existing item
-    item3 = Item(dbref, 5)
-    assert isinstance(item3.get_properties(), dict)
-    assert len(item3.get_properties()) == len(item_values)
-    # Try direct read thru Element
-    item2.set_properties(item2.get_properties_from_db(None, None))
-    assert isinstance(item2.get_properties(), dict)
-    assert len(item2.get_properties()) == 0
-    db_close(dbref)
-
-
-def test_005_18_item_update(db_create):
-    dbref = db_create
-    item = Item(dbref)
-    item.set_properties(item_values)
-    item_id = item.add()
-    assert item_id == 1
-    assert item_values["quantity"] == item.get_quantity()
-    # update item quantity
-    item.set_quantity(6)
-    result = item.update()
-    assert result
-    assert item.get_properties() is not None
+    item = Item(dbref, record_id)
+    assert not item.get_record_id() == item_values["record_id"]
     assert item.get_record_id() == 1
-    assert item_values["part_number"] == item.get_part_number()
-    assert item_values["assembly"] == item.get_assembly()
-    assert not item_values["quantity"] == item.get_quantity()
-    assert item.get_quantity() == 6
-    assert item_values["condition"] == item.get_condition()
-    assert item_values["installed"] == item.get_installed()
-    assert item_values["remarks"] == item.get_remarks()
-    assert item_values["box"] == item.get_box()
-    db_close(dbref)
+    assert item.get_part_number() == item_values["part_number"]
+    assert item.get_assembly() == item_values["assembly"]
+    assert item.get_quantity() == item_values["quantity"]
+    assert item.get_condition() == item_values["condition"]
+    assert item.get_installed() == item_values["installed"]
+    assert item.get_remarks() == item_values["remarks"]
+    assert item.get_box() == item_values["box"]
 
-
-def test_005_19_item_delete(db_create):
-    dbref = db_create
-    item = Item(dbref)
-    item.set_properties(item_values)
-    item.add()
-    # delete item
-    result = item.delete()
-    assert result
-    # make sure it is really gone
-    item = Item(dbref, 1)
-    assert isinstance(item.get_properties(), dict)
-    assert len(item.get_properties()) == 8
     db_close(dbref)
