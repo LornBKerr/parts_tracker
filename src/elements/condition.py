@@ -14,7 +14,14 @@ from lbk_library import Dbal, Element
 
 
 class Condition(Element):
-    """Implement a single Condition in the database."""
+    """
+    Implement a single Condition in the database.
+
+    A condition reflects the current condition of a specific item.
+    Typical conditions are new (for a new item), usable (for something
+    that has been removed but is ok to reuse), and a number of others as
+    listed in the database.
+    """
 
     def __init__(self, dbref: Dbal, condition_key: str = None) -> None:
         """
@@ -36,8 +43,8 @@ class Condition(Element):
         Parameters:
             dbref (Dbal): reference to the database holding the element
             condition_key (str | dict): the record_id of the Condition
-                being constructed or an dict object of the values for a
-                Condition for direct insertion into the properties array.
+                being constructed or a dict object of the values for a
+                Condition for insertion into the properties array.
         """
         super().__init__(dbref, "conditions")
 
