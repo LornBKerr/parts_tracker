@@ -14,7 +14,12 @@ from lbk_library import Dbal, Element
 
 
 class Item(Element):
-    """Implement a single Item in the database."""
+    """
+    Implement a single Item in the database.
+
+    A item may be a single part or a grouping of parts such  as a set
+    of bolts to fasten another item.
+    """
 
     def __init__(self, dbref: Dbal, item_key: str | dict[str, Any] = None) -> None:
         """
@@ -67,10 +72,7 @@ class Item(Element):
             item_key = deepcopy(self.defaults)
 
         self.set_properties(item_key)
-        self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
-
-    # end __init__()
 
     def set_properties(self, properties: dict[str, Any]) -> None:
         """
@@ -105,8 +107,6 @@ class Item(Element):
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
 
-    # end set_properties()
-
     def get_part_number(self) -> str:
         """
         Get the Item's part number.
@@ -118,8 +118,6 @@ class Item(Element):
         if part_number is None:
             part_number = self.defaults["part_number"]
         return part_number
-
-    # end get_part_number()
 
     def set_part_number(self, part_number: str) -> dict[str, Any]:
         """
@@ -142,7 +140,7 @@ class Item(Element):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        result = self.validate.text_field(part_number, self.validate.REQUIRED, 0, 30)
+        result = self.validate.text_field(part_number, self.validate.REQUIRED, 1, 30)
         if result["valid"]:
             self._set_property("part_number", result["entry"])
         else:
@@ -293,8 +291,6 @@ class Item(Element):
         if installed is None:
             installed = self.defaults["installed"]
         return installed
-
-        # end get_installed()
 
     def set_installed(self, installed: bool) -> dict[str, Any]:
         """
