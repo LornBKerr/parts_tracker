@@ -11,8 +11,8 @@ import os
 import sys
 
 import pytest
-from lbk_library import Dbal
-from test_setup import db_close, db_create, db_open
+from lbk_library import Dbal, Element
+from test_setup import db_close, db_create, db_open, filesystem
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -23,30 +23,49 @@ from elements import Source
 source_values = {"record_id": 15, "source": "Moss USA"}
 
 
-def test_003_01_constr(db_open):
-    dbref = db_open
+def test_003_01_constr(filesystem):
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     source = Source(dbref)
-    assert type(source) == Source
+    assert isinstance(source, Source)
+    assert isinstance(source, Element)
+    # default values.
+    assert isinstance(source.defaults, dict)
+    assert len(source.defaults) == 2
+    assert source.defaults["record_id"] == 0
+    assert source.defaults["source"] == ""
     db_close(dbref)
 
 
-def test_003_02_get_table(db_open):
-    dbref = db_open
-    source = Source(dbref)
-    assert source.get_table() == "sources"
-    db_close(dbref)
-
-
-def test_003_03_get_dbref(db_open):
-    dbref = db_open
+def test_003_02_get_dbref(filesystem):
+    """Source needs correct database."""
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     source = Source(dbref)
     assert source.get_dbref() == dbref
     db_close(dbref)
 
 
-def test_003_04_set_source(db_open):
-    # set empty Source
-    dbref = db_open
+def test_003_03_get_table(filesystem):
+    """Sourcen needs the database table 'sources'."""
+    fs_base = filesystem
+    dbref = db_open(fs_base)
+    source = Source(dbref)
+    assert source.get_table() == "sources"
+    db_close(dbref)
+
+
+def test_003_04_set_source(filesystem):
+    """
+    Get and set the source property.
+
+    The property 'source' is required and is a text value held in the
+    database.
+
+    The property 'record_id is handled in the Element' base class.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     source = Source(dbref)
     defaults = source.get_initial_values()
     source._set_property("source", source_values["source"])
@@ -63,16 +82,15 @@ def test_003_04_set_source(db_open):
     db_close(dbref)
 
 
-def test_003_05_get_properties_type(db_open):
-    dbref = db_open
-    source = Source(dbref)
-    data = source.get_properties()
-    assert type(data) == dict
-    db_close(dbref)
+def test_003_05_get_default_property_values(filesystem):
+    """
+    Check the default values.
 
-
-def test_003_06_get_default_property_values(db_open):
-    dbref = db_open
+    With no properties given to consturcr, the initial values should be
+    the default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     source = Source(dbref)
     defaults = source.get_initial_values()
     assert source.get_record_id() == defaults["record_id"]
@@ -80,9 +98,14 @@ def test_003_06_get_default_property_values(db_open):
     db_close(dbref)
 
 
-def test_003_07_set_properties_from_dict(db_open):
-    # set Source from array
-    dbref = db_open
+def test_003_06_set_properties_from_dict(filesystem):
+    """
+    Check the 'set_properties' function.
+
+    The inital values can be set from a dict input.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     source = Source(dbref)
     source.set_properties(source_values)
     assert source_values["record_id"] == source.get_record_id()
@@ -90,24 +113,43 @@ def test_003_07_set_properties_from_dict(db_open):
     db_close(dbref)
 
 
-def test_003_08_get_properties_size(db_open):
-    dbref = db_open
+def test_003_07_get_properties_size(filesystem):
+    """
+    Check the size of the properties dict.
+
+    There should be two members.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     source = Source(dbref)
     data = source.get_properties()
     assert len(data) == 2
     db_close(dbref)
 
 
-def test_003_09_source_from_dict(db_open):
-    dbref = db_open
+def test_003_08_source_from_dict(filesystem):
+    """
+    Initialize a new Source with a dict of values.
+
+    The resulting properties should match the input values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     source = Source(dbref, source_values)
     assert source_values["record_id"] == source.get_record_id()
     assert source_values["source"] == source.get_source()
     db_close(dbref)
 
 
-def test_003_10_item_from__partial_dict(db_open):
-    dbref = db_open
+def test_003_09_item_from__partial_dict(filesystem):
+    """
+    Initialize a new Source with a sparse dict of values.
+
+    The resulting properties should mach the input values with the
+    missing values replaced with default values.
+    """
+    fs_base = filesystem
+    dbref = db_open(fs_base)
     values = {"record_id": 15}
     source = Source(dbref, values)
     assert values["record_id"] == source.get_record_id()
@@ -115,66 +157,24 @@ def test_003_10_item_from__partial_dict(db_open):
     db_close(dbref)
 
 
-def test_003_11_add(db_create):
-    dbref = db_create
+def test_001_10_get_properties_from_database(filesystem):
+    """
+    Access the database for the source properties.
+
+    Add a Source to the database, then access it with the
+    record_id key. The actual read and write funtions are in the
+    base class "Element".
+    """
+    fs_base = filesystem
+    dbref = db_create(fs_base)
     source = Source(dbref, source_values)
     record_id = source.add()
     assert record_id == 1
     assert record_id == source.get_record_id()
     assert source_values["source"] == source.get_source()
-    db_close(dbref)
 
-
-def test_003_12_read_db(db_create):
-    dbref = db_create
-    source = Source(dbref)
-    source.set_properties(source_values)
-    record_id = source.add()
-    assert record_id == 1
-    # read db for existing part
-    source2 = Source(dbref, record_id)
-    assert record_id == source2.get_record_id()
-    assert source_values["source"] == source2.get_source()
-    # read db for non-existing part
-    source3 = Source(dbref, 5)
-    assert isinstance(source3.get_properties(), dict)
-    assert len(source3.get_properties()) == len(source_values)
-    # Try direct read thru Element
-    source2.set_properties(source2.get_properties_from_db(None, None))
-    assert isinstance(source2.get_properties(), dict)
-    assert len(source2.get_properties()) == 0
-    db_close(dbref)
-
-
-def test_003_13_update(db_create):
-    dbref = db_create
-    source = Source(dbref)
-    source.set_properties(source_values)
-    record_id = source.add()
-    assert record_id == 1
+    condtion = Source(dbref, record_id)
+    assert record_id == source.get_record_id()
     assert source_values["source"] == source.get_source()
 
-    # update source
-    source.set_source("British Wiring")
-    result = source.update()
-    assert result
-    assert source.get_properties() is not None
-    assert record_id == source.get_record_id()
-    assert not source_values["source"] == source.get_source()
-    assert "British Wiring" == source.get_source()
-    db_close(dbref)
-
-
-def test_003_14_delete(db_create):
-    dbref = db_create
-    source = Source(dbref)
-    source.set_properties(source_values)
-    record_id = source.add()
-    # delete part
-    result = source.delete()
-    assert result
-    # make sure it is really gone
-    source2 = Source(dbref, source_values["record_id"])
-    assert isinstance(source2.get_properties(), dict)
-    assert len(source2.get_properties()) == len(source_values)
     db_close(dbref)
