@@ -7,7 +7,6 @@ Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-
 import re
 from copy import deepcopy
 from typing import Any
