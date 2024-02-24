@@ -7,7 +7,6 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-
 from lbk_library import Dbal, ElementSet
 
 from .condition import Condition
