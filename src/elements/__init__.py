@@ -1,5 +1,5 @@
 """
-The Parts Database Element Collection.
+The Parts Tracker Database Element Collection.
 
 This module contains the following classes
     Condition extends lbk_library.Element
