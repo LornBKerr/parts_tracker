@@ -9,7 +9,7 @@ License:    MIT, see file License
 
 import sys
 
-from PyQt6.QtWidgets import QApplication  # , QStyleFactory
+from PyQt5.QtWidgets import QApplication  # , QStyleFactory
 
 from pages import MainWindow
 
