@@ -3,22 +3,18 @@ Test the assembly_tree_page class.
 
 File:       test_201_assembly_tree_page.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2023 Lorn B Kerr
+Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
 """
 
 import os
 import sys
 
-# import pytest
-from lbk_library import Dbal
-from PyQt6 import uic
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QMainWindow,
+from PyQt5 import uic
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
-    QTreeWidgetItemIterator,
 )
 from test_setup import (
     build_test_config,
@@ -37,52 +33,55 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from dialogs import ItemDialog
+
+# from dialogs import ItemDialog
 from elements import Item, ItemSet, Part
 from pages import AssemblyTreePage, MainWindow
 
 
-def setup_page(db_create, qtbot):
+def setup_page(qtbot, filesystem):
     """Initialize an assembly page for testing"""
-    dbref = db_create
-    load_all_db_tables(dbref)
+    fs_base = filesystem
+    parts_file = db_create(fs_base)
+    load_all_db_tables(parts_file)
     form = uic.loadUi("src/forms/main_window.ui")
-    page = AssemblyTreePage(form, dbref)
+    page = AssemblyTreePage(form, parts_file)
     qtbot.addWidget(form)
-    return (dbref, form, page)
+    return (parts_file, form, page)
 
 
-def test_201_01_class_type(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_01_class_type(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     assert isinstance(page, AssemblyTreePage)
-    assert page.get_dbref() == dbref
+    assert page.get_parts_file() == parts_file
     assert type(page.tree) == QTreeWidget
     assert page.form == form
     assert type(page.tree) is QTreeWidget
 
 
-def test_201_02_resize_columns(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_02_resize_columns(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     # delete existing tree headings and entries
     page.tree.clear()
     blank_header = [None, None, None, None, None, None, None]
     page.tree.setColumnCount(len(AssemblyTreePage.COL_NAMES))
     page.tree.setHeaderLabels(blank_header)
-    page.resize()
+    page.resize_columns()
     for i in range(0, len(blank_header) - 1):
         assert page.tree.columnWidth(i) == page.tree.header().minimumSectionSize()
     page.tree.setHeaderLabels(AssemblyTreePage.COL_NAMES)
-    page.resize()
+    page.resize_columns()
     for i in range(0, len(AssemblyTreePage.COL_NAMES) - 1):
         assert page.tree.columnWidth(i) > page.tree.header().minimumSectionSize()
 
 
-def test_201_03_set_tree_headers(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_03_set_tree_headers(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     page.tree.clear()
     blank_header = [None, None, None, None, None, None, None]
     page.tree.setColumnCount(len(AssemblyTreePage.COL_NAMES))
     page.tree.setHeaderLabels(blank_header)
-    page.resize()
+    page.resize_columns()
     page.set_tree_headers()
     assert page.tree.columnCount() == len(page.COL_NAMES)
     header = page.tree.header()
@@ -91,20 +90,20 @@ def test_201_03_set_tree_headers(db_create, qtbot):
         assert page.tree.columnWidth(i) > page.tree.header().minimumSectionSize()
 
 
-def test_201_03_set_part_description(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_03_set_part_description(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     item_number = item_value_set[0][0]
     part_number = item_value_set[0][1]
-    item = Item(dbref, item_number)
-    part = Part(dbref, item.get_part_number(), "part_number")
+    item = Item(parts_file, item_number)
+    part = Part(parts_file, item.get_part_number(), "part_number")
     item_properties = page.set_part_description(item.get_properties())
     assert item_properties["description"] == part.get_description()
 
 
-def test_201_04_set_installed_entry(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_04_set_installed_entry(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     item_number = item_value_set[0][0]
-    item = Item(dbref, item_number)
+    item = Item(parts_file, item_number)
     item.set_installed(True)
     item_properties = page.set_installed_entry(item.get_properties())
     assert item_properties["installed"] == "Yes"
@@ -113,10 +112,10 @@ def test_201_04_set_installed_entry(db_create, qtbot):
     assert item_properties["installed"] == ""
 
 
-def test_201_05_set_item_values(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_05_set_item_values(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     item_number = item_value_set[0][0]
-    item = Item(dbref, item_number)
+    item = Item(parts_file, item_number)
     item_properties = page.set_part_description(item.get_properties())
     item_properties = page.set_installed_entry(item_properties)
     item_values = page.set_item_values(item_properties)
@@ -124,8 +123,8 @@ def test_201_05_set_item_values(db_create, qtbot):
         assert type(value) is str
 
 
-def test_201_06_find_parent_assy(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_06_find_parent_assy(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     tree_items = {}
     assembly = "A"
     parent = page.find_parent_assy(assembly, tree_items)
@@ -141,10 +140,10 @@ def test_201_06_find_parent_assy(db_create, qtbot):
     tree_items[assembly] = parent
 
 
-def test_201_07_add_item_to_tree(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
+def test_201_07_add_item_to_tree(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
     tree_items = {}
-    item_set = ItemSet(dbref, None, None, "assembly")
+    item_set = ItemSet(parts_file, None, None, "assembly")
     item = item_set.get(0)
     item_properties = page.set_part_description(item.get_properties())
     assembly1 = item_properties["assembly"]
@@ -163,22 +162,22 @@ def test_201_07_add_item_to_tree(db_create, qtbot):
     assert tree_items[assembly2].parent() == tree_items[assembly1]
 
 
-def test_201_09_fill_tree_widget(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
-    item_set = ItemSet(dbref, None, None, "assembly")
+def test_201_09_fill_tree_widget(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
+    item_set = ItemSet(parts_file, None, None, "assembly")
     tree_items = page.fill_tree_widget(item_set)
     assert type(tree_items["A"]) is QTreeWidgetItem
     assert tree_items["AA"].parent() == tree_items["A"]
     assert len(tree_items) == len(item_value_set)
 
 
-def test_201_10_update_tree(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
-    item_set = ItemSet(dbref, None, None, "assembly")
+def test_201_10_update_tree(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
+    item_set = ItemSet(parts_file, None, None, "assembly")
     tree_items = page.fill_tree_widget(item_set)
     init_num_items = len(tree_items)
-    Item(dbref, 1370).delete()
-    Item(dbref, 1328).delete()
+    Item(parts_file, 1370).delete()
+    Item(parts_file, 1328).delete()
     tree_items = page.update_tree()
     assert len(tree_items) < init_num_items
     assert (init_num_items - len(tree_items)) == 2
@@ -186,9 +185,9 @@ def test_201_10_update_tree(db_create, qtbot):
     assert not "AAACB" in tree_items.keys()
 
 
-def test_201_11_clear_tree(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
-    item_set = ItemSet(dbref, None, None, "assembly")
+def test_201_11_clear_tree(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
+    item_set = ItemSet(parts_file, None, None, "assembly")
     tree_items = page.fill_tree_widget(item_set)
     top_item_count = page.tree.topLevelItemCount()
     assert top_item_count > 0
@@ -197,9 +196,9 @@ def test_201_11_clear_tree(db_create, qtbot):
     assert top_item_count == 0
 
 
-def test_201_12_action_expand(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
-    item_set = ItemSet(dbref, None, None, "assembly")
+def test_201_12_action_expand(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
+    item_set = ItemSet(parts_file, None, None, "assembly")
     page.fill_tree_widget(item_set)
 
     collapsed_width = page.tree.columnWidth(0)
@@ -214,9 +213,9 @@ def test_201_12_action_expand(db_create, qtbot):
     assert expanded_width >= collapsed_width
 
 
-def test_201_13_action_collapse(db_create, qtbot):
-    dbref, form, page = setup_page(db_create, qtbot)
-    item_set = ItemSet(dbref, None, None, "assembly")
+def test_201_13_action_collapse(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
+    item_set = ItemSet(parts_file, None, None, "assembly")
     page.fill_tree_widget(item_set)
     collapsed_width = page.tree.columnWidth(0)
 
@@ -230,3 +229,13 @@ def test_201_13_action_collapse(db_create, qtbot):
 
     page.form.button_collapse_tree.click()
     recollapsed_width = page.tree.columnWidth(0)
+
+
+def test_201_14_action_item_clicked(qtbot, filesystem):
+    parts_file, form, page = setup_page(qtbot, filesystem)
+
+    item_set = ItemSet(parts_file, None, None, "assembly")
+    page.fill_tree_widget(item_set)
+    item = page.tree.itemAt(0, 0)
+    dialog = page.action_item_clicked(item, 0)
+    assert type(dialog) == ItemDialog
