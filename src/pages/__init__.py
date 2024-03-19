@@ -9,7 +9,7 @@ This module contains the following classes:
     OrderListPage (OQject): Displays the Orders in a Table Listing.
 
 Also included is:
-    table_definition (List[str]): A list of sql definitions for the 
+    table_definition (List[str]): A list of sql definitions for the
         Parts Database file.
 
 File       __init__.py
