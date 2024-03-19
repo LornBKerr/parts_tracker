@@ -38,10 +38,10 @@ Database Handling:
         file system returning a reference to the database.
     db_create(db_open): Pytest fixture to create a new database returning
         a reference to the new database.
-    db_close(dbref): function to close the open database
-    load_db_table(dbref, table_name, column_names, value_set): Funcion
+    db_close(parts_file): function to close the open database
+    load_db_table(parts_file, table_name, column_names, value_set): Funcion
         to load a specific database table.
-    load_all_db_tables(dbref)  : Function to load all db tables  
+    load_all_db_tables(parts_file)  : Function to load all db tables  
 """
 
 import os
@@ -74,20 +74,20 @@ def db_open(fs_base):
         (Dbal) reference to an open, empty database.
     """
     path = fs_base / __db_name
-    dbref = Dbal()
-    dbref.sql_connect(path)
-    return dbref
+    parts_file = Dbal()
+    parts_file.sql_connect(path)
+    return parts_file
 
 
 # close database
-def db_close(dbref):
+def db_close(parts_file):
     """
     Close an open database.
 
     Parameters:
-        dbref (Dbal): The open database to be closed.
+        parts_file (Dbal): The open database to be closed.
     """
-    dbref.sql_close()
+    parts_file.sql_close()
 
 
 # Create a new Database
@@ -149,13 +149,13 @@ __sql_statements = [
 
 
 def db_create(fs_base):
-    dbref = db_open(fs_base)
+    parts_file = db_open(fs_base)
     for sql in __sql_statements:
-        dbref.sql_query(sql)
-    return dbref
+        parts_file.sql_query(sql)
+    return parts_file
 
 
-def load_db_table(dbref, table_name, column_names, value_set):
+def load_db_table(parts_file, table_name, column_names, value_set):
     """Load one of the database tables with a set of values."""
     sql_query = {"type": "INSERT", "table": table_name}
     for values in value_set:
@@ -164,17 +164,17 @@ def load_db_table(dbref, table_name, column_names, value_set):
         while i < len(column_names):
             entries[column_names[i]] = values[i]
             i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        dbref.sql_query(sql, entries)
+        sql = parts_file.sql_query_from_array(sql_query, entries)
+        parts_file.sql_query(sql, entries)
 
 
-def load_all_db_tables(dbref):
-    load_db_table(dbref, "conditions", condition_columns, condition_value_set)
-    load_db_table(dbref, "items", item_columns, item_value_set)
-    load_db_table(dbref, "parts", part_columns, part_value_set)
-    load_db_table(dbref, "orders", order_columns, order_value_set)
-    load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
-    load_db_table(dbref, "sources", source_columns, source_value_set)
+def load_all_db_tables(parts_file):
+    load_db_table(parts_file, "conditions", condition_columns, condition_value_set)
+    load_db_table(parts_file, "items", item_columns, item_value_set)
+    load_db_table(parts_file, "parts", part_columns, part_value_set)
+    load_db_table(parts_file, "orders", order_columns, order_value_set)
+    load_db_table(parts_file, "order_lines", order_line_columns, order_line_value_set)
+    load_db_table(parts_file, "sources", source_columns, source_value_set)
 
 
 # Directories for Windows and Linux
@@ -190,7 +190,9 @@ test_config = {
         "recent_files": [],
         "db_file_dir": "",
         "assy_list_dir": "",
-    }
+    },
+    "recent_files": ["", "", "", ""],
+    "geometry": [0, 0, 1237, 908],
 }
 
 
@@ -234,6 +236,11 @@ def filesystem(tmp_path):
     fp.close()
 
     return fs_base
+
+
+@pytest.fixture  # (autouse=True)
+def change_test_dir(request, monkeypatch):
+    monkeypatch.chdir(request.fspath.dirname)
 
 
 # ######################################################
