@@ -3,7 +3,7 @@ Provide common values and functionality for the PartsTracker testing.
 
 File:       test_setup_elements.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2022 Lorn B Kerr
+Copyright:  (c) 2022, 2024 Lorn B Kerr
 License:    MIT, see file License
 
 This module provides a number of values and functions to help setup the
@@ -27,21 +27,21 @@ Values Available:
         'source' table.
 
 Filesystem, Directories and associated files:
-    build_test_config(fs_base): fill a cofig file
-    directories (list): List of directories for the filesystem
+    build_test_config(fs_base): fill a cofig file.
+    directories (list): List of directories for the filesystem.
     filesystem(tmp_path): Pytest fixture to generate a temporary
         filesystem.
-    test_config (dict): an empty configuration setup
+    test_config (dict): an empty configuration setup.
 
 Database Handling:
     db_open(fs_base): Pytest fixture to open a database in temporary 
         file system returning a reference to the database.
     db_create(db_open): Pytest fixture to create a new database returning
         a reference to the new database.
-    db_close(parts_file): function to close the open database
-    load_db_table(parts_file, table_name, column_names, value_set): Funcion
-        to load a specific database table.
-    load_all_db_tables(parts_file)  : Function to load all db tables  
+    db_close(parts_file): function to close the open database.
+    load_db_table(parts_file, table_name, column_names, value_set): 
+        Function to load a specific database table.
+    load_all_db_tables(parts_file) : Function to load all db tables.
 """
 
 import os
