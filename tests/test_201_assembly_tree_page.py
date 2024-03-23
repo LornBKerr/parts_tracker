@@ -10,8 +10,6 @@ License:    MIT, see file License
 import os
 import sys
 
-#from PyQt5 import uic
-#from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
 from test_setup import (
     db_create,
