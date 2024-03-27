@@ -8,39 +8,51 @@ License:    MIT, see file License
 """
 
 from lbk_library import Dbal
-from PyQt5.QtWidgets import QMainWindow  # , QTableWidgetItem
+from lbk_library.gui import Dialog, TableWidgetIntItem
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHeaderView, QTableWidget, QTableWidgetItem
+
+from dialogs import PartDialog
+from elements import PartSet
 
 
 class PartsListPage:
     """Displaying the Parts in the database."""
 
-    def __init__(self, main_window: QMainWindow, dbref: Dbal) -> None:
+    COLUMN_NAMES = [
+        "Part Id",
+        "Part Number",
+        "Description",
+        "Source",
+        "Qty Used",
+        "Part Remarks",
+    ]
+
+    def __init__(self, table: QTableWidget, parts_file: Dbal) -> None:
         """
         Initialize and display the Part List.
 
         Parameters
             main_window (QMainWindow): the parent window
-            dbref (Dbal): reference to the database for this item.
+            parts_file (Dbal): reference to theparts file.
         """
-        self.main_window: QMainWindow = main_window
-        self.dbref: Dbal = dbref
-
-        # set up the Parts Listing Table
-        self.table = self.main_window.parts_table_widget
+        #        self.main_window: QMainWindow = main_window
+        self.parts_file: Dbal = parts_file
+        self.table = table
 
         # set the table headers and load the table
         self.set_table_headers()
 
-        if self.dbref.sql_is_connected():
+        if self.parts_file.sql_is_connected():
             self.update_table()
 
         # connect the table signal for 'part clicked'
-        self.table.itemClicked.connect(self.action_part_clicked)
+        # self.table.itemClicked.connect(self.action_part_clicked)
 
     def update_table(self) -> None:
         """Update the display table from database."""
         self.table.setSortingEnabled(False)
-        part_list = PartSet(self.dbref, "part_number", None, "part_number")
+        part_list = PartSet(self.parts_file, "part_number", None, "part_number")
 
         # clear the current contents and set the new row count
         self.table.clearContents()
@@ -50,12 +62,12 @@ class PartsListPage:
         row = 0
         for part in part_list:
             col = 0
-            entry_index = part.get_entry_index()
-            entry_index_sortable = TableWidgetIntItem(entry_index)
-            entry_index_sortable.setTextAlignment(
+            record_id = part.get_record_id()
+            record_id_sortable = TableWidgetIntItem(record_id)
+            record_id_sortable.setTextAlignment(
                 Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
             )
-            self.table.setItem(row, col, entry_index_sortable)
+            self.table.setItem(row, col, record_id_sortable)
 
             col += 1
             part_number = QTableWidgetItem(part.get_part_number())
@@ -79,12 +91,12 @@ class PartsListPage:
             self.table.setItem(row, col, QTableWidgetItem(part.get_remarks()))
 
             row += 1
-
         self.table.setSortingEnabled(True)
 
     def clear_table(self):
         """Clear the contents of the Parts Table."""
         self.table.clearContents()
+        self.table.setRowCount(0)
 
     def set_table_headers(self) -> None:
         """
@@ -93,17 +105,10 @@ class PartsListPage:
         The header names are set and the column widths to match the size
         of the entries are set.
         """
-        column_names = [
-            "Part Id",
-            "Part Number",
-            "Description",
-            "Source",
-            "Qty Used",
-            "Part Remarks",
-        ]
+        self.table.verticalHeader().setVisible(False)
         header = self.table.horizontalHeader()
-        self.table.setColumnCount(len(column_names))
-        self.table.setHorizontalHeaderLabels(column_names)
+        self.table.setColumnCount(len(self.COLUMN_NAMES))
+        self.table.setHorizontalHeaderLabels(self.COLUMN_NAMES)
         self.table.setColumnWidth(0, 50)
         self.table.setColumnWidth(1, 120)
         self.table.setColumnWidth(2, 400)
@@ -122,6 +127,20 @@ class PartsListPage:
         row = table_item.row()
         column = table_item.column()
         part_index = self.table.item(row, 0)
-        dialog = PartDialog(self.main_window.tab_widget, self.dbref, part_index.text())
-        result = dialog.exec()
+        dialog = PartDialog(
+            self.table,
+            self.parts_file,
+            part_index.text(),
+            Dialog.EDIT_ELEMENT,
+        )
+        result = dialog.open()
         self.update_table()
+        return dialog
+
+    def get_parts_file(self):
+        """
+        Return the parts file reference.
+
+        Return (Dbal): the current parts file reference.
+        """
+        return self.parts_file
