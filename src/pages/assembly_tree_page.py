@@ -265,8 +265,6 @@ class AssemblyTreePage:
 
         """
         item_number_column = 1
-        print(self.tree.parent())
-
         dialog = ItemDialog(
             self.tree,
             self.parts_file,
