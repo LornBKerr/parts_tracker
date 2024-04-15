@@ -104,7 +104,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="FocusComboBox" name="part_number_combo">
+   <widget class="QComboBox" name="part_number_combo">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -117,7 +117,7 @@
      <string>Select Part Number, Required</string>
     </property>
    </widget>
-   <widget class="FocusComboBox" name="source_combo">
+   <widget class="ComboBox" name="source_combo">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -130,7 +130,7 @@
      <string>Select a Source, Required</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="description_edit">
+   <widget class="LineEdit" name="description_edit">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -143,7 +143,7 @@
      <string>Description of the part, Required, up to 255 characters</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="remarks_edit">
+   <widget class="LineEdit" name="remarks_edit">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -166,7 +166,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="part_number_edit">
+   <widget class="LineEdit" name="part_number_edit">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -356,9 +356,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FocusComboBox</class>
+   <class>ComboBox</class>
    <extends>QComboBox</extends>
-   <header>focuscombobox.h</header>
+   <header>lbk_library/gui/combo_box</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lbk_library/gui/line_edit</header>
   </customwidget>
  </customwidgets>
  <tabstops>

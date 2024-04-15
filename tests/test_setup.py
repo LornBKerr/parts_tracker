@@ -3,7 +3,7 @@ Provide common values and functionality for the PartsTracker testing.
 
 File:       test_setup_elements.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2022 Lorn B Kerr
+Copyright:  (c) 2022, 2024 Lorn B Kerr
 License:    MIT, see file License
 
 This module provides a number of values and functions to help setup the
@@ -27,25 +27,26 @@ Values Available:
         'source' table.
 
 Filesystem, Directories and associated files:
-    build_test_config(fs_base): fill a cofig file
-    directories (list): List of directories for the filesystem
+    build_test_config(fs_base): fill a cofig file.
+    directories (list): List of directories for the filesystem.
     filesystem(tmp_path): Pytest fixture to generate a temporary
         filesystem.
-    test_config (dict): an empty configuration setup
+    test_config (dict): an empty configuration setup.
 
 Database Handling:
     db_open(fs_base): Pytest fixture to open a database in temporary 
         file system returning a reference to the database.
     db_create(db_open): Pytest fixture to create a new database returning
         a reference to the new database.
-    db_close(dbref): function to close the open database
-    load_db_table(dbref, table_name, column_names, value_set): Funcion
-        to load a specific database table.
-    load_all_db_tables(dbref)  : Function to load all db tables  
+    db_close(parts_file): function to close the open database.
+    load_db_table(parts_file, table_name, column_names, value_set): 
+        Function to load a specific database table.
+    load_all_db_tables(parts_file) : Function to load all db tables.
 """
 
 import os
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 from lbk_library import Dbal
@@ -60,34 +61,34 @@ while len(long_string) < 255:
 
 # open the test database
 # Set up and access the database
-__db_name = "parts_test.db"
+__db_name = "parts_test.parts"
 
 
-def db_open(fs_base):
+def db_open(fs_base, filename: str = __db_name):
     """
     Open a detabase.
 
     Parameters:
-        tmp_path (pathlib.Path): pytest fixture to create a temporary pth
+        fs_base (pathlib.Path): pytest fixture to create a temporary path
 
     Returns:
         (Dbal) reference to an open, empty database.
     """
-    path = fs_base / __db_name
-    dbref = Dbal()
-    dbref.sql_connect(path)
-    return dbref
+    path = fs_base / filename
+    parts_file = Dbal()
+    parts_file.sql_connect(path)
+    return parts_file
 
 
 # close database
-def db_close(dbref):
+def db_close(parts_file):
     """
     Close an open database.
 
     Parameters:
-        dbref (Dbal): The open database to be closed.
+        parts_file (Dbal): The open database to be closed.
     """
-    dbref.sql_close()
+    parts_file.sql_close()
 
 
 # Create a new Database
@@ -148,14 +149,14 @@ __sql_statements = [
 ]
 
 
-def db_create(fs_base):
-    dbref = db_open(fs_base)
+def db_create(fs_base: str, filename: str = __db_name):
+    parts_file = db_open(fs_base, filename)
     for sql in __sql_statements:
-        dbref.sql_query(sql)
-    return dbref
+        parts_file.sql_query(sql)
+    return parts_file
 
 
-def load_db_table(dbref, table_name, column_names, value_set):
+def load_db_table(parts_file, table_name, column_names, value_set):
     """Load one of the database tables with a set of values."""
     sql_query = {"type": "INSERT", "table": table_name}
     for values in value_set:
@@ -164,17 +165,17 @@ def load_db_table(dbref, table_name, column_names, value_set):
         while i < len(column_names):
             entries[column_names[i]] = values[i]
             i += 1
-        sql = dbref.sql_query_from_array(sql_query, entries)
-        dbref.sql_query(sql, entries)
+        sql = parts_file.sql_query_from_array(sql_query, entries)
+        parts_file.sql_query(sql, entries)
 
 
-def load_all_db_tables(dbref):
-    load_db_table(dbref, "conditions", condition_columns, condition_value_set)
-    load_db_table(dbref, "items", item_columns, item_value_set)
-    load_db_table(dbref, "parts", part_columns, part_value_set)
-    load_db_table(dbref, "orders", order_columns, order_value_set)
-    load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
-    load_db_table(dbref, "sources", source_columns, source_value_set)
+def load_all_db_tables(parts_file):
+    load_db_table(parts_file, "conditions", condition_columns, condition_value_set)
+    load_db_table(parts_file, "items", item_columns, item_value_set)
+    load_db_table(parts_file, "parts", part_columns, part_value_set)
+    load_db_table(parts_file, "orders", order_columns, order_value_set)
+    load_db_table(parts_file, "order_lines", order_line_columns, order_line_value_set)
+    load_db_table(parts_file, "sources", source_columns, source_value_set)
 
 
 # Directories for Windows and Linux
@@ -190,7 +191,9 @@ test_config = {
         "recent_files": [],
         "db_file_dir": "",
         "assy_list_dir": "",
-    }
+    },
+    "recent_files": ["", "", "", ""],
+    "geometry": [0, 0, 1237, 908],
 }
 
 
@@ -228,12 +231,17 @@ def filesystem(tmp_path):
         a_dir = fs_base / dir
         a_dir.mkdir()
 
-    fp = open(fs_base / "Documents/parts_tracker/test_file1.db", "w")
+    fp = open(fs_base / "Documents/parts_tracker/test_file1.parts", "w")
     fp.close()
-    fp = open(fs_base / "Documents/parts_tracker/test_file2.db", "w")
+    fp = open(fs_base / "Documents/parts_tracker/test_file2.parts", "w")
     fp.close()
 
     return fs_base
+
+
+@pytest.fixture  # (autouse=True)
+def change_test_dir(request, monkeypatch):
+    monkeypatch.chdir(request.fspath.dirname)
 
 
 # ######################################################
@@ -312,7 +320,18 @@ order_columns = [
     "total",
 ]
 order_value_set = [
-    [13, "06-013", "2006-08-22", "British car parts", "", 0.0, 0.0, 0.0, 0.0, 0.0],
+    [
+        13,
+        "06-013",
+        "2006-08-22",
+        "British car parts",
+        "a remark",
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+    ],
     [14, "06-015", "2006-12-04", "Ebay", "", 0.0, 0.0, 0.0, 0.0, 0.0],
     [
         15,

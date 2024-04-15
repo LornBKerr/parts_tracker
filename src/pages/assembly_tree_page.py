@@ -1,5 +1,5 @@
 """
-Display the Items in a tree format by assembly order.
+Display the Items in a tree parentat by assembly order.
 
 File:       assembly_tree_page.py
 Author:     Lorn B Kerr
@@ -7,19 +7,18 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-# import sys
 from typing import Any
 
 from lbk_library import Dbal, Dialog
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMainWindow, QTreeWidgetItem  # , QTreeWidget
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 from dialogs import ItemDialog
 from elements import Item, ItemSet, Part
 
 
 class AssemblyTreePage:
-    """Displays the Items in a tree format by assembly order."""
+    """Displays the Items in a tree parent by assembly order."""
 
     COL_NAMES = [
         "Assembly",
@@ -33,28 +32,23 @@ class AssemblyTreePage:
     ]
     """ Names of the tree columns."""
 
-    def __init__(self, form: QMainWindow, dbref: Dbal) -> None:
+    def __init__(self, tree: QTreeWidget, parts_file: Dbal) -> None:  #
         """
         Initialize the assembly tree widget.
 
         Parameters:
             tree (QTreeWidget): the tree to be filled with info
-            dbref (Dbal):  database reference for the assembly items.
+            parts_file (Dbal):  database reference for the parts file.
         """
-        self.dbref: Dbal = dbref
-        self.form = form
-        self.tree = form.assembly_tree_widget
-        self.resize()
-
+        super().__init__()
+        self.parts_file: Dbal = parts_file
+        self.tree = tree
+        self.resize_columns()
         self.set_tree_headers()
 
-        if self.dbref.sql_is_connected():
+        if self.parts_file.sql_is_connected():
             self.update_tree()
 
-        self.form.button_expand_tree.clicked.connect(self.action_expand)
-        self.form.button_collapse_tree.clicked.connect(self.action_collapse)
-        self.tree.itemExpanded.connect(self.resize)
-        self.tree.itemCollapsed.connect(self.resize)
         self.tree.itemClicked.connect(self.action_item_clicked)
 
     def update_tree(self) -> None:
@@ -67,7 +61,7 @@ class AssemblyTreePage:
         self.tree.clear()  # clear the existing tree
 
         # display the revised item set
-        item_set = ItemSet(self.dbref, None, None, "assembly")
+        item_set = ItemSet(self.parts_file, None, None, "assembly")
         return self.fill_tree_widget(item_set)
 
     def fill_tree_widget(self, item_set: ItemSet) -> dict[str, list[Item]]:
@@ -95,7 +89,7 @@ class AssemblyTreePage:
             tree_items = self.add_item_to_tree(
                 item_properties["assembly"], item_values, parent, tree_items
             )
-        self.resize()
+        self.resize_columns()
         return tree_items
 
     def set_part_description(self, item_properties: dict[str, Any]) -> dict[str, Any]:
@@ -109,7 +103,7 @@ class AssemblyTreePage:
         Returns:
             The updated set of properties.
         """
-        part = Part(self.dbref, item_properties["part_number"], "part_number")
+        part = Part(self.parts_file, item_properties["part_number"], "part_number")
         item_properties["description"] = part.get_description()
         return item_properties
 
@@ -216,7 +210,6 @@ class AssemblyTreePage:
             tree_items (dict[str, QTreeWidgetItem]): the updated set of
                 tree widget items.
         """
-        # Add item to tree
         if parent is None:
             tree_items[assembly] = QTreeWidgetItem(self.tree, item_values)
         else:
@@ -232,7 +225,7 @@ class AssemblyTreePage:
         """Clear the assembly listing tree display."""
         self.tree.clear()
 
-    def resize(self) -> None:
+    def resize_columns(self) -> None:
         """
         Resize the columns to match the size of the entries.
 
@@ -257,21 +250,11 @@ class AssemblyTreePage:
         while i < len(AssemblyTreePage.COL_NAMES):
             self.tree.header().setDefaultAlignment(Qt.AlignmentFlag.AlignHCenter)
             i += 1
-        self.resize()
-
-    def action_collapse(self):
-        """Collapse the tree to top level entries."""
-        self.tree.collapseAll()
-        self.resize()
-
-    def action_expand(self):
-        """Expand the tree to show all levels."""
-        self.tree.expandAll()
-        self.resize()
+        self.resize_columns()
 
     def action_item_clicked(self, tree_item: QTreeWidgetItem, column: int) -> str:
         """
-        Display the Item Editing Form.
+        Display the Item Editing Dialog.
 
         Parameters:
             tree_item (QTreeWidgetItem): the Item clicked
@@ -282,22 +265,20 @@ class AssemblyTreePage:
 
         """
         item_number_column = 1
-
         dialog = ItemDialog(
-            self.form.tab_widget,
-            self.dbref,
+            self.tree,
+            self.parts_file,
             tree_item.text(item_number_column),
             Dialog.EDIT_ELEMENT,
         )
-        dialog_type = type(dialog)
-        dialog.exec()
+        dialog.open()
         self.update_tree()
         return dialog
 
-    def get_dbref(self):
+    def get_parts_file(self):
         """
-        Return the databbase reference.
+        Return the parts file reference.
 
-        Return (Dbal): the current database reference.
+        Return (Dbal): the current parts file reference.
         """
-        return self.dbref
+        return self.parts_file
