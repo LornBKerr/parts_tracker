@@ -46,6 +46,7 @@ Database Handling:
 
 import os
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 from lbk_library import Dbal
@@ -60,20 +61,20 @@ while len(long_string) < 255:
 
 # open the test database
 # Set up and access the database
-__db_name = "parts_test.db"
+__db_name = "parts_test.parts"
 
 
-def db_open(fs_base):
+def db_open(fs_base, filename: str = __db_name):
     """
     Open a detabase.
 
     Parameters:
-        tmp_path (pathlib.Path): pytest fixture to create a temporary pth
+        fs_base (pathlib.Path): pytest fixture to create a temporary path
 
     Returns:
         (Dbal) reference to an open, empty database.
     """
-    path = fs_base / __db_name
+    path = fs_base / filename
     parts_file = Dbal()
     parts_file.sql_connect(path)
     return parts_file
@@ -148,8 +149,8 @@ __sql_statements = [
 ]
 
 
-def db_create(fs_base):
-    parts_file = db_open(fs_base)
+def db_create(fs_base: str, filename: str = __db_name):
+    parts_file = db_open(fs_base, filename)
     for sql in __sql_statements:
         parts_file.sql_query(sql)
     return parts_file
@@ -230,9 +231,9 @@ def filesystem(tmp_path):
         a_dir = fs_base / dir
         a_dir.mkdir()
 
-    fp = open(fs_base / "Documents/parts_tracker/test_file1.db", "w")
+    fp = open(fs_base / "Documents/parts_tracker/test_file1.parts", "w")
     fp.close()
-    fp = open(fs_base / "Documents/parts_tracker/test_file2.db", "w")
+    fp = open(fs_base / "Documents/parts_tracker/test_file2.parts", "w")
     fp.close()
 
     return fs_base
