@@ -11,12 +11,7 @@ import os
 import sys
 
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
-from test_setup import (
-    db_create,
-    filesystem,
-    item_value_set,
-    load_all_db_tables,
-)
+from test_setup import db_create, filesystem, item_value_set, load_all_db_tables
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -24,7 +19,7 @@ if src_path not in sys.path:
 
 from dialogs import ItemDialog
 from elements import Item, ItemSet, Part
-from pages import AssemblyTreePage      #, MainWindow
+from pages import AssemblyTreePage
 
 
 def setup_page(qtbot, filesystem):
@@ -191,4 +186,3 @@ def test_201_12_action_item_clicked(qtbot, filesystem):
     item = page.tree.itemAt(0, 0)
     dialog = page.action_item_clicked(item, 0)
     assert type(dialog) == ItemDialog
-
