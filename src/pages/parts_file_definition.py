@@ -3,7 +3,7 @@ Define the PartsTracker database table as a sequence of sql statements.
 
 File:       parts_table_definition.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2022 Lorn B Kerr
+Copyright:  (c) 2022, 2024 Lorn B Kerr
 License:    MIT, see file License
 """
 
@@ -22,7 +22,7 @@ table_definition = [
         'condition TEXT DEFAULT "", '
         "installed INTEGER DEFAULT 0, "
         "box INTEGER DEFAULT 0, "
-        'remarks DEFAULT "")'
+        'remarks TEXT DEFAULT "")'
     ),
     (
         'CREATE TABLE "order_lines" '
