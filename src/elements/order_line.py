@@ -1,5 +1,5 @@
 """
-Implements a single OrderLine in the database.
+Implements a single OrderLine in the parts file.
 
 File:       order_line.py
 Author:     Lorn B Kerr
@@ -10,13 +10,13 @@ License:    MIT, see file License
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import Dbal, Element
+from lbk_library import DataFile, Element
 
 
 class OrderLine(Element):
-    """Implements single OrderLine in the database."""
+    """Implements single OrderLine in the parts file."""
 
-    def __init__(self, dbref: Dbal, order_line_key: Any = None) -> None:
+    def __init__(self, parts_file: DataFile, order_line_key: Any = None) -> None:
         """
         Implement a single OrderLine.
 
@@ -25,22 +25,22 @@ class OrderLine(Element):
         containing the properties of an OrderLine, or None.
 
         If the order_line_key is a single integer value, the OrderLine
-        will be retrieved from the database. If order_line_key is a
+        will be retrieved from the parts file. If order_line_key is a
         dict{} object, the properties of this OrderLine are set from
         the dict object. If the order_line_key is not provided or the
-        database does not contain the requested item, the OrderLine is
+        parts file does not contain the requested item, the OrderLine is
         constructed from the default values. The order_line_key dict may
         be sparse and missing entries will be filled from the default
         values.
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element
+            parts_file (DataFile): reference to the parts file holding the element
             order_line_key (int | str | dict): the specific key of the
                 OrderLine being constructed or an dict object of the
                 values for an OrderLine for direct insertion into the
                 properties array.
         """
-        super().__init__(dbref, "order_lines")
+        super().__init__(parts_file, "order_lines")
 
         # Default values for the Order
         self.defaults: dict[str, Any] = {
@@ -63,7 +63,9 @@ class OrderLine(Element):
                     order_line_key[key] = deepcopy(self.defaults[key])
 
         if isinstance(order_line_key, (int, str)):
-            order_line_key = self.get_properties_from_db("record_id", order_line_key)
+            order_line_key = self.get_properties_from_datafile(
+                "record_id", order_line_key
+            )
 
         if not order_line_key:
             order_line_key = deepcopy(self.defaults)
@@ -203,7 +205,7 @@ class OrderLine(Element):
         Set the order line's part number.
 
         The part number is selected from the set of Parts existing in
-        the Part database. The Part Number is required. The valid and
+        the Part parts file. The Part Number is required. The valid and
         changed flags are updated based on the result of the set
         operation.
 

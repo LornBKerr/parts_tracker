@@ -1,5 +1,5 @@
 """
-This is a set of Items in the database.
+This is a set of Items in the parts file.
 
 File:       item_set.py
 Author:     Lorn B Kerr
@@ -7,17 +7,17 @@ Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
 """
 
-from lbk_library import Dbal, ElementSet
+from lbk_library import DataFile, ElementSet
 
 from .item import Item
 
 
 class ItemSet(ElementSet):
-    """Provides set of Items from database table 'items'."""
+    """Provides set of Items from parts file table 'items'."""
 
     def __init__(
         self,
-        dbref: Dbal,
+        parts_file: DataFile,
         where_column: str = None,
         where_value: str = None,
         order_by_column: str = None,
@@ -25,10 +25,10 @@ class ItemSet(ElementSet):
         offset: int = None,
     ) -> None:
         """
-        Build a set of Items from the database table 'items'.
+        Build a set of Items from the parts file table 'items'.
 
         Parameters:
-            dbref (Dbal): the dababase instance to use.
+            parts_file (DataFile): the dababase instance to use.
             where_column (str): The key column of the table containing
                 the key value to determine the elements being retrieved.
                 If None, all rows are retrieved.
@@ -40,11 +40,11 @@ class ItemSet(ElementSet):
             offset (int): row number to start retrieval, 0 based,
                 defaults to row 0.
         """
-        table_name = "items"  # The database table for this element
+        table_name = "items"  # The parts file table for this element
         element_type = Item
 
         super().__init__(
-            dbref,
+            parts_file,
             table_name,
             element_type,
             where_column,

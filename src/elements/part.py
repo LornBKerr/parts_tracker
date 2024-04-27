@@ -1,5 +1,5 @@
 """
-Implement a single Part in the database.
+Implement a single Part in the parts_file.
 
 File:       part.py
 Author:     Lorn B Kerr
@@ -10,15 +10,17 @@ License:    MIT, see file License
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import Dbal, Element
+from lbk_library import DataFile, Element
 
 from .item_set import ItemSet
 
 
 class Part(Element):
-    """Implement a single Part in the database."""
+    """Implement a single Part in the parts_file."""
 
-    def __init__(self, dbref: Dbal, part_key: Any = None, column: str = None) -> None:
+    def __init__(
+        self, parts_file: DataFile, part_key: Any = None, column: str = None
+    ) -> None:
         """
         Initialize a single Part.
 
@@ -37,11 +39,12 @@ class Part(Element):
         If 'part_key' is given as a single value, it must be either an
         'record_id' or an 'part_number' as indicated by 'column'. If
         'column' is not given, 'record_id' is the default. The Part
-        will be constructed from the database for the specific value
+        will be constructed from the parts_file for the specific value
         given by 'column' and 'part_key'
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element
+            parts_file (DataFile): reference to the parts_file holding
+                the element
             part_key (Mixed): the specific key of the Part being
                 constructed or an dict object of the values for an Part
                 for direct insertion into the properties array.
@@ -52,7 +55,7 @@ class Part(Element):
                 default is None. Column name and part value must be
                 consistent.
         """
-        super().__init__(dbref, "parts")
+        super().__init__(parts_file, "parts")
 
         # Default values for the Part
         self.defaults: dict[str, Any] = {
@@ -80,7 +83,7 @@ class Part(Element):
             column = None
 
         if isinstance(part_key, (int, str)):
-            part_key = self.get_properties_from_db(column, part_key)
+            part_key = self.get_properties_from_datafile(column, part_key)
 
         if not part_key:
             part_key = deepcopy(self.defaults)
@@ -250,7 +253,7 @@ class Part(Element):
         Return (integer) the total quantity of this part number used.
         """
         item_set = ItemSet(
-            self.get_dbref(),
+            self.get_datafile(),
             "part_number",
             self.get_part_number(),
             "record_id",

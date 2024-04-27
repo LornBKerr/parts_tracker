@@ -1,5 +1,5 @@
 """
-Implement a single Order in the database.
+Implement a single Order in the parts file.
 
 File:       order.py
 Author:     Lorn B Kerr
@@ -11,14 +11,17 @@ import re
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import Dbal, Element
+from lbk_library import DataFile, Element
 
 
 class Order(Element):
-    """Implement a single Order in the database."""
+    """Implement a single Order in the parts file."""
 
     def __init__(
-        self, dbref: Dbal, order_key: int | dict[str, Any] = None, column: str = None
+        self,
+        parts_file: DataFile,
+        order_key: int | dict[str, Any] = None,
+        column: str = None,
     ) -> None:
         """
         Initialize a single Order.
@@ -40,11 +43,11 @@ class Order(Element):
         If 'order_key' is given as a single value, it must be either a
         'record_id' or an 'order_number' as indicated by 'column'. If
         'column' is not given, 'record_id' is the default. The Order
-        will be constructed from the database for the specific value
+        will be constructed from the parts file for the specific value
         given by 'column' and 'record_id'
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element.
+            parts_file (DataFile): reference to the parts file holding the element.
             order_key (int | dict[str, Any]): the specific key of the
                 Order being constructed or an dict object of the values
                 for an Order for direct insertion into the properties
@@ -55,7 +58,7 @@ class Order(Element):
                 default is None. Column name and order_key value must
                 be consistent.
         """
-        super().__init__(dbref, "orders")
+        super().__init__(parts_file, "orders")
 
         # Default values for the Order
         self.defaults: dict[str, Any] = {
@@ -88,7 +91,7 @@ class Order(Element):
             column = None
 
         if isinstance(order_key, (int, str)):
-            order_key = self.get_properties_from_db(column, order_key)
+            order_key = self.get_properties_from_datafile(column, order_key)
 
         if not order_key:
             order_key = deepcopy(self.defaults)

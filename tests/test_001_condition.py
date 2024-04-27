@@ -3,24 +3,37 @@ Test the Condition class.
 
 File:       test_001_condition.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2023 Lorn B Kerr
+Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
 """
 
 import os
 import sys
 
-import pytest
-from lbk_library import Dbal, Element
-from test_setup import db_close, db_create, db_open, filesystem
+from lbk_library import Element
+from test_data import condition_value_set
+from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from elements import Condition
+from pages import table_definition
 
-condition_values = {"record_id": 1, "condition": "Usable"}
+parts_filename = "parts_test.parts"
+
+condition_values = {
+    "record_id": condition_value_set[0][0],
+    "condition": condition_value_set[0][1],
+}
+
+
+def base_setup(filesystem):
+    filename = filesystem + "/" + parts_filename
+    parts_file = parts_file_create(filename, table_definition)
+    condition = Condition(parts_file)
+    return (condition, parts_file)
 
 
 def test_001_01_constr(filesystem):
@@ -29,9 +42,7 @@ def test_001_01_constr(filesystem):
 
     Default values should be a dict of record_id = 0, condition = "".
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    condition = Condition(dbref)
+    condition, parts_file = base_setup(filesystem)
     # Condition class structure.
     assert isinstance(condition, Condition)
     assert isinstance(condition, Element)
@@ -40,26 +51,40 @@ def test_001_01_constr(filesystem):
     assert len(condition.defaults) == 2
     assert condition.defaults["record_id"] == 0
     assert condition.defaults["condition"] == ""
+    parts_file_close(parts_file)
 
-    db_close(dbref)
 
-
-def test_001_02_get_dbref(filesystem):
+def test_001_02_get_parts_file(filesystem):
     """Condition needs correct database."""
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    condition = Condition(dbref)
-    assert condition.get_dbref() == dbref
-    db_close(dbref)
+    parts_file_dir = filesystem + parts_dir
+    parts_file = datafile_create(parts_file_dir, table_definition)
+    condition = Condition(parts_file)
+    assert condition.get_dbref() == parts_file
+    parts_file_close(parts_file)
 
 
 def test_001_03_get_table(filesystem):
     """Condition needs the database table 'conditions'."""
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    condition = Condition(dbref)
+    parts_file_dir = filesystem + parts_dir
+    parts_file = datafile_create(parts_file_dir, table_definition)
+    condition = Condition(parts_file)
     assert condition.get_table() == "conditions"
-    db_close(dbref)
+    parts_file_close(parts_file)
+    parts_file_close(parts_file)
+
+
+def test_001_02_get_parts_file(filesystem):
+    """Condition needs correct parts_file."""
+    condition, parts_file = base_setup(filesystem)
+    assert condition.get_datafile() == parts_file
+    parts_file_close(parts_file)
+
+
+def test_001_03_get_table(filesystem):
+    """Condition needs the parts_file table 'conditions'."""
+    condition, parts_file = base_setup(filesystem)
+    assert condition.get_table() == "conditions"
+    parts_file_close(parts_file)
 
 
 def test_001_04_get_set_condition(filesystem):
@@ -67,26 +92,24 @@ def test_001_04_get_set_condition(filesystem):
     Get and set the condition property.
 
     The property 'condition' is required and is a text value held in the
-    database.
+    parts_file.
 
-    The property 'record_id is handled in the Element' base class.
+    The property 'record_id' is handled in the Element' base class.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    condition = Condition(dbref)
+    condition, parts_file = base_setup(filesystem)
     defaults = condition.get_initial_values()
-    condition._set_property("condition", condition_values["condition"])
-    assert condition.get_condition() == condition_values["condition"]
+    condition._set_property("condition", condition_value_set[0][1])
+    assert condition.get_condition() == condition_value_set[0][1]
     condition._set_property("condition", None)
     assert condition.defaults["condition"] == condition.get_condition()
     result = condition.set_condition(None)
     assert not result["valid"]
     assert result["entry"] == None
-    result = condition.set_condition(condition_values["condition"])
+    result = condition.set_condition(condition_value_set[0][1])
     assert result["valid"]
-    assert result["entry"] == condition_values["condition"]
+    assert result["entry"] == condition_value_set[0][1]
     assert result["entry"] == condition.get_condition()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_001_05_get_default_property_values(filesystem):
@@ -96,13 +119,11 @@ def test_001_05_get_default_property_values(filesystem):
     With no properties given to consturcr, the initial values should be
     the default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    condition = Condition(dbref)
+    condition, parts_file = base_setup(filesystem)
     defaults = condition.get_initial_values()
     assert condition.get_record_id() == defaults["record_id"]
     assert condition.get_condition() == defaults["condition"]
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_001_06_set_properties_from_dict(filesystem):
@@ -111,13 +132,11 @@ def test_001_06_set_properties_from_dict(filesystem):
 
     The inital values can be set from a dict input.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    condition = Condition(dbref)
+    condition, parts_file = base_setup(filesystem)
     condition.set_properties(condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_001_07_get_properties_size(filesystem):
@@ -126,12 +145,10 @@ def test_001_07_get_properties_size(filesystem):
 
     There should be two members.
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    condition = Condition(dbref)
+    condition, parts_file = base_setup(filesystem)
     data = condition.get_properties()
     assert len(data) == 2
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_001_08_condition_from_dict(filesystem):
@@ -140,12 +157,11 @@ def test_001_08_condition_from_dict(filesystem):
 
     The resulting properties should match the input values.
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    condition = Condition(dbref, condition_values)
+    condition, parts_file = base_setup(filesystem)
+    condition = Condition(parts_file, condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_001_09_item_from_partial_dict(filesystem):
@@ -155,34 +171,31 @@ def test_001_09_item_from_partial_dict(filesystem):
     The resulting properties should mach the input values with the
     missing values replaced with default values.
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    condition = Condition(dbref, condition_values)
+    condition, parts_file = base_setup(filesystem)
+    condition = Condition(parts_file, condition_values)
     values = {"record_id": 15}
-    condition = Condition(dbref, values)
+    condition = Condition(parts_file, values)
     assert values["record_id"] == condition.get_record_id()
     assert "" == condition.get_condition()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
-def test_001_10_get_properties_from_database(filesystem):
+def test_001_10_get_properties_from_parts_file(filesystem):
     """
-    Access the database for the condition properties.
+    Access the parts_file for the condition properties.
 
-    Add a condition to the database, then access it with the
+    Add a condition to the parts_file, then access it with the
     record_id key. The actual read and write funtions are in the
     base class "Element".
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    condition = Condition(dbref, condition_values)
+    condition, parts_file = base_setup(filesystem)
+    condition = Condition(parts_file, condition_values)
     record_id = condition.add()
     assert record_id == 1
     assert record_id == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
 
-    condition = Condition(dbref, record_id)
+    condition = Condition(parts_file, record_id)
     assert record_id == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-
-    db_close(dbref)
+    parts_file_close(parts_file)

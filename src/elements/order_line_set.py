@@ -1,5 +1,5 @@
 """
-This is a set of Order Lines in the database.
+This is a set of Order Lines in the parts file.
 
 File:       order_line_set.py
 Author:     Lorn B Kerr
@@ -9,17 +9,17 @@ License:    MIT, see file License
 
 from typing import Any
 
-from lbk_library import Dbal, ElementSet
+from lbk_library import DataFile, ElementSet
 
 from .order_line import OrderLine
 
 
 class OrderLineSet(ElementSet):
-    """Set of Order Lines in the database."""
+    """Set of Order Lines in the parts file."""
 
     def __init__(
         self,
-        dbref: Dbal,
+        parts_file: DataFile,
         where_column: str = None,
         where_value: Any = None,
         order_by_column: str = None,
@@ -27,10 +27,10 @@ class OrderLineSet(ElementSet):
         offset: int = None,
     ) -> None:
         """
-        Build a set of OrderLines from the database table 'order_lines'.
+        Build a set of OrderLines from the parts file table 'order_lines'.
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element.
+            parts_file (DataFile): reference to the parts file holding the element.
             where_column (str): The key column of the table containing
                 the key value to determine the elements being retrieved,
                 defaults to all rows are retrieved.
@@ -46,7 +46,7 @@ class OrderLineSet(ElementSet):
         element_type = OrderLine
 
         super().__init__(
-            dbref,
+            parts_file,
             table_name,
             element_type,
             where_column,

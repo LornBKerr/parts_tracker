@@ -1,5 +1,5 @@
 """
-Implement a single Item in the database.
+Implement a single Item in the parts file.
 
 File:       item.py
 Author:     Lorn B Kerr
@@ -10,18 +10,20 @@ License:    MIT, see file License
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import Dbal, Element
+from lbk_library import DataFile, Element
 
 
 class Item(Element):
     """
-    Implement a single Item in the database.
+    Implement a single Item in the data file.
 
     A item may be a single part or a grouping of parts such  as a set
     of bolts to fasten another item.
     """
 
-    def __init__(self, dbref: Dbal, item_key: str | dict[str, Any] = None) -> None:
+    def __init__(
+        self, parts_file: DataFile, item_key: str | dict[str, Any] = None
+    ) -> None:
         """
         Define a single replacable Item from the car.
 
@@ -30,20 +32,20 @@ class Item(Element):
         containing the properties of an Item, or None.
 
         If the item_key is a single integer value, the Item will be
-        retrieved from the database. If item_key is a dict{} object, the
+        retrieved from the data file. If item_key is a dict{} object, the
         properties of this Item are set from the dict object. If the
-        item_key is not provided or the database does not contain the
+        item_key is not provided or the data file does not contain the
         requested item, the Item is constructed from the default values.
         The item_key dict may be sparse and missing entries will be
         filled from the default values.
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element
+            parts_file (DataFile): reference to the data file holding the element
             item_key (int | str | dict) the item number of the Item being
                 constructed or an dict object of the values for an Item
                 for direct insertion into the properties array.
         """
-        super().__init__(dbref, "items")
+        super().__init__(parts_file, "items")
 
         # Default values for the Item
         self.defaults: dict[str, Any] = {
@@ -66,7 +68,7 @@ class Item(Element):
                     item_key[key] = deepcopy(self.defaults[key])
 
         if isinstance(item_key, (int, str)):
-            item_key = self.get_properties_from_db("record_id", item_key)
+            item_key = self.get_properties_from_datafile("record_id", item_key)
 
         if not item_key:
             item_key = deepcopy(self.defaults)
@@ -124,7 +126,7 @@ class Item(Element):
         Set the Item's part number.
 
         The part number is selected from the set of Parts existing in
-        the Part database. The Part Number is required. The valid and
+        the Part data file. The Part Number is required. The valid and
         changed flags are updated based on the result of the set
         operation.
 
@@ -252,13 +254,13 @@ class Item(Element):
         Set the Item's condition.
 
         The condition is required. The item's condition is selected from
-        the set of Conditions in the Condition database table. The valid
+        the set of Conditions in the Condition data file table. The valid
         and changed flags are updated based on the result of this
         operation.
 
         Parameters:
         condition (str) The Item's Condition. The condition is a
-            selection from the 'condition' table in the database. If the
+            selection from the 'condition' table in the data file. If the
             supplied condition is not valid, the condition is set to the
             default value.
 

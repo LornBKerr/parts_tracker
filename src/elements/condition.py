@@ -1,29 +1,29 @@
 """
-Implement a single Condition in the database.
+Implement a single Condition in the parts file.
 
 File:       condition.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2023 Lorn B Kerr
+Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
 """
 
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import Dbal, Element
+from lbk_library import DataFile, Element
 
 
 class Condition(Element):
     """
-    Implement a single Condition in the database.
+    Implement a single Condition in the parts file.
 
     A condition reflects the current condition of a specific item.
     Typical conditions are new (for a new item), usable (for something
     that has been removed but is ok to reuse), and a number of others as
-    listed in the database.
+    listed in the parts file.
     """
 
-    def __init__(self, dbref: Dbal, condition_key: str = None) -> None:
+    def __init__(self, parts_file: DataFile, condition_key: str = None) -> None:
         """
         Implement a single Condition.
 
@@ -32,21 +32,21 @@ class Condition(Element):
         containing the properties of an Condition, or None.
 
         If the condition_key is a single integer value, the Condition
-        will be retrieved from the database. If condition_key is a
+        will be retrieved from the parts file. If condition_key is a
         dict object, the properties of this Condition are set from the
         dict object. If the condition_key is not provided or the
-        database does not contain the requested condition, The Condition
+        parts file does not contain the requested condition, The Condition
         is constructed from the default values. The condition_key dict
         may be sparse and missing entries will be filled from the
         default values.
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element
+            parts_file (DataFile): reference to the parts file holding the element
             condition_key (str | dict): the record_id of the Condition
                 being constructed or a dict object of the values for a
                 Condition for insertion into the properties array.
         """
-        super().__init__(dbref, "conditions")
+        super().__init__(parts_file, "conditions")
 
         # Default values for the Condition
         self.defaults: dict(str, Any) = {
@@ -65,7 +65,9 @@ class Condition(Element):
                     condition_key[key] = deepcopy(self.defaults[key])
 
         if isinstance(condition_key, (int, str)):
-            condition_key = self.get_properties_from_db("record_id", condition_key)
+            condition_key = self.get_properties_from_datafile(
+                "record_id", condition_key
+            )
 
         if not condition_key:
             condition_key = deepcopy(self.defaults)
@@ -86,6 +88,7 @@ class Condition(Element):
             properties (dict) the element values; keys must match the
             required keys of the Condition being creates/modified
         """
+        print(properties)
         if properties is not None and isinstance(properties, dict):
             # Handle the 'record_id' and 'remarks' entries
             super().set_properties(properties)
@@ -93,6 +96,7 @@ class Condition(Element):
             for key in properties.keys():
                 if key == "condition":
                     self.set_condition(properties[key])
+        print(self.get_properties(), "\n")
 
     def get_condition(self) -> str:
         """

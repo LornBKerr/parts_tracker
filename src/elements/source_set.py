@@ -1,5 +1,5 @@
 """
-This is a set of Sources in the database.
+This is a set of Sources in the parts file.
 
 File:       source_set.py
 Author:     Lorn B Kerr
@@ -7,29 +7,29 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-from lbk_library import Dbal, ElementSet
+from lbk_library import DataFile, ElementSet
 
 from .source import Source
 
 
 class SourceSet(ElementSet):
-    """Provides a set of Sources from the database table 'sources'."""
+    """Provides a set of Sources from the parts file table 'sources'."""
 
     def __init__(
         self,
-        dbref: Dbal,
+        parts_file: DataFile,
         where_column: str = None,
         where_value: str | int = None,
         order_by_column: str = None,
     ) -> None:
         """
-        Build a set of Sources from the database table 'sources'.
+        Build a set of Sources from the parts file table 'sources'.
 
         Note: This set does not support 'limit' and 'offset' entries
         when creating the set.
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element
+            parts_file (DataFile): reference to the parts file holding the element
             where_column (str): The key column of the table containing
                 the key value to determine the elements being retrieved.
                 Default is all rows are retrieved.
@@ -42,5 +42,10 @@ class SourceSet(ElementSet):
         element_type = Source
 
         super().__init__(
-            dbref, table_name, element_type, where_column, where_value, order_by_column
+            parts_file,
+            table_name,
+            element_type,
+            where_column,
+            where_value,
+            order_by_column,
         )

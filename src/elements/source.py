@@ -1,5 +1,5 @@
 """
-Implement a single Source in the database.
+Implement a single Source in the parts file.
 
 File:       source.py
 Author:     Lorn B Kerr
@@ -8,19 +8,19 @@ License:    MIT, see file License
 """
 
 from copy import deepcopy
-from typing import Any  # , Union
+from typing import Any
 
-from lbk_library import Dbal, Element
+from lbk_library import DataFile, Element
 
 
 class Source(Element):
     """
-    Implement a single Source in the database.
+    Implement a single Source in the parts file.
 
     A source is where a part is bought.
     """
 
-    def __init__(self, dbref: Dbal, source_key: str = None) -> None:
+    def __init__(self, parts_file: DataFile, source_key: str = None) -> None:
         """
         Build a single Source.
 
@@ -29,21 +29,22 @@ class Source(Element):
         containing the properties of an Source, or None.
 
         If the source_key is a single integer value, the Source
-        will be retrieved from the database. If source_key is a
+        will be retrieved from the parts file. If source_key is a
         dict object, the properties of this Source are set from the
         dict object. If the source_key is not provided or the
-        database does not contain the requested source, The Source
+        parts file does not contain the requested source, The Source
         is constructed from the default values. The source_key dict
         may be sparse and missing entries will be filled from the
         default values.
 
         Parameters:
-            dbref (Dbal): reference to the database holding the element
+            parts_file (DataFile): reference to the parts file holding
+                the element.
             source_key (str | dict): the record_id of the Source
                 being constructed or an dict object of the values for a
                 Source for direct insertion into the properties array.
         """
-        super().__init__(dbref, "sources")
+        super().__init__(parts_file, "sources")
 
         # Default values for the Source
         self.defaults: dict(str, Any) = {
@@ -61,7 +62,7 @@ class Source(Element):
                     source_key[key] = deepcopy(self.defaults[key])
 
         if isinstance(source_key, (int, str)):
-            source_key = self.get_properties_from_db("record_id", source_key)
+            source_key = self.get_properties_from_datafile("record_id", source_key)
 
         if not source_key:
             source_key = deepcopy(self.defaults)

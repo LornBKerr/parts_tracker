@@ -10,27 +10,37 @@ License:    MIT, see file License
 import os
 import sys
 
-from lbk_library import Dbal, Element
-from test_setup import db_close, db_create, db_open, filesystem
+from lbk_library import Element
+from test_data import order_value_set
+from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from elements import Order
+from pages import table_definition
 
+parts_filename = "parts_test.parts"
 order_values = {
-    "record_id": 9876,
-    "order_number": "09-001",
-    "date": "10/02/2009",
-    "source": "Moss",
-    "subtotal": 25.25,
-    "shipping": 2.95,
-    "discount": -1.02,
-    "tax": 1.77,
-    "total": 28.95,
-    "remarks": "From local source",
+    "record_id": order_value_set[0][0],
+    "order_number": order_value_set[0][1],
+    "date": "2006-08-22",
+    "source": order_value_set[0][3],
+    "remarks": order_value_set[0][4],
+    "subtotal": order_value_set[0][5],
+    "shipping": order_value_set[0][6],
+    "discount": order_value_set[0][7],
+    "tax": order_value_set[0][8],
+    "total": order_value_set[0][9],
 }
+
+
+def base_setup(filesystem):
+    filename = filesystem + "/" + parts_filename
+    parts_file = parts_file_create(filename, table_definition)
+    order = Order(parts_file)
+    return (order, parts_file)
 
 
 def test_011_01_constr(filesystem):
@@ -39,9 +49,7 @@ def test_011_01_constr(filesystem):
 
     Check the types of class variables and default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     assert isinstance(order, Order)
     assert isinstance(order, Element)
     # default values.
@@ -56,23 +64,19 @@ def test_011_01_constr(filesystem):
     assert order.defaults["tax"] == 0.0
     assert order.defaults["total"] == 0.0
     assert order.defaults["remarks"] == ""
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_02_get_table(filesystem):
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     assert order.get_table() == "orders"
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
-def test_011_03_get_dbref(filesystem):
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
-    assert order.get_dbref() == dbref
-    db_close(dbref)
+def test_011_03_get_parts_file(filesystem):
+    order, parts_file = base_setup(filesystem)
+    assert order.get_datafile() == parts_file
+    parts_file_close(parts_file)
 
 
 def test_011_04_get_set_order_number(filesystem):
@@ -84,9 +88,7 @@ def test_011_04_get_set_order_number(filesystem):
     the nnn is a three digit sequential number starting at '001' for the
     next order in the year.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("order_number", order_values["order_number"])
     assert order_values["order_number"] == order.get_order_number()
@@ -99,7 +101,7 @@ def test_011_04_get_set_order_number(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["order_number"]
     assert result["entry"] == order.get_order_number()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_05_get_set_date(filesystem):
@@ -107,13 +109,11 @@ def test_011_05_get_set_date(filesystem):
     Get and set the date property.
 
     The property 'date' is required and is a string matching the
-    regular exression 'yy-nnn' where the yy is the two digit year and
+    regular expression 'yy-nnn' where the yy is the two digit year and
     the nnn is a three digit sequential number starting at '001' for the
     next order in the year.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("date", None)
     assert defaults["date"] == order.get_date()
@@ -125,9 +125,9 @@ def test_011_05_get_set_date(filesystem):
     assert not result["valid"]
     assert order.get_date() == defaults["date"]
     assert result["entry"] == ""
-    result = order.set_date(order_values["date"])
+    result = order.set_date("2006-08-22")
     assert result["valid"]
-    assert result["entry"] == order_values["date"]
+    assert result["entry"] == "08/22/2006"
     assert result["entry"] == order.get_date()
     result = order.set_date("2009-02-29")
     assert not result["valid"]
@@ -138,7 +138,7 @@ def test_011_05_get_set_date(filesystem):
     assert result["valid"]
     assert result["entry"] == "02/28/2009"
     assert order.get_date() == "02/28/2009"
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_06_get_set_source(filesystem):
@@ -149,9 +149,7 @@ def test_011_06_get_set_source(filesystem):
     character long. The allowed source values are held in the 'sources'
     table in the database.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("source", None)
     assert defaults["source"] == order.get_source()
@@ -163,7 +161,7 @@ def test_011_06_get_set_source(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["source"]
     assert result["entry"] == order.get_source()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_07_get_set_subtotal(filesystem):
@@ -173,9 +171,7 @@ def test_011_07_get_set_subtotal(filesystem):
     The property 'subtotal' is optional and is displayed as dollars and
     cents (nnn.nn). The subtotal defaults to 0.00.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("subtotal", None)
     assert defaults["subtotal"] == order.get_subtotal()
@@ -189,7 +185,7 @@ def test_011_07_get_set_subtotal(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["subtotal"]
     assert result["entry"] == order.get_subtotal()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_08_get_set_shipping(filesystem):
@@ -199,9 +195,7 @@ def test_011_08_get_set_shipping(filesystem):
     The property 'shipping' is optional and is displayed as dollars and
     cents (nnn.nn). The shipping defaults to 0.00.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("shipping", None)
     assert defaults["shipping"] == order.get_shipping()
@@ -215,7 +209,7 @@ def test_011_08_get_set_shipping(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["shipping"]
     assert result["entry"] == order.get_shipping()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_09_get_set_discount(filesystem):
@@ -225,9 +219,7 @@ def test_011_09_get_set_discount(filesystem):
     The property 'discount' is optional and is displayed as dollars and
     cents (nnn.nn). The discount defaults to 0.00.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("discount", None)
     assert defaults["discount"] == order.get_discount()
@@ -243,7 +235,7 @@ def test_011_09_get_set_discount(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["discount"]
     assert result["entry"] == order.get_discount()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_10_get_set_tax(filesystem):
@@ -253,9 +245,7 @@ def test_011_10_get_set_tax(filesystem):
     The property 'tax' is optional and is displayed as dollars and
     cents (nnn.nn). The tax defaults to 0.00.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("tax", None)
     assert defaults["tax"] == order.get_tax()
@@ -269,7 +259,7 @@ def test_011_10_get_set_tax(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["tax"]
     assert result["entry"] == order.get_tax()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_11_get_set_total(filesystem):
@@ -279,9 +269,7 @@ def test_011_11_get_set_total(filesystem):
     The property 'total' is optional and is displayed as dollars and
     cents (nnn.nn). The total defaults to 0.00.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("total", None)
     assert defaults["total"] == order.get_total()
@@ -295,7 +283,7 @@ def test_011_11_get_set_total(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["total"]
     assert result["entry"] == order.get_total()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_12_get_default_property_values(filesystem):
@@ -305,9 +293,7 @@ def test_011_12_get_default_property_values(filesystem):
     With no properties given to constructor, the initial values should
     be the default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     assert order.get_record_id() == defaults["record_id"]
     assert order.get_order_number() == defaults["order_number"]
@@ -319,7 +305,7 @@ def test_011_12_get_default_property_values(filesystem):
     assert order.get_discount() == defaults["discount"]
     assert order.get_total() == defaults["total"]
     assert order.get_remarks() == defaults["remarks"]
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_13_set_order_from_dict(filesystem):
@@ -328,21 +314,19 @@ def test_011_13_set_order_from_dict(filesystem):
 
     The inital values can be set from a dict input.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     order.set_properties(order_values)
-    assert order_values["record_id"] == order.get_record_id()
-    assert order_values["order_number"] == order.get_order_number()
-    assert order_values["source"] == order.get_source()
-    assert order_values["date"] == order.get_date()
-    assert order_values["subtotal"] == order.get_subtotal()
-    assert order_values["tax"] == order.get_tax()
-    assert order_values["shipping"] == order.get_shipping()
-    assert order_values["shipping"] == order.get_shipping()
-    assert order_values["discount"] == order.get_discount()
-    assert order_values["remarks"] == order.get_remarks()
-    db_close(dbref)
+    assert order.get_record_id() == order_values["record_id"]
+    assert order.get_order_number() == order_values["order_number"]
+    assert order.get_source() == order_values["source"]
+    assert order.get_date() == "08/22/2006"
+    assert order.get_subtotal() == order_values["subtotal"]
+    assert order.get_tax() == order_values["tax"]
+    assert order.get_shipping() == order_values["shipping"]
+    assert order.get_shipping() == order_values["shipping"]
+    assert order.get_discount() == order_values["discount"]
+    assert order.get_remarks() == order_values["remarks"]
+    parts_file_close(parts_file)
 
 
 def test_011_14_get_properties_size(filesystem):
@@ -351,12 +335,10 @@ def test_011_14_get_properties_size(filesystem):
 
     There should be 10 members.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref)
+    order, parts_file = base_setup(filesystem)
     data = order.get_properties()
     assert len(data) == len(order_values)
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_15_set_order_from_partial_dict(filesystem):
@@ -366,21 +348,20 @@ def test_011_15_set_order_from_partial_dict(filesystem):
     The resulting properties should mach the input values with the
     missing values replaced with default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
+    order, parts_file = base_setup(filesystem)
     del order_values["source"]
-    order = Order(dbref, order_values)
-    assert order_values["record_id"] == order.get_record_id()
-    assert order_values["order_number"] == order.get_order_number()
-    assert order_values["source"] == ""
-    assert order_values["date"] == order.get_date()
-    assert order_values["subtotal"] == order.get_subtotal()
-    assert order_values["tax"] == order.get_tax()
-    assert order_values["shipping"] == order.get_shipping()
-    assert order_values["discount"] == order.get_discount()
-    assert order_values["total"] == order.get_total()
-    assert order_values["remarks"] == order.get_remarks()
-    db_close(dbref)
+    order = Order(parts_file, order_values)
+    assert order.get_record_id() == order_values["record_id"]
+    assert order.get_order_number() == order_values["order_number"]
+    assert order.get_source() == ""
+    assert order.get_date() == "08/22/2006"
+    assert order.get_subtotal() == order_values["subtotal"]
+    assert order.get_tax() == order_values["tax"]
+    assert order.get_shipping() == order_values["shipping"]
+    assert order.get_shipping() == order_values["shipping"]
+    assert order.get_discount() == order_values["discount"]
+    assert order.get_remarks() == order_values["remarks"]
+    parts_file_close(parts_file)
 
 
 def test_011_16_correct_column_name(filesystem):
@@ -389,9 +370,8 @@ def test_011_16_correct_column_name(filesystem):
 
     The column name must be one of None, 'record_id', or 'order_number'.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    order = Order(dbref, None, "a_column")
+    order, parts_file = base_setup(filesystem)
+    order = Order(parts_file, None, "a_column")
     defaults = order.get_initial_values()
     assert order.get_record_id() == defaults["record_id"]
     assert order.get_order_number() == defaults["order_number"]
@@ -403,7 +383,7 @@ def test_011_16_correct_column_name(filesystem):
     assert order.get_discount() == defaults["discount"]
     assert order.get_total() == defaults["total"]
     assert order.get_remarks() == defaults["remarks"]
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_011_17_get_properties_from_database(filesystem):
@@ -414,20 +394,19 @@ def test_011_17_get_properties_from_database(filesystem):
     record_id key. The actual read and write funtions are in the
     base class "Element".
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    order = Order(dbref, order_values)
+    order, parts_file = base_setup(filesystem)
+    order = Order(parts_file, order_values)
     record_id = order.add()
     assert record_id == 1
     assert record_id == order.get_record_id()
 
-    order = Order(dbref, record_id, "record_id")
+    order = Order(parts_file, record_id, "record_id")
     print(record_id)
     print(order.get_properties())
     assert not order.get_record_id() == order_values["record_id"]
     assert order.get_record_id() == 1
     assert order.get_order_number() == order_values["order_number"]
-    assert order.get_date() == order_values["date"]
+    assert order.get_date() == "08/22/2006"
     assert order.get_source() == order_values["source"]
     assert order.get_subtotal() == order_values["subtotal"]
     assert order.get_tax() == order_values["tax"]
@@ -436,4 +415,4 @@ def test_011_17_get_properties_from_database(filesystem):
     assert order.get_total() == order_values["total"]
     assert order.get_remarks() == order_values["remarks"]
 
-    db_close(dbref)
+    parts_file_close(parts_file)

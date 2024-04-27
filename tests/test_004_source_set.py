@@ -10,15 +10,13 @@ License:    MIT, see file License
 import os
 import sys
 
-from lbk_library import Dbal, ElementSet
+from lbk_library import ElementSet
+from test_data import source_columns, source_value_set
 from test_setup import (
-    db_close,
-    db_create,
-    db_open,
     filesystem,
-    load_db_table,
-    source_columns,
-    source_value_set,
+    load_parts_file_table,
+    parts_file_close,
+    parts_file_create,
 )
 
 src_path = os.path.join(os.path.realpath("."), "src")
@@ -26,23 +24,31 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from elements import SourceSet
+from pages import table_definition
+
+parts_filename = "parts_test.parts"
+
+
+def base_setup(filesystem):
+    filename = filesystem + "/" + parts_filename
+    parts_file = parts_file_create(filename, table_definition)
+    source_set = SourceSet(parts_file)
+    return (source_set, parts_file)
 
 
 def test_004_01_constr(filesystem):
     """
     SourceSet Extends ElementSet.
 
-    The 'table' must be "conditions" and 'dbref' needs to be the
-    initializing dbref.
+    The 'table' must be "conditions" and 'parts_file' needs to be the
+    initializing parts_file.
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    source_set = SourceSet(dbref)
+    source_set, parts_file = base_setup(filesystem)
     assert isinstance(source_set, SourceSet)
     assert isinstance(source_set, ElementSet)
     assert source_set.get_table() == "sources"
-    assert source_set.get_dbref() == dbref
-    db_close(dbref)
+    assert source_set.get_datafile() == parts_file
+    parts_file_close(parts_file)
 
 
 def test_004_02_set_property_set_empty(filesystem):
@@ -50,18 +56,18 @@ def test_004_02_set_property_set_empty(filesystem):
     The 'property_set', a list of 'Sources', is empty when set to
     None or when the table is empty.
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    source_set = SourceSet(dbref)
+    source_set, parts_file = base_setup(filesystem)
     assert isinstance(source_set.get_property_set(), list)
     source_set.set_property_set(None)
     assert isinstance(source_set.get_property_set(), list)
     assert len(source_set.get_property_set()) == 0
-    count_result = dbref.sql_query("SELECT COUNT(*) FROM " + source_set.get_table())
-    count = dbref.sql_fetchrow(count_result)["COUNT(*)"]
+    count_result = parts_file.sql_query(
+        "SELECT COUNT(*) FROM " + source_set.get_table()
+    )
+    count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(source_set.get_property_set())
     assert count == source_set.get_number_elements()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_004_03_selected_rows(filesystem):
@@ -69,16 +75,15 @@ def test_004_03_selected_rows(filesystem):
     The 'property_set', a list of 'Sources', should contain the
     requested subset of conditions.
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    load_db_table(dbref, "sources", source_columns, source_value_set)
-    source_set = SourceSet(dbref, "source", "British Car Parts")
-    count_result = dbref.sql_query(
+    source_set, parts_file = base_setup(filesystem)
+    load_parts_file_table(parts_file, "sources", source_columns, source_value_set)
+    source_set = SourceSet(parts_file, "source", "British Car Parts")
+    count_result = parts_file.sql_query(
         "SELECT COUNT(*) FROM "
         + source_set.get_table()
         + " WHERE source = 'British Car Parts'"
     )
-    count = dbref.sql_fetchrow(count_result)["COUNT(*)"]
+    count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(source_set.get_property_set())
     assert count == 1
-    db_close(dbref)
+    parts_file_close(parts_file)

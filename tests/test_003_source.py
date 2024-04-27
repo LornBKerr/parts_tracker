@@ -3,30 +3,38 @@ Test the source class.
 
 File:       test_03_source.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2023 Lorn B Kerr
+Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
 """
 
 import os
 import sys
 
-import pytest
-from lbk_library import Dbal, Element
-from test_setup import db_close, db_create, db_open, filesystem
+from lbk_library import Element
+from test_data import source_value_set
+from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from elements import Source
+from pages import table_definition
 
-source_values = {"record_id": 15, "source": "Moss USA"}
+source_values = {"record_id": source_value_set[0][0], "source": source_value_set[0][1]}
+
+parts_filename = "parts_test.parts"
+
+
+def base_setup(filesystem):
+    filename = filesystem + "/" + parts_filename
+    parts_file = parts_file_create(filename, table_definition)
+    source = Source(parts_file)
+    return (source, parts_file)
 
 
 def test_003_01_constr(filesystem):
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref)
+    source, parts_file = base_setup(filesystem)
     assert isinstance(source, Source)
     assert isinstance(source, Element)
     # default values.
@@ -34,25 +42,21 @@ def test_003_01_constr(filesystem):
     assert len(source.defaults) == 2
     assert source.defaults["record_id"] == 0
     assert source.defaults["source"] == ""
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
-def test_003_02_get_dbref(filesystem):
+def test_003_02_get_parts_file(filesystem):
     """Source needs correct database."""
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref)
-    assert source.get_dbref() == dbref
-    db_close(dbref)
+    source, parts_file = base_setup(filesystem)
+    assert source.get_datafile() == parts_file
+    parts_file_close(parts_file)
 
 
 def test_003_03_get_table(filesystem):
     """Sourcen needs the database table 'sources'."""
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref)
+    source, parts_file = base_setup(filesystem)
     assert source.get_table() == "sources"
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_003_04_set_source(filesystem):
@@ -64,9 +68,7 @@ def test_003_04_set_source(filesystem):
 
     The property 'record_id is handled in the Element' base class.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref)
+    source, parts_file = base_setup(filesystem)
     defaults = source.get_initial_values()
     source._set_property("source", source_values["source"])
     assert source_values["source"] == source.get_source()
@@ -79,7 +81,7 @@ def test_003_04_set_source(filesystem):
     assert result["valid"]
     assert result["entry"] == source_values["source"]
     assert result["entry"] == source.get_source()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_003_05_get_default_property_values(filesystem):
@@ -89,13 +91,11 @@ def test_003_05_get_default_property_values(filesystem):
     With no properties given to consturcr, the initial values should be
     the default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref)
+    source, parts_file = base_setup(filesystem)
     defaults = source.get_initial_values()
     assert source.get_record_id() == defaults["record_id"]
     assert source.get_source() == defaults["source"]
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_003_06_set_properties_from_dict(filesystem):
@@ -104,13 +104,11 @@ def test_003_06_set_properties_from_dict(filesystem):
 
     The inital values can be set from a dict input.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref)
+    source, parts_file = base_setup(filesystem)
     source.set_properties(source_values)
     assert source_values["record_id"] == source.get_record_id()
     assert source_values["source"] == source.get_source()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_003_07_get_properties_size(filesystem):
@@ -119,12 +117,10 @@ def test_003_07_get_properties_size(filesystem):
 
     There should be two members.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref)
+    source, parts_file = base_setup(filesystem)
     data = source.get_properties()
     assert len(data) == 2
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_003_08_source_from_dict(filesystem):
@@ -133,12 +129,11 @@ def test_003_08_source_from_dict(filesystem):
 
     The resulting properties should match the input values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    source = Source(dbref, source_values)
+    source, parts_file = base_setup(filesystem)
+    source = Source(parts_file, source_values)
     assert source_values["record_id"] == source.get_record_id()
     assert source_values["source"] == source.get_source()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_003_09_item_from__partial_dict(filesystem):
@@ -148,13 +143,12 @@ def test_003_09_item_from__partial_dict(filesystem):
     The resulting properties should mach the input values with the
     missing values replaced with default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
+    source, parts_file = base_setup(filesystem)
     values = {"record_id": 15}
-    source = Source(dbref, values)
+    source = Source(parts_file, values)
     assert values["record_id"] == source.get_record_id()
     assert "" == source.get_source()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_001_10_get_properties_from_database(filesystem):
@@ -165,16 +159,15 @@ def test_001_10_get_properties_from_database(filesystem):
     record_id key. The actual read and write funtions are in the
     base class "Element".
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    source = Source(dbref, source_values)
+    source, parts_file = base_setup(filesystem)
+    source = Source(parts_file, source_values)
     record_id = source.add()
     assert record_id == 1
     assert record_id == source.get_record_id()
     assert source_values["source"] == source.get_source()
 
-    condtion = Source(dbref, record_id)
+    condtion = Source(parts_file, record_id)
     assert record_id == source.get_record_id()
     assert source_values["source"] == source.get_source()
 
-    db_close(dbref)
+    parts_file_close(parts_file)

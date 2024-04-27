@@ -3,32 +3,42 @@ Test the Item class.
 
 File:       test_005_item.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2022 Lorn B Kerr
+Copyright:  (c) 2022, 2024 Lorn B Kerr
 License:    MIT, see file License
 """
 
 import os
 import sys
 
-from lbk_library import Dbal, Element
-from test_setup import db_close, db_create, db_open, filesystem
+from lbk_library import Element
+from test_data import item_value_set
+from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from elements import Item
+from pages import table_definition
 
+parts_filename = "parts_test.parts"
 item_values = {
-    "record_id": 731,
-    "part_number": "17005",
-    "assembly": "CAABA",
-    "quantity": 4,
-    "condition": "New",
-    "installed": 1,
-    "box": 0,
-    "remarks": "",
+    "record_id": item_value_set[0][0],
+    "part_number": item_value_set[0][1],
+    "assembly": item_value_set[0][2],
+    "quantity": item_value_set[0][3],
+    "condition": item_value_set[0][4],
+    "installed": item_value_set[0][5],
+    "box": item_value_set[0][6],
+    "remarks": item_value_set[0][7],
 }
+
+
+def base_setup(filesystem):
+    filename = filesystem + "/" + parts_filename
+    parts_file = parts_file_create(filename, table_definition)
+    item = Item(parts_file)
+    return (item, parts_file)
 
 
 def test_005_01_constr(filesystem):
@@ -37,9 +47,7 @@ def test_005_01_constr(filesystem):
 
     Check the types of class variables and default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     assert isinstance(item, Item)
     assert isinstance(item, Element)
     # default values.
@@ -53,25 +61,21 @@ def test_005_01_constr(filesystem):
     assert item.defaults["installed"] == False
     assert item.defaults["remarks"] == ""
     assert item.defaults["box"] == 0
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
-def test_005_02_get_dbref(filesystem):
+def test_005_02_get_datafile(filesystem):
     """Item needs correct database."""
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
-    assert item.get_dbref() == dbref
-    db_close(dbref)
+    item, parts_file = base_setup(filesystem)
+    assert item.get_datafile() == parts_file
+    parts_file_close(parts_file)
 
 
 def test_005_03_get_table(filesystem):
     """Item needs the database table 'items'."""
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     assert item.get_table() == "items"
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_04_get_set_part_number(filesystem):
@@ -81,9 +85,7 @@ def test_005_04_get_set_part_number(filesystem):
     The property 'part_number' is required and is a string between 1 and
     30 characters long.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     defaults = item.get_initial_values()
     item._set_property("part_number", item_values["part_number"])
     assert item_values["part_number"] == item.get_part_number()
@@ -96,7 +98,7 @@ def test_005_04_get_set_part_number(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["part_number"]
     assert result["entry"] == item.get_part_number()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_05_get_set_assembly(filesystem):
@@ -106,9 +108,7 @@ def test_005_05_get_set_assembly(filesystem):
     The property 'assembly' is required and is a string between 1 and
     15 characters long. It is forced to all uppercase.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     defaults = item.get_initial_values()
     item._set_property("assembly", item_values["assembly"])
     assert item_values["assembly"] == item.get_assembly()
@@ -121,7 +121,7 @@ def test_005_05_get_set_assembly(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["assembly"]
     assert result["entry"] == item.get_assembly()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_06_get_set_quantity(filesystem):
@@ -131,9 +131,7 @@ def test_005_06_get_set_quantity(filesystem):
     The property 'quantity' is required and is a integer between 0 and
     999.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     defaults = item.get_initial_values()
     item._set_property("quantity", item_values["quantity"])
     assert item_values["quantity"] == item.get_quantity()
@@ -149,7 +147,7 @@ def test_005_06_get_set_quantity(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["quantity"]
     assert result["entry"] == item.get_quantity()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_07_get_set_condition(filesystem):
@@ -159,9 +157,7 @@ def test_005_07_get_set_condition(filesystem):
     The property 'condition' is required and is a string selected from
     one of the values held in the "condtions' database table.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     defaults = item.get_initial_values()
     item._set_property("condition", item_values["condition"])
     assert item_values["condition"] == item.get_condition()
@@ -174,7 +170,7 @@ def test_005_07_get_set_condition(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["condition"]
     assert result["entry"] == item.get_condition()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_08_get_set_installed(filesystem):
@@ -184,9 +180,7 @@ def test_005_08_get_set_installed(filesystem):
     The property 'installed' is required and is a boolean value. If the
     item is installed in the car, it is True, otherwise False.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     defaults = item.get_initial_values()
     item._set_property("installed", item_values["installed"])
     assert item_values["installed"] == item.get_installed()
@@ -202,7 +196,7 @@ def test_005_08_get_set_installed(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["installed"]
     assert result["entry"] == item.get_installed()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_09_get_set_box(filesystem):
@@ -214,9 +208,7 @@ def test_005_09_get_set_box(filesystem):
     item not in storage box.If it is stored in a box,then the values can
     be between 1 and 99.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     defaults = item.get_initial_values()
     item._set_property("box", item_values["box"])
     assert item_values["box"] == item.get_box()
@@ -232,7 +224,7 @@ def test_005_09_get_set_box(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["box"]
     assert result["entry"] == item.get_box()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_10_get_default_property_values(filesystem):
@@ -242,9 +234,7 @@ def test_005_10_get_default_property_values(filesystem):
     With no properties given to constructor, the initial values should
     be the default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     defaults = item.get_initial_values()
     assert item.get_record_id() == defaults["record_id"]
     assert item.get_remarks() == defaults["remarks"]
@@ -254,7 +244,7 @@ def test_005_10_get_default_property_values(filesystem):
     assert item.get_condition() == defaults["condition"]
     assert item.get_installed() == defaults["installed"]
     assert item.get_box() == defaults["box"]
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_11_set_properties_from_dict(filesystem):
@@ -263,9 +253,7 @@ def test_005_11_set_properties_from_dict(filesystem):
 
     The inital values can be set from a dict input.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     item.set_properties(item_values)
     assert item_values["record_id"] == item.get_record_id()
     assert item_values["part_number"] == item.get_part_number()
@@ -275,7 +263,7 @@ def test_005_11_set_properties_from_dict(filesystem):
     assert item_values["installed"] == item.get_installed()
     assert item_values["remarks"] == item.get_remarks()
     assert item_values["box"] == item.get_box()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_12_item_get_properties_size(filesystem):
@@ -284,11 +272,9 @@ def test_005_12_item_get_properties_size(filesystem):
 
     There should be 8 members.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
-    item = Item(dbref)
+    item, parts_file = base_setup(filesystem)
     assert len(item.get_properties()) == len(item_values)
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_005_13_item_from_partial_dict(filesystem):
@@ -298,11 +284,10 @@ def test_005_13_item_from_partial_dict(filesystem):
     The resulting properties should mach the input values with the
     missing values replaced with default values.
     """
-    fs_base = filesystem
-    dbref = db_open(fs_base)
+    item, parts_file = base_setup(filesystem)
     assembly = item_values["assembly"]
     del item_values["assembly"]
-    item = Item(dbref, item_values)
+    item = Item(parts_file, item_values)
     item_values["assembly"] = assembly
     assert item_values["record_id"] == item.get_record_id()
     assert item_values["part_number"] == item.get_part_number()
@@ -312,7 +297,7 @@ def test_005_13_item_from_partial_dict(filesystem):
     assert item_values["installed"] == item.get_installed()
     assert item_values["remarks"] == item.get_remarks()
     assert item_values["box"] == item.get_box()
-    db_close(dbref)
+    parts_file_close(parts_file)
 
 
 def test_001_14_get_properties_from_database(filesystem):
@@ -323,14 +308,13 @@ def test_001_14_get_properties_from_database(filesystem):
     record_id key. The actual read and write funtions are in the
     base class "Element".
     """
-    fs_base = filesystem
-    dbref = db_create(fs_base)
-    item = Item(dbref, item_values)
+    item, parts_file = base_setup(filesystem)
+    item = Item(parts_file, item_values)
     record_id = item.add()
     assert record_id == 1
     assert record_id == item.get_record_id()
 
-    item = Item(dbref, record_id)
+    item = Item(parts_file, record_id)
     assert not item.get_record_id() == item_values["record_id"]
     assert item.get_record_id() == 1
     assert item.get_part_number() == item_values["part_number"]
@@ -341,4 +325,4 @@ def test_001_14_get_properties_from_database(filesystem):
     assert item.get_remarks() == item_values["remarks"]
     assert item.get_box() == item_values["box"]
 
-    db_close(dbref)
+    parts_file_close(parts_file)
