@@ -8,12 +8,10 @@ License:    MIT, see file License
 """
 
 import os
-
-# import pickle
 import sys
 from pathlib import Path
 
-from lbk_library import Dbal
+from lbk_library import DataFile
 from lbk_library.gui import Dialog
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import (
@@ -24,20 +22,19 @@ from PyQt5.QtWidgets import (
     QTreeWidget,
 )
 from test_setup import (  # build_test_config, test_config, change_test_dir,;; ; db_open,; ; ; ;
-    __db_name,
-    db_close,
-    db_create,
     directories,
     filesystem,
     item_value_set,
-    load_all_db_tables,
+    load_all_parts_file_tables,
     order_value_set,
     part_value_set,
+    parts_file_close,
+    parts_file_create,
 )
 
-## import pytest
-## from PyQt5.QtCore import Qt
-## from pytestqt import qtbot
+### import pytest
+### from PyQt5.QtCore import Qt
+### from pytestqt import qtbot
 
 
 src_path = os.path.join(os.path.realpath("."), "src")
@@ -45,14 +42,14 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from dialogs import (
+    AssemblyListDialog,
     ChangePartNumberDialog,
-    EditConditionListDialog,
-    EditSourcesListDialog,
+    EditConditionsDialog,
+    EditSourcesDialog,
     EditStructureDialog,
     ItemDialog,
     OrderDialog,
     PartDialog,
-    SaveAssyListDialog,
 )
 from pages import (
     AssemblyTreePage,
@@ -92,7 +89,7 @@ def restore_config_file(original_config_file):
 def set_environment(filesystem, qtbot):
     # setup common base settings for running tests
     source = filesystem
-    parts_file_path = os.path.join(source, directories[2])
+    parts_file_path = str(os.path.join(source, directories[2]))
     main = MainWindow()
     qtbot.addWidget(main)
     return (main, source, parts_file_path)
@@ -103,9 +100,9 @@ def test_204_01_class_type(filesystem, qtbot):
 
     assert isinstance(main, MainWindow)
     assert isinstance(main, QMainWindow)
-    assert type(main.parts_file) == Dbal
+    assert type(main.parts_file) == DataFile
     save_config_file(QSettings("Unnamed Branch", "PartsTracker"))
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_02_initialize_config_file(filesystem, qtbot):
@@ -125,7 +122,7 @@ def test_204_02_initialize_config_file(filesystem, qtbot):
     assert config.value("geometry/width") == int(1250)
     assert config.value("geometry/height") == int(920)
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_03_menus_enabled(filesystem, qtbot):
@@ -145,7 +142,7 @@ def test_204_03_menus_enabled(filesystem, qtbot):
     assert main.form.menu_file.isEnabled()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_04_open_file(filesystem, qtbot):
@@ -156,7 +153,7 @@ def test_204_04_open_file(filesystem, qtbot):
     # no current or previous parts files available
     # file menu should be enabled, all other menus disabled
     parts_file = main.open_file()
-    assert isinstance(parts_file, Dbal)
+    assert isinstance(parts_file, DataFile)
     assert not main.form.menu_assembly_listing.isEnabled()
     assert not main.form.menu_parts.isEnabled()
     assert not main.form.menu_orders.isEnabled()
@@ -168,14 +165,14 @@ def test_204_04_open_file(filesystem, qtbot):
         "recent_files/file1", os.path.join(parts_file_path, "test_204_04_file1.parts")
     )
     parts_file = main.open_file()
-    assert isinstance(parts_file, Dbal)
+    assert isinstance(parts_file, DataFile)
     assert os.path.isfile(config.value("recent_files/file1"))
     assert main.form.menu_assembly_listing.isEnabled()
     assert main.form.menu_parts.isEnabled()
     assert main.form.menu_orders.isEnabled()
     assert main.form.menu_file.isEnabled()
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_05_exit_app_action(qtbot, filesystem):
@@ -188,13 +185,13 @@ def test_204_05_exit_app_action(qtbot, filesystem):
         "recent_files/file1", os.path.join(parts_file_path, "test_204_05_file1.parts")
     )
     main.parts_file = main.open_file()
-    assert isinstance(main.parts_file, Dbal)
+    assert isinstance(main.parts_file, DataFile)
     assert main.parts_file.sql_is_connected()
 
     main.exit_app_action()
     assert not main.parts_file.sql_is_connected()
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_06_get_recent_files_list(filesystem, qtbot):
@@ -218,7 +215,7 @@ def test_204_06_get_recent_files_list(filesystem, qtbot):
     assert recent_files[0] == str(parts_file_path) + "/test_204_06_file1.parts"
     assert recent_files[1] == str(parts_file_path) + "/test_204_06_file2.parts"
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_07_save_recent_files_list(filesystem, qtbot):
@@ -242,7 +239,7 @@ def test_204_07_save_recent_files_list(filesystem, qtbot):
     assert main.config.value("recent_files/file3") == ""
     assert main.config.value("recent_files/file4") == ""
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_08_set_recent_files_menu(filesystem, qtbot):
@@ -274,7 +271,7 @@ def test_204_08_set_recent_files_menu(filesystem, qtbot):
         assert not menu_actions[i].isVisible()
         i += 1
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_09_set_tab_widgets(filesystem, qtbot):
@@ -309,7 +306,7 @@ def test_204_10_configure_window(filesystem, qtbot):
     assert main.form.tab_widget.currentIndex() == 0
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_11_move_event(filesystem, qtbot):
@@ -323,7 +320,7 @@ def test_204_11_move_event(filesystem, qtbot):
     assert main.config.value("geometry/y") == int(move_value)
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_12_resize_event(filesystem, qtbot):
@@ -337,7 +334,7 @@ def test_204_12_resize_event(filesystem, qtbot):
     assert main.config.value("geometry/height") == int(resize_value)
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_13_get_existing_filename(filesystem, qtbot, mocker):
@@ -350,7 +347,7 @@ def test_204_13_get_existing_filename(filesystem, qtbot, mocker):
     value = main.get_existing_filename()
     assert value == test_file_name
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_14_get_new_filename(filesystem, qtbot, mocker):
@@ -362,24 +359,24 @@ def test_204_14_get_new_filename(filesystem, qtbot, mocker):
     value = main.get_new_filename()
     assert value == test_file_name
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_15_load_file(filesystem, qtbot):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
     main.initialize_config_file()
 
-    parts_file1 = source / "test_204_15_file1.parts"
-    db_create(parts_file1, "")
-    parts_file2 = source / "test_204_15_file2.parts"
-    db_create(parts_file2, "")
-    parts_file3 = source / "test_204_15_file3.parts"
-    db_create(parts_file3, "")
-    parts_file4 = source / "test_204_15_file4.parts"
-    db_create(parts_file4, "")
+    parts_file1 = source + "/test_204_15_file1.parts"
+    parts_file_create(parts_file1, table_definition)
+    parts_file2 = source + "/test_204_15_file2.parts"
+    parts_file_create(parts_file2, table_definition)
+    parts_file3 = source + "/test_204_15_file3.parts"
+    parts_file_create(parts_file3, table_definition)
+    parts_file4 = source + "/test_204_15_file4.parts"
+    parts_file_create(parts_file4, table_definition)
 
     # load an initial file, number of recent files = 1
-    main.load_file(str(parts_file1))
+    main.load_file(parts_file1)
     assert main.form.menu_assembly_listing.isEnabled()
     assert main.config.value("recent_files/file1") == str(parts_file1)
 
@@ -427,15 +424,15 @@ def test_204_15_load_file(filesystem, qtbot):
     assert main.config.value("recent_files/file4") == str(parts_file3)
     assert len(main.get_recent_files_list()) == 4
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_16_file_new_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     main.initialize_config_file()
-    file_path1 = str(source / "Documents/parts_tracker/test_204_16_file1.parts")
-    file_path2 = str(source / "Documents/parts_tracker/test_204_16_file2.parts")
+    file_path1 = source + "/Documents/parts_tracker/test_204_16_file1.parts"
+    file_path2 = source + "/Documents/parts_tracker/test_204_16_file2.parts"
 
     mocker.patch.object(MainWindow, "get_new_filename")
     main.get_new_filename.return_value = str(file_path1)
@@ -457,17 +454,17 @@ def test_204_16_file_new_action(qtbot, filesystem, mocker):
     assert main.parts_file.sql_is_connected()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_17_file_open_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     main.initialize_config_file()
-    test_file_name1 = str(source / "Documents/parts_tracker/test_204_17_file2.parts")
-    Dbal.new_file(test_file_name1, table_definition)
-    test_file_name2 = str(source / "Documents/parts_tracker/test_204_17_file3.parts")
-    Dbal.new_file(test_file_name2, table_definition)
+    test_file_name1 = source + "/Documents/parts_tracker/test_204_17_file2.parts"
+    DataFile.new_file(test_file_name1, table_definition)
+    test_file_name2 = source + "/Documents/parts_tracker/test_204_17_file3.parts"
+    DataFile.new_file(test_file_name2, table_definition)
 
     mocker.patch.object(MainWindow, "get_existing_filename")
     main.get_existing_filename.return_value = test_file_name1
@@ -486,15 +483,15 @@ def test_204_17_file_open_action(qtbot, filesystem, mocker):
     assert main.config.value("recent_files/file2") == test_file_name1
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_18_file_close_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     main.initialize_config_file()
-    test_204_18_testfile = str(source / "Documents/parts_tracker/test_file2.parts")
-    Dbal.new_file(test_204_18_testfile, table_definition)
+    test_204_18_testfile = source + "/Documents/parts_tracker/test_file2.parts"
+    DataFile.new_file(test_204_18_testfile, table_definition)
 
     mocker.patch.object(MainWindow, "get_existing_filename")
     main.get_existing_filename.return_value = test_204_18_testfile
@@ -511,15 +508,15 @@ def test_204_18_file_close_action(qtbot, filesystem, mocker):
     assert not main.form.menu_orders.isEnabled()
     assert main.form.menu_file.isEnabled()
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_19_recent_file_1_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     main.initialize_config_file()
-    test_204_19_file1 = str(source / "Documents/parts_tracker/test_204_19_testfile_0")
-    Dbal.new_file(test_204_19_file1, table_definition)
+    test_204_19_file1 = source + "/Documents/parts_tracker/test_204_19_testfile_0"
+    DataFile.new_file(test_204_19_file1, table_definition)
 
     main.recent_file_1_action()
     assert main.config.value("recent_files/file1") == ""
@@ -537,21 +534,21 @@ def test_204_19_recent_file_1_action(qtbot, filesystem, mocker):
     assert main.form.menu_orders.isEnabled()
     assert main.form.menu_file.isEnabled()
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_20_recent_file_2_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     main.initialize_config_file()
-    test_204_20_file1 = str(source / "Documents/parts_tracker/test_204_20_testfile_0")
-    Dbal.new_file(test_204_20_file1, table_definition)
-    test_204_20_file2 = str(source / "Documents/parts_tracker/test_204_20_testfile_1")
-    Dbal.new_file(test_204_20_file2, table_definition)
-    test_204_20_file3 = str(source / "Documents/parts_tracker/test_204_20_testfile_2")
-    Dbal.new_file(test_204_20_file3, table_definition)
-    test_204_20_file4 = str(source / "Documents/parts_tracker/test_204_20_testfile_3")
-    Dbal.new_file(test_204_20_file4, table_definition)
+    test_204_20_file1 = source + "/Documents/parts_tracker/test_204_20_testfile_0"
+    DataFile.new_file(test_204_20_file1, table_definition)
+    test_204_20_file2 = source + "/Documents/parts_tracker/test_204_20_testfile_1"
+    DataFile.new_file(test_204_20_file2, table_definition)
+    test_204_20_file3 = source + "/Documents/parts_tracker/test_204_20_testfile_2"
+    DataFile.new_file(test_204_20_file3, table_definition)
+    test_204_20_file4 = source + "/Documents/parts_tracker/test_204_20_testfile_3"
+    DataFile.new_file(test_204_20_file4, table_definition)
 
     main.recent_file_2_action()
     assert main.config.value("recent_files/file1") == ""
@@ -572,21 +569,21 @@ def test_204_20_recent_file_2_action(qtbot, filesystem, mocker):
     assert main.config.value("recent_files/file3") == ""
     assert main.config.value("recent_files/file4") == ""
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_21_recent_file_3_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     main.initialize_config_file()
-    test_204_21_file1 = str(source / "Documents/parts_tracker/test_204_21_testfile_1")
-    Dbal.new_file(test_204_21_file1, table_definition)
-    test_204_21_file2 = str(source / "Documents/parts_tracker/test_204_21_testfile_2")
-    Dbal.new_file(test_204_21_file2, table_definition)
-    test_204_21_file3 = str(source / "Documents/parts_tracker/test_204_21_testfile_3")
-    Dbal.new_file(test_204_21_file3, table_definition)
-    test_204_21_file4 = str(source / "Documents/parts_tracker/test_204_21_testfile_4")
-    Dbal.new_file(test_204_21_file4, table_definition)
+    test_204_21_file1 = source + "/Documents/parts_tracker/test_204_21_testfile_1"
+    DataFile.new_file(test_204_21_file1, table_definition)
+    test_204_21_file2 = source + "/Documents/parts_tracker/test_204_21_testfile_2"
+    DataFile.new_file(test_204_21_file2, table_definition)
+    test_204_21_file3 = source + "/Documents/parts_tracker/test_204_21_testfile_3"
+    DataFile.new_file(test_204_21_file3, table_definition)
+    test_204_21_file4 = source + "/Documents/parts_tracker/test_204_21_testfile_4"
+    DataFile.new_file(test_204_21_file4, table_definition)
 
     main.recent_file_3_action()
     assert main.config.value("recent_files/file1") == ""
@@ -611,21 +608,21 @@ def test_204_21_recent_file_3_action(qtbot, filesystem, mocker):
     assert main.config.value("recent_files/file3") == test_204_21_file2
     assert main.config.value("recent_files/file4") == ""
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_22_recent_file_4_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     main.initialize_config_file()
-    test_204_22_file1 = str(source / "Documents/parts_tracker/test_204_22_testfile_1")
-    Dbal.new_file(test_204_22_file1, table_definition)
-    test_204_22_file2 = str(source / "Documents/parts_tracker/test_204_22_testfile_2")
-    Dbal.new_file(test_204_22_file2, table_definition)
-    test_204_22_file3 = str(source / "Documents/parts_tracker/test_204_22_testfile_3")
-    Dbal.new_file(test_204_22_file3, table_definition)
-    test_204_22_file4 = str(source / "Documents/parts_tracker/test_204_22_testfile_4")
-    Dbal.new_file(test_204_22_file4, table_definition)
+    test_204_22_file1 = source + "/Documents/parts_tracker/test_204_22_testfile_1"
+    DataFile.new_file(test_204_22_file1, table_definition)
+    test_204_22_file2 = source + "/Documents/parts_tracker/test_204_22_testfile_2"
+    DataFile.new_file(test_204_22_file2, table_definition)
+    test_204_22_file3 = source + "/Documents/parts_tracker/test_204_22_testfile_3"
+    DataFile.new_file(test_204_22_file3, table_definition)
+    test_204_22_file4 = source + "/Documents/parts_tracker/test_204_22_testfile_4"
+    DataFile.new_file(test_204_22_file4, table_definition)
 
     main.recent_file_4_action()
     assert main.config.value("recent_files/file1") == ""
@@ -654,7 +651,7 @@ def test_204_22_recent_file_4_action(qtbot, filesystem, mocker):
     assert main.config.value("recent_files/file3") == test_204_22_file3
     assert main.config.value("recent_files/file4") == test_204_22_file2
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_23_item_dialog_action(qtbot, filesystem, mocker):
@@ -677,18 +674,18 @@ def test_204_23_item_dialog_action(qtbot, filesystem, mocker):
     dialog.close()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_24_action_edit_conditions(qtbot, filesystem):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     dialog = main.edit_conditions_action()
-    assert isinstance(dialog, EditConditionListDialog)
+    assert isinstance(dialog, EditConditionsDialog)
     dialog.close()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_25_edit_assembly_tree_action(qtbot, filesystem):
@@ -699,28 +696,27 @@ def test_204_25_edit_assembly_tree_action(qtbot, filesystem):
     dialog.close()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_26_save_assembly_list_action(qtbot, filesystem):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     dialog = main.save_assembly_list_action()
-    assert isinstance(dialog, SaveAssyListDialog)
+    assert isinstance(dialog, AssemblyListDialog)
     dialog.close()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
-def test_204_27_update_assembly_tree_action(qtbot, filesystem):
+def test_204_27_update_assembly_tree_action(qtbot, filesystem, mocker):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
-    file_name = parts_file_path + "/" + __db_name
-    parts_file = db_create(Path(parts_file_path))
-    load_all_db_tables(parts_file)
-    main.load_file(file_name)
-
+    test_file_name = parts_file_path + "/test_204_27_file.parts"
+    test_file = parts_file_create(test_file_name, table_definition)
+    load_all_parts_file_tables(test_file)
+    main.load_file(test_file_name)
     orig_tree_items = main.update_assembly_tree_action()
     query = {
         "type": "DELETE",
@@ -733,7 +729,7 @@ def test_204_27_update_assembly_tree_action(qtbot, filesystem):
     assert len(orig_tree_items) - len(new_tree_items) == 1
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_28_part_dialog_action(qtbot, filesystem, mocker):
@@ -756,18 +752,18 @@ def test_204_28_part_dialog_action(qtbot, filesystem, mocker):
     dialog.close()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_29_update_sources_action(qtbot, filesystem):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     dialog = main.update_sources_action()
-    assert isinstance(dialog, EditSourcesListDialog)
+    assert isinstance(dialog, EditSourcesDialog)
     dialog.close()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_30_part_change_pn_action(qtbot, filesystem):
@@ -777,18 +773,18 @@ def test_204_30_part_change_pn_action(qtbot, filesystem):
     assert isinstance(dialog, ChangePartNumberDialog)
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_31_update_parts_list_table_action(qtbot, filesystem):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
-    file_name = parts_file_path + "/" + __db_name
-    parts_file = db_create(Path(parts_file_path))
-    load_all_db_tables(parts_file)
-    main.load_file(file_name)
+    test_file_name = parts_file_path + "/test_204_31_file.parts"
+    test_file = parts_file_create(test_file_name, table_definition)
+    load_all_parts_file_tables(test_file)
+    main.load_file(test_file_name)
 
-    main.form.action_change_part_number.trigger()
+    main.form.action_update_part_list_table.trigger()
     orig_number_rows = main.parts_list_widget.rowCount()
     query = {
         "type": "DELETE",
@@ -797,12 +793,12 @@ def test_204_31_update_parts_list_table_action(qtbot, filesystem):
     }
     sql = main.parts_file.sql_query_from_array(query)
     main.parts_file.sql_query(sql)
-    main.form.action_change_part_number.trigger()
+    main.form.action_update_part_list_table.trigger()
     new_number_rows = main.parts_list_widget.rowCount()
     assert orig_number_rows - new_number_rows == 1
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_32_order_dialog_action(qtbot, filesystem, mocker):
@@ -825,16 +821,16 @@ def test_204_32_order_dialog_action(qtbot, filesystem, mocker):
     dialog.close()
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_33_update_orders_list_table_action(qtbot, filesystem):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
-    file_name = parts_file_path + "/" + __db_name
-    parts_file = db_create(Path(parts_file_path))
-    load_all_db_tables(parts_file)
-    main.load_file(file_name)
+    test_file_name = parts_file_path + "/test_204_33_file.parts"
+    test_file = parts_file_create(test_file_name, table_definition)
+    load_all_parts_file_tables(test_file)
+    main.load_file(test_file_name)
 
     main.form.action_update_order_table.trigger()
     orig_number_rows = main.orders_list_widget.rowCount()
@@ -850,7 +846,7 @@ def test_204_33_update_orders_list_table_action(qtbot, filesystem):
     assert orig_number_rows - new_number_rows == 1
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)
 
 
 def test_204_99_restore_config_file(qtbot, filesystem):
@@ -858,4 +854,4 @@ def test_204_99_restore_config_file(qtbot, filesystem):
     main, source, parts_file_path = set_environment(filesystem, qtbot)
 
     restore_config_file(main.config)
-    db_close(main.parts_file)
+    parts_file_close(main.parts_file)

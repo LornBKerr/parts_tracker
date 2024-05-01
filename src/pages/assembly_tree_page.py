@@ -9,7 +9,7 @@ License:    MIT, see file License
 
 from typing import Any
 
-from lbk_library import Dbal, Dialog
+from lbk_library import DataFile, Dialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
 
@@ -32,17 +32,19 @@ class AssemblyTreePage:
     ]
     """ Names of the tree columns."""
 
-    def __init__(self, tree: QTreeWidget, parts_file: Dbal) -> None:  #
+    def __init__(self, tree: QTreeWidget, parts_file: DataFile) -> None:
         """
         Initialize the assembly tree widget.
 
         Parameters:
             tree (QTreeWidget): the tree to be filled with info
-            parts_file (Dbal):  database reference for the parts file.
+            parts_file (DataFile):  database reference for the parts file.
         """
         super().__init__()
-        self.parts_file: Dbal = parts_file
+
+        self.parts_file: DataFile = parts_file
         self.tree = tree
+
         self.resize_columns()
         self.set_tree_headers()
 
@@ -151,25 +153,25 @@ class AssemblyTreePage:
         self, assembly: str, tree_items: dict[str, QTreeWidgetItem]
     ) -> str | None:
         """
-        Find the parent assembly of the current assembly.
+         Find the parent assembly of the current assembly.
 
         The tree is keyed on the item assembly. The top level tree items
-        normally have a single character assembly value. Second, third,
-        forth, ... levels have the corresponding number of characters in
-        the assembly. The parent of the current assembly is the
-        corresponding next level up, so the parent of assembly AC will
-        be A, for ACRGE, parent will be ACRG. If the corresponding upper
-        level does not exist, move up through the levels until a
-        corresponding level is found. If no parent is found, assign the
-        assembly as a top level. (Generally, this means there is an
-        error in the assignment of the assembly.)
+         normally have a single character assembly value. Second, third,
+         forth, ... levels have the corresponding number of characters in
+         the assembly. The parent of the current assembly is the
+         corresponding next level up, so the parent of assembly AC will
+         be A, for ACRGE, parent will be ACRG. If the corresponding upper
+         level does not exist, move up through the levels until a
+         corresponding level is found. If no parent is found, assign the
+         assembly as a top level. (Generally, this means there is an
+         error in the assignment of the assembly.)
 
-        Parameters:
-            assembly (str): the current assembly.
-            tree_items (dict[str, QTreeWidgetItem]): the set of tree
-                widget items.
-        Returns:
-            (str) the parent assembly of the current assembly.
+         Parameters:
+             assembly (str): the current assembly.
+             tree_items (dict[str, QTreeWidgetItem]): the set of tree
+                 widget items.
+         Returns:
+             (str) the parent assembly of the current assembly.
         """
         if len(assembly) == 1:
             parent = None
@@ -262,7 +264,6 @@ class AssemblyTreePage:
 
         Returns:
             (str): the type of dialog executed (primarily for testing).
-
         """
         item_number_column = 1
         dialog = ItemDialog(
@@ -279,6 +280,6 @@ class AssemblyTreePage:
         """
         Return the parts file reference.
 
-        Return (Dbal): the current parts file reference.
+        Return (DataFile): the current parts file reference.
         """
         return self.parts_file

@@ -7,7 +7,7 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-from lbk_library import Dbal
+from lbk_library import DataFile
 from lbk_library.gui import Dialog, TableWidgetIntItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QTableWidget, QTableWidgetItem
@@ -28,15 +28,15 @@ class OrdersListPage:
         "Order Remarks",
     ]
 
-    def __init__(self, table: QTableWidget, parts_file: Dbal) -> None:
+    def __init__(self, table: QTableWidget, parts_file: DataFile) -> None:
         """
         Initialize and display the Order List.
 
         Parameters:
             main_window (QMainWindow): the parent window.
-            parts_file (Dbal): reference to the parts file.
+            parts_file (DataFile): reference to the parts file.
         """
-        self.parts_file: Dbal = parts_file
+        self.parts_file: DataFile = parts_file
         self.table = table
 
         # # set up the Orders Listing Table
@@ -152,10 +152,10 @@ class OrdersListPage:
         self.update_table()
         return dialog
 
-    def get_parts_file(self) -> Dbal:
+    def get_parts_file(self) -> DataFile:
         """
         Return the parts file reference.
 
-        Return (Dbal): the current parts file reference.
+        Return (DataFile): the current parts file reference.
         """
         return self.parts_file

@@ -11,19 +11,14 @@ import os
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (  # QMainWindow,; QTreeWidgetItem,; QTreeWidgetItemIterator,
-    QTableWidget,
-)
-from test_setup import (  # build_test_config,; db_open,; directories,; ; part_value_set,; test_config,
-    db_close,
-    db_create,
+from PyQt5.QtWidgets import QTableWidget
+from test_setup import (
     filesystem,
-    load_all_db_tables,
+    load_all_parts_file_tables,
     part_value_set,
+    parts_file_close,
+    parts_file_create,
 )
-
-# from lbk_library import Dbal
-
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -31,14 +26,16 @@ if src_path not in sys.path:
 
 from dialogs import PartDialog
 from elements import Part, PartSet  # Item,
-from pages import PartsListPage
+from pages import PartsListPage, table_definition
+
+parts_filename = "parts_test.parts"
 
 
 def setup_page(qtbot, filesystem):
     """Initialize  parts list page for testing"""
-    fs_base = filesystem
-    parts_file = db_create(fs_base)
-    load_all_db_tables(parts_file)
+    filename = filesystem + "/" + parts_filename
+    parts_file = parts_file_create(filename, table_definition)
+    load_all_parts_file_tables(parts_file)
     table = QTableWidget()
     page = PartsListPage(table, parts_file)
     qtbot.addWidget(table)
@@ -69,6 +66,7 @@ def test_202_02_set_table_headers(qtbot, filesystem):
             header.model().headerData(i, header.orientation()) == page.COLUMN_NAMES[i]
         )
         assert page.table.columnWidth(i) > header.minimumSectionSize()
+    parts_file_close(parts_file)
 
 
 def test_202_03_update_table(qtbot, filesystem):
@@ -83,8 +81,7 @@ def test_202_03_update_table(qtbot, filesystem):
     assert (initial_num_parts - page.table.rowCount()) == 2
     assert not page.table.findItems(part_value_set[0][1], Qt.MatchExactly)
     assert not page.table.findItems(part_value_set[1][1], Qt.MatchExactly)
-
-    db_close(parts_file)
+    parts_file_close(parts_file)
 
 
 def test_202_04_clear_table(qtbot, filesystem):
@@ -92,9 +89,8 @@ def test_202_04_clear_table(qtbot, filesystem):
 
     page.clear_table()
     assert page.table.rowCount() == 0
-    db_close(parts_file)
-
-    db_close(parts_file)
+    parts_file_close(parts_file)
+    parts_file_close(parts_file)
 
 
 def test_202_05_action_part_clicked(qtbot, filesystem):
@@ -103,8 +99,4 @@ def test_202_05_action_part_clicked(qtbot, filesystem):
     part_item = page.table.itemAt(0, 0)
     dialog = page.action_part_clicked(part_item)
     assert type(dialog) == PartDialog
-
-    db_close(parts_file)
-
-
-# end
+    parts_file_close(parts_file)

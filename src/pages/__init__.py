@@ -21,5 +21,5 @@ License:    MIT, see file License
 from .assembly_tree_page import AssemblyTreePage
 from .main_window import MainWindow
 from .orders_list_page import OrdersListPage
+from .parts_file_definition import table_definition
 from .parts_list_page import PartsListPage
-from .parts_table_definition import table_definition

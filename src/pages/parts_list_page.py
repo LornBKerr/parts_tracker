@@ -7,7 +7,7 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-from lbk_library import Dbal
+from lbk_library import DataFile
 from lbk_library.gui import Dialog, TableWidgetIntItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QTableWidget, QTableWidgetItem
@@ -28,16 +28,16 @@ class PartsListPage:
         "Part Remarks",
     ]
 
-    def __init__(self, table: QTableWidget, parts_file: Dbal) -> None:
+    def __init__(self, table: QTableWidget, parts_file: DataFile) -> None:
         """
         Initialize and display the Part List.
 
         Parameters
             main_window (QMainWindow): the parent window
-            parts_file (Dbal): reference to theparts file.
+            parts_file (DataFile): reference to theparts file.
         """
         #        self.main_window: QMainWindow = main_window
-        self.parts_file: Dbal = parts_file
+        self.parts_file: DataFile = parts_file
         self.table = table
 
         # set the table headers and load the table
@@ -141,6 +141,6 @@ class PartsListPage:
         """
         Return the parts file reference.
 
-        Return (Dbal): the current parts file reference.
+        Return (DataFile): the current parts file reference.
         """
         return self.parts_file

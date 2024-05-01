@@ -11,7 +11,13 @@ import os
 import sys
 
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
-from test_setup import db_create, filesystem, item_value_set, load_all_db_tables
+from test_setup import (
+    filesystem,
+    item_value_set,
+    load_all_parts_file_tables,
+    parts_file_close,
+    parts_file_create,
+)
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -19,14 +25,16 @@ if src_path not in sys.path:
 
 from dialogs import ItemDialog
 from elements import Item, ItemSet, Part
-from pages import AssemblyTreePage
+from pages import AssemblyTreePage, table_definition
+
+parts_filename = "parts_test.parts"
 
 
 def setup_page(qtbot, filesystem):
     """Initialize an assembly page for testing"""
-    fs_base = filesystem
-    parts_file = db_create(fs_base)
-    load_all_db_tables(parts_file)
+    filename = filesystem + "/" + parts_filename
+    parts_file = parts_file_create(filename, table_definition)
+    load_all_parts_file_tables(parts_file)
     tree = QTreeWidget()
     page = AssemblyTreePage(tree, parts_file)
     qtbot.addWidget(tree)
@@ -39,6 +47,7 @@ def test_201_01_class_type(qtbot, filesystem):
     assert page.get_parts_file() == parts_file
     assert type(page.tree) == QTreeWidget
     assert page.tree == tree
+    parts_file_close(parts_file)
 
 
 def test_201_02_resize_columns(qtbot, filesystem):

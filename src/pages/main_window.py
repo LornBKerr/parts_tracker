@@ -10,7 +10,7 @@ License:    MIT, see file License
 import os
 from pathlib import Path
 
-from lbk_library import Dbal
+from lbk_library import DataFile
 from lbk_library.gui import Dialog
 from PyQt5 import uic
 from PyQt5.QtCore import QSettings  # QPoint,
@@ -24,20 +24,20 @@ from PyQt5.QtWidgets import (
 )
 
 from dialogs import (
+    AssemblyListDialog,
     ChangePartNumberDialog,
-    EditConditionListDialog,
-    EditSourcesListDialog,
+    EditConditionsDialog,
+    EditSourcesDialog,
     EditStructureDialog,
     ItemDialog,
     OrderDialog,
     PartDialog,
-    SaveAssyListDialog,
 )
 
 from .assembly_tree_page import AssemblyTreePage
 from .orders_list_page import OrdersListPage
+from .parts_file_definition import table_definition
 from .parts_list_page import PartsListPage
-from .parts_table_definition import table_definition
 
 
 class MainWindow(QMainWindow):
@@ -50,8 +50,8 @@ class MainWindow(QMainWindow):
 
         self.config = QSettings("Unnamed Branch", "PartsTracker")
         """The configuration setup."""
-        self.parts_file: Dbal = Dbal()
-        """The database of the set of parts information."""
+        self.parts_file: DataFile = DataFile()
+        """The parts file of the set of parts information."""
         self.__number_recent_files = 4
         """ The number of recent files listed in the recent Files menu."""
 
@@ -95,7 +95,6 @@ class MainWindow(QMainWindow):
             self.save_assembly_list_action
         )
         self.form.action_update_assemby_tree.triggered.connect(
-            # self.update_assembly_tree_action
             self.assembly_tree.update_tree
         )
 
@@ -124,7 +123,6 @@ class MainWindow(QMainWindow):
         self.form.action_update_order_table.triggered.connect(
             lambda: (self.order_list.update_table())
         )
-
         # show the window
         self.show()
 
@@ -134,7 +132,7 @@ class MainWindow(QMainWindow):
 
          The minimal config structure is:
              'settings': {
-                 'parts_file_dir': (str) Where to store the parts database,
+                 'parts_file_dir': (str) Where to store the parts file,
                      defaults to the directory
                      "{user documents directory}/PartsTracker"
                  'list_files_dir': (str) where to store the 'csv'/'xlxs'
@@ -176,7 +174,7 @@ class MainWindow(QMainWindow):
 
         return self.config
 
-    def open_file(self) -> Dbal:
+    def open_file(self) -> DataFile:
         """
         Load the last used file.
 
@@ -184,7 +182,7 @@ class MainWindow(QMainWindow):
         parts file. Otherwise, leave the connection closed
 
         Returns:
-            (Dbal): The parts file reference
+            (DataFile): The parts file reference
         """
         if not self.config.value("recent_files/file1") == "":
             # use first filename to open the parts file
@@ -259,7 +257,7 @@ class MainWindow(QMainWindow):
         """
         Enable or disable all menu except the Files menu.
 
-        When no database is open, disable the menus since they have
+        When no parts file is open, disable the menus since they have
         no function.
 
         Parameters:
@@ -297,7 +295,7 @@ class MainWindow(QMainWindow):
 
     def load_file(self, filepath: str) -> None:
         """
-        Build and display a new, empty database file.
+        Build and display a new, empty parts file file.
 
         Parameters:
             filepath (String): An absolute path to file to open
@@ -340,7 +338,7 @@ class MainWindow(QMainWindow):
         self.load_file(filepath)
 
     def file_close_action(self) -> None:
-        """Close the current database file."""
+        """Close the current parts file file."""
         # if a file is open, then close it
         if self.parts_file.sql_is_connected():
             self.parts_file.sql_close()
@@ -356,13 +354,13 @@ class MainWindow(QMainWindow):
         """
         Create and load a new PartsTracker File.
 
-        The database is created with new, empty tables. The file already
+        The parts file is created with new, empty tables. The file already
         exists, it is deleted first, then recreated.
         """
         file_name = self.get_new_filename()
         if Path(file_name).is_file():
             os.remove(file_name)
-        Dbal.new_file(file_name, table_definition)
+        DataFile.new_file(file_name, table_definition)
         self.load_file(file_name)
 
     def recent_file_1_action(self) -> None:
@@ -390,7 +388,7 @@ class MainWindow(QMainWindow):
             self.load_file(file_4)
 
     def exit_app_action(self) -> None:
-        """Save the config file, close database, then Exit."""
+        """Save the config file, close parts file, then Exit."""
         self.config.sync()
         if self.parts_file.sql_is_connected():
             self.parts_file.sql_close()
@@ -400,7 +398,7 @@ class MainWindow(QMainWindow):
         Activate the Item Editing form.
 
         Parameters:
-            record_id (int): the index into the database for the item to
+            record_id (int): the index into the parts file for the item to
                 be edited, default is None.
             add_item (int): The constant Dialog.Dialog.ADD_ELEMENT if a new item is
                 to be aded, Dialog.Dialog.EDIT_ELEMENT for editing an existing item.
@@ -422,7 +420,7 @@ class MainWindow(QMainWindow):
         Returns:
             (dialog) the opened EditConditionDialog object
         """
-        dialog = EditConditionListDialog(self.parts_file)
+        dialog = EditConditionsDialog(self.parts_file)
         dialog.open()
         return dialog
 
@@ -445,9 +443,9 @@ class MainWindow(QMainWindow):
         file entry "settings/list_files_dir".
 
         Returns:
-            (dialog) the opened SaveAssyListDialog object
+            (dialog) the opened AssemblyListDialog object
         """
-        dialog = SaveAssyListDialog(self, self.parts_file, self.config)
+        dialog = AssemblyListDialog(self, self.parts_file, self.config)
         dialog.open()
         return dialog
 
@@ -466,7 +464,7 @@ class MainWindow(QMainWindow):
          Activate the Part Editing form.
 
         Parameters:
-             record_id (integer) the index into the database for the
+             record_id (integer) the index into the parts file for the
                  part to be edited.
              add_part (int) The constant Dialog.Dialog.ADD_ELEMENT if a new part
                  is to be aded, Dialog.EDIT_ELEMENT for editing an
@@ -489,17 +487,17 @@ class MainWindow(QMainWindow):
         Returns:
             (dialog) the opened EditSourceDialog object
         """
-        dialog = EditSourcesListDialog(self, self.parts_file, Dialog.ADD_ELEMENT)
+        dialog = EditSourcesDialog(self, self.parts_file, Dialog.ADD_ELEMENT)
         dialog.open()
         return dialog
 
     def part_change_pn_dialog_action(self) -> None:
         """
-        Change a part number throughout the database.
+        Change a part number throughout the parts file.
 
          Parameters:
             parent (QMainWindow) the parent window owning this dialog.
-            parts_file (Dbal) reference to the database for this item.
+            parts_file (DataFile) reference to the parts file for this item.
         """
         dialog = ChangePartNumberDialog(self, self.parts_file)
         dialog.open()
@@ -514,10 +512,10 @@ class MainWindow(QMainWindow):
 
         Parameters:
             parent (QMainWindow) the parent window owning this dialog.
-            parts_file (Dbal) reference to the database for this order.
+            parts_file (DataFile) reference to the parts file for this order.
             resources (AppResources) reference to the app resources for
                this dialog.
-            record_id (int) the index into the database for the order
+            record_id (int) the index into the parts file for the order
                 to be edited, default is None
             add_order (int) The constant Dialog.Dialog.ADD_ELEMENT if a new
                 order is to be aded, Dialog.EDIT_ELEMENT for editing
