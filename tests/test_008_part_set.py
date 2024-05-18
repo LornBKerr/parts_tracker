@@ -11,13 +11,13 @@ import os
 import sys
 
 from lbk_library import ElementSet
-from test_data import part_columns, part_value_set
-from test_setup import (
+from lbk_library.testing_support import (
+    datafile_close,
+    datafile_create,
     filesystem,
-    load_parts_file_table,
-    parts_file_close,
-    parts_file_create,
+    load_datafile_table,
 )
+from test_data import part_columns, part_value_set
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -31,7 +31,7 @@ parts_filename = "parts_test.parts"
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     part_set = PartSet(parts_file)
     return (part_set, parts_file)
 
@@ -48,7 +48,7 @@ def test_008_01_constr(filesystem):
     assert isinstance(part_set, ElementSet)
     assert part_set.get_table() == "parts"
     assert part_set.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_008_02_set_property_set_empty(filesystem):
@@ -65,7 +65,7 @@ def test_008_02_set_property_set_empty(filesystem):
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(part_set.get_property_set())
     assert count == part_set.get_number_elements()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_008_03_selected_rows(filesystem):
@@ -74,7 +74,7 @@ def test_008_03_selected_rows(filesystem):
     requested subset of Parts.
     """
     part_set, parts_file = base_setup(filesystem)
-    load_parts_file_table(parts_file, "parts", part_columns, part_value_set)
+    load_datafile_table(parts_file, "parts", part_columns, part_value_set)
     part_set = PartSet(parts_file, "source", "None")
     count_result = parts_file.sql_query(
         "SELECT COUNT(*) FROM " + part_set.get_table() + " WHERE source = 'None'"
@@ -82,7 +82,7 @@ def test_008_03_selected_rows(filesystem):
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(part_set.get_property_set())
     assert count == 6
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_008_4_selected_rows_limit(filesystem):
@@ -92,12 +92,12 @@ def test_008_4_selected_rows_limit(filesystem):
     rows given by 'limit'.
     """
     part_set, parts_file = base_setup(filesystem)
-    load_parts_file_table(parts_file, "parts", part_columns, part_value_set)
+    load_datafile_table(parts_file, "parts", part_columns, part_value_set)
     limit = 5
     part_set = PartSet(parts_file, None, None, "record_id", limit)
     assert limit == len(part_set.get_property_set())
     assert part_set.get_property_set()[0].get_record_id() == part_value_set[0][0]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_008_05_selected_rows_limit_offset(filesystem):
@@ -107,10 +107,10 @@ def test_008_05_selected_rows_limit_offset(filesystem):
     rows given by 'limit' starting at 'offset' number of records.
     """
     part_set, parts_file = base_setup(filesystem)
-    load_parts_file_table(parts_file, "parts", part_columns, part_value_set)
+    load_datafile_table(parts_file, "parts", part_columns, part_value_set)
     limit = 5
     offset = 2
     part_set = PartSet(parts_file, None, None, "record_id", limit, offset)
     assert limit == len(part_set.get_property_set())
     assert part_set.get_property_set()[0].get_record_id() == part_value_set[2][0]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

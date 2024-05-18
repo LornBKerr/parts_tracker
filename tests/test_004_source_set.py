@@ -11,13 +11,13 @@ import os
 import sys
 
 from lbk_library import ElementSet
-from test_data import source_columns, source_value_set
-from test_setup import (
+from lbk_library.testing_support import (
+    datafile_close,
+    datafile_create,
     filesystem,
-    load_parts_file_table,
-    parts_file_close,
-    parts_file_create,
+    load_datafile_table,
 )
+from test_data import source_columns, source_value_set
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -31,7 +31,7 @@ parts_filename = "parts_test.parts"
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     source_set = SourceSet(parts_file)
     return (source_set, parts_file)
 
@@ -48,7 +48,7 @@ def test_004_01_constr(filesystem):
     assert isinstance(source_set, ElementSet)
     assert source_set.get_table() == "sources"
     assert source_set.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_004_02_set_property_set_empty(filesystem):
@@ -67,7 +67,7 @@ def test_004_02_set_property_set_empty(filesystem):
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(source_set.get_property_set())
     assert count == source_set.get_number_elements()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_004_03_selected_rows(filesystem):
@@ -76,7 +76,7 @@ def test_004_03_selected_rows(filesystem):
     requested subset of conditions.
     """
     source_set, parts_file = base_setup(filesystem)
-    load_parts_file_table(parts_file, "sources", source_columns, source_value_set)
+    load_datafile_table(parts_file, "sources", source_columns, source_value_set)
     source_set = SourceSet(parts_file, "source", "British Car Parts")
     count_result = parts_file.sql_query(
         "SELECT COUNT(*) FROM "
@@ -86,4 +86,4 @@ def test_004_03_selected_rows(filesystem):
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(source_set.get_property_set())
     assert count == 1
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

@@ -11,13 +11,13 @@ import os
 import sys
 
 from lbk_library import Element
-from test_data import item_columns, item_value_set, part_columns, part_value_set
-from test_setup import (
+from lbk_library.testing_support import (
+    datafile_close,
+    datafile_create,
     filesystem,
-    load_parts_file_table,
-    parts_file_close,
-    parts_file_create,
+    load_datafile_table,
 )
+from test_data import item_columns, item_value_set, part_columns, part_value_set
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -38,7 +38,7 @@ part_values = {
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     part = Part(parts_file)
     return (part, parts_file)
 
@@ -60,19 +60,19 @@ def test_007_01_constr(filesystem):
     assert part.defaults["source"] == ""
     assert part.defaults["description"] == ""
     assert part.defaults["remarks"] == ""
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_02_get_table(filesystem):
     part, parts_file = base_setup(filesystem)
     assert part.get_table() == "parts"
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_03_get_parts_file(filesystem):
     part, parts_file = base_setup(filesystem)
     assert part.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_04_get_set_part_number(filesystem):
@@ -95,7 +95,7 @@ def test_007_04_get_set_part_number(filesystem):
     assert result["valid"]
     assert result["entry"] == part_values["part_number"]
     assert result["entry"] == part.get_part_number()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_05_get_set_source(filesystem):
@@ -119,7 +119,7 @@ def test_007_05_get_set_source(filesystem):
     assert result["valid"]
     assert result["entry"] == part_values["source"]
     assert result["entry"] == part.get_source()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_06_get_set_description(filesystem):
@@ -142,7 +142,7 @@ def test_007_06_get_set_description(filesystem):
     assert result["valid"]
     assert result["entry"] == part_values["description"]
     assert result["entry"] == part.get_description()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_07_item_get_default_property_values(filesystem):
@@ -159,7 +159,7 @@ def test_007_07_item_get_default_property_values(filesystem):
     assert part.get_part_number() == defaults["part_number"]
     assert part.get_source() == defaults["source"]
     assert part.get_description() == defaults["description"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_08_set_properties_from_dict(filesystem):
@@ -175,7 +175,7 @@ def test_007_08_set_properties_from_dict(filesystem):
     assert part_values["part_number"] == part.get_part_number()
     assert part_values["source"] == part.get_source()
     assert part_values["description"] == part.get_description()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_09_get_properties_size(filesystem):
@@ -186,7 +186,7 @@ def test_007_09_get_properties_size(filesystem):
     """
     part, parts_file = base_setup(filesystem)
     assert len(part.get_properties()) == len(part_values)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_10_part_from_dict(filesystem):
@@ -202,7 +202,7 @@ def test_007_10_part_from_dict(filesystem):
     assert part_values["source"] == part.get_source()
     assert part_values["description"] == part.get_description()
     assert part_values["remarks"] == part.get_remarks()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_12_part_from_partial_dict(filesystem):
@@ -220,7 +220,7 @@ def test_007_12_part_from_partial_dict(filesystem):
     assert "" == part.get_source()
     assert part_values["description"] == part.get_description()
     assert part_values["remarks"] == part.get_remarks()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_13_get_total_quantity(filesystem):
@@ -231,7 +231,7 @@ def test_007_13_get_total_quantity(filesystem):
     is the same as he total quantity held in the database table 'items'.
     """
     part, parts_file = base_setup(filesystem)
-    load_parts_file_table(parts_file, "items", item_columns, item_value_set)
+    load_datafile_table(parts_file, "items", item_columns, item_value_set)
     part = Part(parts_file, part_values)
     item_set = ItemSet(parts_file, "part_number", part.get_part_number())
     total_quantity = 0
@@ -239,7 +239,7 @@ def test_007_13_get_total_quantity(filesystem):
         total_quantity += item.get_quantity()
     # check total quantity used
     assert part.get_total_quantity() == total_quantity
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_007_14_correct_column_name(filesystem):
@@ -249,7 +249,7 @@ def test_007_14_correct_column_name(filesystem):
     The column name must be one of None, 'record_id', or 'part_number'.
     """
     part, parts_file = base_setup(filesystem)
-    load_parts_file_table(parts_file, "parts", part_columns, part_value_set)
+    load_datafile_table(parts_file, "parts", part_columns, part_value_set)
     part = Part(parts_file, part_value_set[0][0], "record_id")
     part.get_record_id() == part_value_set[0][0]
     part.get_part_number() == part_value_set[0][1]
@@ -283,4 +283,4 @@ def test_007_15_get_properties_from_database(filesystem):
     assert part.get_description() == part_values["description"]
     assert part.get_remarks() == part_values["remarks"]
 
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

@@ -11,8 +11,8 @@ import os
 import sys
 
 from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from test_data import condition_value_set
-from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -31,7 +31,7 @@ condition_values = {
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     condition = Condition(parts_file)
     return (condition, parts_file)
 
@@ -51,7 +51,7 @@ def test_001_01_constr(filesystem):
     assert len(condition.defaults) == 2
     assert condition.defaults["record_id"] == 0
     assert condition.defaults["condition"] == ""
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_02_get_parts_file(filesystem):
@@ -60,7 +60,7 @@ def test_001_02_get_parts_file(filesystem):
     parts_file = datafile_create(parts_file_dir, table_definition)
     condition = Condition(parts_file)
     assert condition.get_dbref() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_03_get_table(filesystem):
@@ -69,22 +69,22 @@ def test_001_03_get_table(filesystem):
     parts_file = datafile_create(parts_file_dir, table_definition)
     condition = Condition(parts_file)
     assert condition.get_table() == "conditions"
-    parts_file_close(parts_file)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_02_get_parts_file(filesystem):
     """Condition needs correct parts_file."""
     condition, parts_file = base_setup(filesystem)
     assert condition.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_03_get_table(filesystem):
     """Condition needs the parts_file table 'conditions'."""
     condition, parts_file = base_setup(filesystem)
     assert condition.get_table() == "conditions"
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_04_get_set_condition(filesystem):
@@ -109,7 +109,7 @@ def test_001_04_get_set_condition(filesystem):
     assert result["valid"]
     assert result["entry"] == condition_value_set[0][1]
     assert result["entry"] == condition.get_condition()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_05_get_default_property_values(filesystem):
@@ -123,7 +123,7 @@ def test_001_05_get_default_property_values(filesystem):
     defaults = condition.get_initial_values()
     assert condition.get_record_id() == defaults["record_id"]
     assert condition.get_condition() == defaults["condition"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_06_set_properties_from_dict(filesystem):
@@ -136,7 +136,7 @@ def test_001_06_set_properties_from_dict(filesystem):
     condition.set_properties(condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_07_get_properties_size(filesystem):
@@ -148,7 +148,7 @@ def test_001_07_get_properties_size(filesystem):
     condition, parts_file = base_setup(filesystem)
     data = condition.get_properties()
     assert len(data) == 2
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_08_condition_from_dict(filesystem):
@@ -161,7 +161,7 @@ def test_001_08_condition_from_dict(filesystem):
     condition = Condition(parts_file, condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_09_item_from_partial_dict(filesystem):
@@ -177,7 +177,7 @@ def test_001_09_item_from_partial_dict(filesystem):
     condition = Condition(parts_file, values)
     assert values["record_id"] == condition.get_record_id()
     assert "" == condition.get_condition()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_10_get_properties_from_parts_file(filesystem):
@@ -198,4 +198,4 @@ def test_001_10_get_properties_from_parts_file(filesystem):
     condition = Condition(parts_file, record_id)
     assert record_id == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

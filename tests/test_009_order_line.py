@@ -10,14 +10,13 @@ License:    MIT, see file License
 import os
 import sys
 
-from lbk_library import Dbal
-from test_data import order_line_columns, order_line_value_set
-from test_setup import (
+from lbk_library.testing_support import (
+    datafile_close,
+    datafile_create,
     filesystem,
-    load_parts_file_table,
-    parts_file_close,
-    parts_file_create,
+    load_datafile_table,
 )
+from test_data import order_line_columns, order_line_value_set
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -40,7 +39,7 @@ order_line_values = {
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     order_line = OrderLine(parts_file)
     return (order_line, parts_file)
 
@@ -63,21 +62,21 @@ def test_009_01_constr(filesystem):
     assert order_line.defaults["cost_each"] == 0.0
     assert order_line.defaults["quantity"] == 0
     assert order_line.defaults["remarks"] == ""
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_02_get_parts_file(filesystem):
     """OrderLine needs correct database."""
     order_line, parts_file = base_setup(filesystem)
     assert order_line.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_03_get_table(filesystem):
     """OrderLine needs the database table 'order_lines'."""
     order_line, parts_file = base_setup(filesystem)
     assert order_line.get_table() == "order_lines"
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_04_get_set_order_number(filesystem):
@@ -120,7 +119,7 @@ def test_009_04_get_set_order_number(filesystem):
     assert not result["valid"]
     assert result["entry"] == bad
     assert len(result["msg"]) > 0
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_05_get_set_line(filesystem):
@@ -169,7 +168,7 @@ def test_009_05_get_set_line(filesystem):
     assert order_line.get_line() == defaults["line"]
     assert result["entry"] == -10
     assert result["valid"] == False
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_06_get_set_part_number(filesystem):
@@ -192,7 +191,7 @@ def test_009_06_get_set_part_number(filesystem):
     assert result["valid"]
     assert result["entry"] == order_line_values["part_number"]
     assert result["entry"] == order_line.get_part_number()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_07_get_set_cost_ea(filesystem):
@@ -261,7 +260,7 @@ def test_009_08_get_set_quantity(filesystem):
     assert order_line.get_quantity() == defaults["quantity"]
     assert result["entry"] == -10
     assert result["valid"] == False
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_09_get_line_cost(filesystem):
@@ -308,7 +307,7 @@ def test_009_10_get_default_property_values(filesystem):
     assert order_line.get_cost_each() == defaults["cost_each"]
     assert order_line.get_quantity() == defaults["quantity"]
     assert order_line.get_remarks() == defaults["remarks"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_11_set_properties_from_dict(filesystem):
@@ -326,7 +325,7 @@ def test_009_11_set_properties_from_dict(filesystem):
     assert order_line_values["cost_each"] == order_line.get_cost_each()
     assert order_line_values["quantity"] == order_line.get_quantity()
     assert order_line_values["remarks"] == order_line.get_remarks()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_12_get_properties_size(filesystem):
@@ -338,7 +337,7 @@ def test_009_12_get_properties_size(filesystem):
     order_line, parts_file = base_setup(filesystem)
     data = order_line.get_properties()
     assert len(data) == len(order_line_values)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_009_13_set_from_partial_dict(filesystem):
@@ -358,7 +357,7 @@ def test_009_13_set_from_partial_dict(filesystem):
     assert order_line_values["cost_each"] == order_line.get_cost_each()
     assert order_line_values["quantity"] == order_line.get_quantity()
     assert order_line_values["remarks"] == order_line.get_remarks()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_16_get_properties_from_database(filesystem):
@@ -385,4 +384,4 @@ def test_001_16_get_properties_from_database(filesystem):
     assert order_line.get_cost_each() == order_line_values["cost_each"]
     assert order_line.get_remarks() == order_line_values["remarks"]
 
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

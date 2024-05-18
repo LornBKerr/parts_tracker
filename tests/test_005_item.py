@@ -11,8 +11,8 @@ import os
 import sys
 
 from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from test_data import item_value_set
-from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -36,7 +36,7 @@ item_values = {
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     item = Item(parts_file)
     return (item, parts_file)
 
@@ -61,21 +61,21 @@ def test_005_01_constr(filesystem):
     assert item.defaults["installed"] == False
     assert item.defaults["remarks"] == ""
     assert item.defaults["box"] == 0
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_02_get_datafile(filesystem):
     """Item needs correct database."""
     item, parts_file = base_setup(filesystem)
     assert item.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_03_get_table(filesystem):
     """Item needs the database table 'items'."""
     item, parts_file = base_setup(filesystem)
     assert item.get_table() == "items"
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_04_get_set_part_number(filesystem):
@@ -98,7 +98,7 @@ def test_005_04_get_set_part_number(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["part_number"]
     assert result["entry"] == item.get_part_number()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_05_get_set_assembly(filesystem):
@@ -121,7 +121,7 @@ def test_005_05_get_set_assembly(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["assembly"]
     assert result["entry"] == item.get_assembly()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_06_get_set_quantity(filesystem):
@@ -147,7 +147,7 @@ def test_005_06_get_set_quantity(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["quantity"]
     assert result["entry"] == item.get_quantity()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_07_get_set_condition(filesystem):
@@ -170,7 +170,7 @@ def test_005_07_get_set_condition(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["condition"]
     assert result["entry"] == item.get_condition()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_08_get_set_installed(filesystem):
@@ -196,7 +196,7 @@ def test_005_08_get_set_installed(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["installed"]
     assert result["entry"] == item.get_installed()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_09_get_set_box(filesystem):
@@ -224,7 +224,7 @@ def test_005_09_get_set_box(filesystem):
     assert result["valid"]
     assert result["entry"] == item_values["box"]
     assert result["entry"] == item.get_box()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_10_get_default_property_values(filesystem):
@@ -244,7 +244,7 @@ def test_005_10_get_default_property_values(filesystem):
     assert item.get_condition() == defaults["condition"]
     assert item.get_installed() == defaults["installed"]
     assert item.get_box() == defaults["box"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_11_set_properties_from_dict(filesystem):
@@ -263,7 +263,7 @@ def test_005_11_set_properties_from_dict(filesystem):
     assert item_values["installed"] == item.get_installed()
     assert item_values["remarks"] == item.get_remarks()
     assert item_values["box"] == item.get_box()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_12_item_get_properties_size(filesystem):
@@ -274,7 +274,7 @@ def test_005_12_item_get_properties_size(filesystem):
     """
     item, parts_file = base_setup(filesystem)
     assert len(item.get_properties()) == len(item_values)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_005_13_item_from_partial_dict(filesystem):
@@ -297,7 +297,7 @@ def test_005_13_item_from_partial_dict(filesystem):
     assert item_values["installed"] == item.get_installed()
     assert item_values["remarks"] == item.get_remarks()
     assert item_values["box"] == item.get_box()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_14_get_properties_from_database(filesystem):
@@ -325,4 +325,4 @@ def test_001_14_get_properties_from_database(filesystem):
     assert item.get_remarks() == item_values["remarks"]
     assert item.get_box() == item_values["box"]
 
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

@@ -11,8 +11,8 @@ import os
 import sys
 
 from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from test_data import order_value_set
-from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -38,7 +38,7 @@ order_values = {
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     order = Order(parts_file)
     return (order, parts_file)
 
@@ -64,19 +64,19 @@ def test_011_01_constr(filesystem):
     assert order.defaults["tax"] == 0.0
     assert order.defaults["total"] == 0.0
     assert order.defaults["remarks"] == ""
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_02_get_table(filesystem):
     order, parts_file = base_setup(filesystem)
     assert order.get_table() == "orders"
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_03_get_parts_file(filesystem):
     order, parts_file = base_setup(filesystem)
     assert order.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_04_get_set_order_number(filesystem):
@@ -101,7 +101,7 @@ def test_011_04_get_set_order_number(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["order_number"]
     assert result["entry"] == order.get_order_number()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_05_get_set_date(filesystem):
@@ -138,7 +138,7 @@ def test_011_05_get_set_date(filesystem):
     assert result["valid"]
     assert result["entry"] == "02/28/2009"
     assert order.get_date() == "02/28/2009"
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_06_get_set_source(filesystem):
@@ -161,7 +161,7 @@ def test_011_06_get_set_source(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["source"]
     assert result["entry"] == order.get_source()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_07_get_set_subtotal(filesystem):
@@ -185,7 +185,7 @@ def test_011_07_get_set_subtotal(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["subtotal"]
     assert result["entry"] == order.get_subtotal()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_08_get_set_shipping(filesystem):
@@ -209,7 +209,7 @@ def test_011_08_get_set_shipping(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["shipping"]
     assert result["entry"] == order.get_shipping()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_09_get_set_discount(filesystem):
@@ -235,7 +235,7 @@ def test_011_09_get_set_discount(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["discount"]
     assert result["entry"] == order.get_discount()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_10_get_set_tax(filesystem):
@@ -259,7 +259,7 @@ def test_011_10_get_set_tax(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["tax"]
     assert result["entry"] == order.get_tax()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_11_get_set_total(filesystem):
@@ -283,7 +283,7 @@ def test_011_11_get_set_total(filesystem):
     assert result["valid"]
     assert result["entry"] == order_values["total"]
     assert result["entry"] == order.get_total()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_12_get_default_property_values(filesystem):
@@ -305,7 +305,7 @@ def test_011_12_get_default_property_values(filesystem):
     assert order.get_discount() == defaults["discount"]
     assert order.get_total() == defaults["total"]
     assert order.get_remarks() == defaults["remarks"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_13_set_order_from_dict(filesystem):
@@ -326,7 +326,7 @@ def test_011_13_set_order_from_dict(filesystem):
     assert order.get_shipping() == order_values["shipping"]
     assert order.get_discount() == order_values["discount"]
     assert order.get_remarks() == order_values["remarks"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_14_get_properties_size(filesystem):
@@ -338,7 +338,7 @@ def test_011_14_get_properties_size(filesystem):
     order, parts_file = base_setup(filesystem)
     data = order.get_properties()
     assert len(data) == len(order_values)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_15_set_order_from_partial_dict(filesystem):
@@ -361,7 +361,7 @@ def test_011_15_set_order_from_partial_dict(filesystem):
     assert order.get_shipping() == order_values["shipping"]
     assert order.get_discount() == order_values["discount"]
     assert order.get_remarks() == order_values["remarks"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_16_correct_column_name(filesystem):
@@ -383,7 +383,7 @@ def test_011_16_correct_column_name(filesystem):
     assert order.get_discount() == defaults["discount"]
     assert order.get_total() == defaults["total"]
     assert order.get_remarks() == defaults["remarks"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_011_17_get_properties_from_database(filesystem):
@@ -415,4 +415,4 @@ def test_011_17_get_properties_from_database(filesystem):
     assert order.get_total() == order_values["total"]
     assert order.get_remarks() == order_values["remarks"]
 
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

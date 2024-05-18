@@ -11,8 +11,8 @@ import os
 import sys
 
 from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from test_data import source_value_set
-from test_setup import filesystem, parts_file_close, parts_file_create
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -28,7 +28,7 @@ parts_filename = "parts_test.parts"
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     source = Source(parts_file)
     return (source, parts_file)
 
@@ -42,21 +42,21 @@ def test_003_01_constr(filesystem):
     assert len(source.defaults) == 2
     assert source.defaults["record_id"] == 0
     assert source.defaults["source"] == ""
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_02_get_parts_file(filesystem):
     """Source needs correct database."""
     source, parts_file = base_setup(filesystem)
     assert source.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_03_get_table(filesystem):
     """Sourcen needs the database table 'sources'."""
     source, parts_file = base_setup(filesystem)
     assert source.get_table() == "sources"
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_04_set_source(filesystem):
@@ -81,7 +81,7 @@ def test_003_04_set_source(filesystem):
     assert result["valid"]
     assert result["entry"] == source_values["source"]
     assert result["entry"] == source.get_source()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_05_get_default_property_values(filesystem):
@@ -95,7 +95,7 @@ def test_003_05_get_default_property_values(filesystem):
     defaults = source.get_initial_values()
     assert source.get_record_id() == defaults["record_id"]
     assert source.get_source() == defaults["source"]
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_06_set_properties_from_dict(filesystem):
@@ -108,7 +108,7 @@ def test_003_06_set_properties_from_dict(filesystem):
     source.set_properties(source_values)
     assert source_values["record_id"] == source.get_record_id()
     assert source_values["source"] == source.get_source()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_07_get_properties_size(filesystem):
@@ -120,7 +120,7 @@ def test_003_07_get_properties_size(filesystem):
     source, parts_file = base_setup(filesystem)
     data = source.get_properties()
     assert len(data) == 2
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_08_source_from_dict(filesystem):
@@ -133,7 +133,7 @@ def test_003_08_source_from_dict(filesystem):
     source = Source(parts_file, source_values)
     assert source_values["record_id"] == source.get_record_id()
     assert source_values["source"] == source.get_source()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_003_09_item_from__partial_dict(filesystem):
@@ -148,7 +148,7 @@ def test_003_09_item_from__partial_dict(filesystem):
     source = Source(parts_file, values)
     assert values["record_id"] == source.get_record_id()
     assert "" == source.get_source()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_001_10_get_properties_from_database(filesystem):
@@ -170,4 +170,4 @@ def test_001_10_get_properties_from_database(filesystem):
     assert record_id == source.get_record_id()
     assert source_values["source"] == source.get_source()
 
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

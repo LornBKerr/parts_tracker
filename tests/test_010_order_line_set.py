@@ -11,13 +11,13 @@ import os
 import sys
 
 from lbk_library import ElementSet
-from test_data import order_line_columns, order_line_value_set
-from test_setup import (
+from lbk_library.testing_support import (
+    datafile_close,
+    datafile_create,
     filesystem,
-    load_parts_file_table,
-    parts_file_close,
-    parts_file_create,
+    load_datafile_table,
 )
+from test_data import order_line_columns, order_line_value_set
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -31,7 +31,7 @@ parts_filename = "parts_test.parts"
 
 def base_setup(filesystem):
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
+    parts_file = datafile_create(filename, table_definition)
     order_line_set = OrderLineSet(parts_file)
     return (order_line_set, parts_file)
 
@@ -48,7 +48,7 @@ def test_010_01_constr(filesystem):
     assert isinstance(order_line_set, ElementSet)
     assert order_line_set.get_table() == "order_lines"
     assert order_line_set.get_datafile() == parts_file
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_010_02_property_set_empty(filesystem):
@@ -67,7 +67,7 @@ def test_010_02_property_set_empty(filesystem):
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(order_line_set.get_property_set())
     assert count == order_line_set.get_number_elements()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_010_03_selected_rows(filesystem):
@@ -76,7 +76,7 @@ def test_010_03_selected_rows(filesystem):
     requested subset of OrderLines.
     """
     order_line_set, parts_file = base_setup(filesystem)
-    load_parts_file_table(
+    load_datafile_table(
         parts_file, "order_lines", order_line_columns, order_line_value_set
     )
     order_line_set = OrderLineSet(parts_file, "order_number", "07-001")
@@ -88,7 +88,7 @@ def test_010_03_selected_rows(filesystem):
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(order_line_set.get_property_set())
     assert count == 2
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_008_4_selected_rows_limit(filesystem):
@@ -98,7 +98,7 @@ def test_008_4_selected_rows_limit(filesystem):
     rows given by 'limit'.
     """
     order_line_set, parts_file = base_setup(filesystem)
-    load_parts_file_table(
+    load_datafile_table(
         parts_file, "order_lines", order_line_columns, order_line_value_set
     )
     limit = 5
@@ -108,7 +108,7 @@ def test_008_4_selected_rows_limit(filesystem):
         order_line_set.get_property_set()[0].get_record_id()
         == order_line_value_set[0][0]
     )
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_008_05_selected_rows_limit_offset(filesystem):
@@ -118,7 +118,7 @@ def test_008_05_selected_rows_limit_offset(filesystem):
     rows given by 'limit' starting at 'offset' number of records.
     """
     order_line_set, parts_file = base_setup(filesystem)
-    load_parts_file_table(
+    load_datafile_table(
         parts_file, "order_lines", order_line_columns, order_line_value_set
     )
     limit = 5
@@ -129,4 +129,4 @@ def test_008_05_selected_rows_limit_offset(filesystem):
         order_line_set.get_property_set()[0].get_record_id()
         == order_line_value_set[2][0]
     )
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
