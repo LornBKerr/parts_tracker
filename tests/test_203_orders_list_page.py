@@ -10,15 +10,10 @@ License:    MIT, see file License
 import os
 import sys
 
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidget
-from test_setup import (
-    filesystem,
-    load_all_parts_file_tables,
-    order_value_set,
-    parts_file_close,
-    parts_file_create,
-)
+from test_setup import load_all_datafile_tables, order_value_set
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -34,8 +29,8 @@ parts_filename = "parts_test.parts"
 def setup_page(qtbot, filesystem):
     """Initialize  parts list page for testing"""
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
-    load_all_parts_file_tables(parts_file)
+    parts_file = datafile_create(filename, table_definition)
+    load_all_datafile_tables(parts_file)
     table = QTableWidget()
     page = OrdersListPage(table, parts_file)
     qtbot.addWidget(table)
@@ -48,7 +43,7 @@ def test_203_01_class_type(qtbot, filesystem):
     assert page.get_parts_file() == parts_file
     assert type(page.table) == QTableWidget
     assert page.table == table
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_203_02_get_number_lines(qtbot, filesystem):
@@ -59,7 +54,7 @@ def test_203_02_get_number_lines(qtbot, filesystem):
     )
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert page.get_number_lines("06-015") == count
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_203_03_set_table_headers(qtbot, filesystem):
@@ -76,7 +71,7 @@ def test_203_03_set_table_headers(qtbot, filesystem):
             header.model().headerData(i, header.orientation()) == page.COLUMN_NAMES[i]
         )
         assert page.table.columnWidth(i) > header.minimumSectionSize()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_203_04_update_table(qtbot, filesystem):
@@ -91,14 +86,14 @@ def test_203_04_update_table(qtbot, filesystem):
     assert (initial_num_parts - page.table.rowCount()) == 2
     assert not page.table.findItems(order_value_set[0][1], Qt.MatchExactly)
     assert not page.table.findItems(order_value_set[1][1], Qt.MatchExactly)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_203_05_clear_table(qtbot, filesystem):
     parts_file, table, page = setup_page(qtbot, filesystem)
     page.clear_table()
     assert page.table.rowCount() == 0
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_203_06_action_order_clicked(qtbot, filesystem):
@@ -106,4 +101,4 @@ def test_203_06_action_order_clicked(qtbot, filesystem):
     order_item = page.table.itemAt(0, 0)
     dialog = page.action_order_clicked(order_item)
     assert type(dialog) == OrderDialog
-    parts_file_close(parts_file)
+    datafile_close(parts_file)

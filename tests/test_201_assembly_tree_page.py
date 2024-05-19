@@ -10,14 +10,9 @@ License:    MIT, see file License
 import os
 import sys
 
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
-from test_setup import (
-    filesystem,
-    item_value_set,
-    load_all_parts_file_tables,
-    parts_file_close,
-    parts_file_create,
-)
+from test_setup import item_value_set, load_all_datafile_tables
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
@@ -33,8 +28,8 @@ parts_filename = "parts_test.parts"
 def setup_page(qtbot, filesystem):
     """Initialize an assembly page for testing"""
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
-    load_all_parts_file_tables(parts_file)
+    parts_file = datafile_create(filename, table_definition)
+    load_all_datafile_tables(parts_file)
     tree = QTreeWidget()
     page = AssemblyTreePage(tree, parts_file)
     qtbot.addWidget(tree)
@@ -47,7 +42,7 @@ def test_201_01_class_type(qtbot, filesystem):
     assert page.get_parts_file() == parts_file
     assert type(page.tree) == QTreeWidget
     assert page.tree == tree
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_201_02_resize_columns(qtbot, filesystem):
@@ -64,6 +59,7 @@ def test_201_02_resize_columns(qtbot, filesystem):
     page.resize_columns()
     for i in range(0, len(AssemblyTreePage.COL_NAMES) - 1):
         assert page.tree.columnWidth(i) > page.tree.header().minimumSectionSize()
+    datafile_close(parts_file)
 
 
 def test_201_03_set_tree_headers(qtbot, filesystem):
@@ -79,6 +75,7 @@ def test_201_03_set_tree_headers(qtbot, filesystem):
     for i in range(0, len(page.COL_NAMES) - 1):
         assert header.model().headerData(i, header.orientation()) == page.COL_NAMES[i]
         assert page.tree.columnWidth(i) > page.tree.header().minimumSectionSize()
+    datafile_close(parts_file)
 
 
 def test_201_04_set_part_description(qtbot, filesystem):
@@ -112,6 +109,7 @@ def test_201_06_set_item_values(qtbot, filesystem):
     item_values = page.set_item_values(item_properties)
     for value in item_values:
         assert type(value) is str
+    datafile_close(parts_file)
 
 
 def test_201_07_find_parent_assy(qtbot, filesystem):
@@ -129,6 +127,7 @@ def test_201_07_find_parent_assy(qtbot, filesystem):
     parent = page.find_parent_assy(assembly, tree_items)
     assert parent is None
     tree_items[assembly] = parent
+    datafile_close(parts_file)
 
 
 def test_201_08_add_item_to_tree(qtbot, filesystem):
@@ -151,6 +150,7 @@ def test_201_08_add_item_to_tree(qtbot, filesystem):
     parent = page.find_parent_assy(assembly2, tree_items)
     tree_items = page.add_item_to_tree(assembly2, item_values, parent, tree_items)
     assert tree_items[assembly2].parent() == tree_items[assembly1]
+    datafile_close(parts_file)
 
 
 def test_201_09_fill_tree_widget(qtbot, filesystem):
@@ -160,6 +160,7 @@ def test_201_09_fill_tree_widget(qtbot, filesystem):
     assert type(tree_items["A"]) is QTreeWidgetItem
     assert tree_items["AA"].parent() == tree_items["A"]
     assert len(tree_items) == len(item_value_set)
+    datafile_close(parts_file)
 
 
 def test_201_10_update_tree(qtbot, filesystem):
@@ -174,6 +175,7 @@ def test_201_10_update_tree(qtbot, filesystem):
     assert (init_num_items - len(tree_items)) == 2
     assert not "ABFCB" in tree_items.keys()
     assert not "AAACB" in tree_items.keys()
+    datafile_close(parts_file)
 
 
 def test_201_11_clear_tree(qtbot, filesystem):
@@ -185,6 +187,7 @@ def test_201_11_clear_tree(qtbot, filesystem):
     page.clear_tree()
     top_item_count = page.tree.topLevelItemCount()
     assert top_item_count == 0
+    datafile_close(parts_file)
 
 
 def test_201_12_action_item_clicked(qtbot, filesystem):
@@ -195,3 +198,4 @@ def test_201_12_action_item_clicked(qtbot, filesystem):
     item = page.tree.itemAt(0, 0)
     dialog = page.action_item_clicked(item, 0)
     assert type(dialog) == ItemDialog
+    datafile_close(parts_file)

@@ -10,22 +10,17 @@ License:    MIT, see file License
 import os
 import sys
 
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidget
-from test_setup import (
-    filesystem,
-    load_all_parts_file_tables,
-    part_value_set,
-    parts_file_close,
-    parts_file_create,
-)
+from test_setup import load_all_datafile_tables, part_value_set
 
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
 from dialogs import PartDialog
-from elements import Part, PartSet  # Item,
+from elements import Part, PartSet
 from pages import PartsListPage, table_definition
 
 parts_filename = "parts_test.parts"
@@ -34,8 +29,8 @@ parts_filename = "parts_test.parts"
 def setup_page(qtbot, filesystem):
     """Initialize  parts list page for testing"""
     filename = filesystem + "/" + parts_filename
-    parts_file = parts_file_create(filename, table_definition)
-    load_all_parts_file_tables(parts_file)
+    parts_file = datafile_create(filename, table_definition)
+    load_all_datafile_tables(parts_file)
     table = QTableWidget()
     page = PartsListPage(table, parts_file)
     qtbot.addWidget(table)
@@ -49,6 +44,7 @@ def test_202_01_class_type(qtbot, filesystem):
     assert page.get_parts_file() == parts_file
     assert type(page.table) == QTableWidget
     assert page.table == table
+    datafile_close(parts_file)
 
 
 def test_202_02_set_table_headers(qtbot, filesystem):
@@ -66,7 +62,7 @@ def test_202_02_set_table_headers(qtbot, filesystem):
             header.model().headerData(i, header.orientation()) == page.COLUMN_NAMES[i]
         )
         assert page.table.columnWidth(i) > header.minimumSectionSize()
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_202_03_update_table(qtbot, filesystem):
@@ -81,7 +77,7 @@ def test_202_03_update_table(qtbot, filesystem):
     assert (initial_num_parts - page.table.rowCount()) == 2
     assert not page.table.findItems(part_value_set[0][1], Qt.MatchExactly)
     assert not page.table.findItems(part_value_set[1][1], Qt.MatchExactly)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_202_04_clear_table(qtbot, filesystem):
@@ -89,8 +85,8 @@ def test_202_04_clear_table(qtbot, filesystem):
 
     page.clear_table()
     assert page.table.rowCount() == 0
-    parts_file_close(parts_file)
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
+    datafile_close(parts_file)
 
 
 def test_202_05_action_part_clicked(qtbot, filesystem):
@@ -99,4 +95,4 @@ def test_202_05_action_part_clicked(qtbot, filesystem):
     part_item = page.table.itemAt(0, 0)
     dialog = page.action_part_clicked(part_item)
     assert type(dialog) == PartDialog
-    parts_file_close(parts_file)
+    datafile_close(parts_file)
