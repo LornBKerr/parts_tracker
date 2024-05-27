@@ -442,9 +442,12 @@ class ItemDialog(BaseDialog):
             self.form.record_id_combo.setEnabled(False)
             self.form.record_id_combo.setToolTip(self.TOOLTIPS["record_id_tbd"])
             self.get_element().set_value_valid_flag("record_id", True)
+            self.form.setWindowTitle("Add an Item")
         else:
             self.form.record_id_combo.setEnabled(True)
             self.form.record_id_combo.setToolTip(ItemDialog.TOOLTIPS["record_id"])
+            self.form.setWindowTitle("Edit an Item")
+
 
     def set_error_frames(self) -> None:
         """Attach and initialize the error_frames."""
