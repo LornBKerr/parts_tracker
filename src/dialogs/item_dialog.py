@@ -1,16 +1,17 @@
 """
-Edit an Item in the database.
+Edit an Item in the parts file.
 
 File:       item_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2020 - 2023 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
 """
 
 from copy import deepcopy
+from typing import ClassVar
 
-from lbk_library import Dbal
-from lbk_library.gui import Dialog
+from lbk_library import DataFile
+from lbk_library.gui import Dialog  # , ErrorFrame
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
@@ -21,12 +22,12 @@ from .base_dialog import BaseDialog
 
 class ItemDialog(BaseDialog):
     """
-    Edit an Item in the database.
+    Edit an Item in the parts file.
 
     An Item can be added, edited or deleted.
     """
 
-    TOOLTIPS = {
+    TOOLTIPS: ClassVar[dict[str, str]] = {
         "assembly": "Required: Enter the Assembly, 1 to 15 Characters",
         "box": "Optional: Enter Storage box if stored, 0 to 99",
         "cancel": "Close the form, optionally saving any changed information",
@@ -34,19 +35,19 @@ class ItemDialog(BaseDialog):
         "delete": "Permanently DELETE the current item and all the lines",
         "installed": "Check if Item is installed",
         "part_number": "Select Part Number, Required",
-        "quantity": "Required: Enter quantity, 0 to  999, 0 default",
+        "quantity": "Required: Enter quantity, 0 to  999, 0 is default",
         "record_id": "Required: Select the Item index",
         "record_id_tbd": "Item ID will be assigned when Item is saved",
         "remarks": "Optional: up to 255 characters",
         "save_new": "Save the current item, then clear the form",
         "save_done": "Save the current item, then close the form",
     }
-    """ Tooltips for each of the elements on the form. """
+    """Tooltips for each of the elements on the form. """
 
     def __init__(
         self,
         parent: QMainWindow,
-        dbref: Dbal,
+        parts_file: DataFile,
         record_id: int = None,
         operation: int = Dialog.EDIT_ELEMENT,
     ) -> None:
@@ -55,18 +56,19 @@ class ItemDialog(BaseDialog):
 
         Parameters:
             parent(QMainWindow): the parent window owning this dialog.
-            dbref (Dbal): reference to the database for this item.
-            record_id (integer): the index into the database for the
+            parts_file (DataFile): reference to the parts file for this
+                item.
+            record_id (integer): the index into the parts file for the
                 item to be edited, default is None
             operation (integer): either the constant Dialog.ADD_ELEMENT
                 if a new item is to be added or the constant
                 Dialog.EDIT_ELEMENT for editing an existing item,
                 defaults to Dialog.EDIT_ELEMENT
         """
-        super().__init__(parent, dbref, operation)
-        self.set_element(Item(dbref, record_id))
+        super().__init__(parent, parts_file, operation)
+
+        self.set_element(Item(parts_file, record_id))
         self.form = uic.loadUi("./src/forms/item.ui", self)
-        self.set_error_frames()
 
         self.set_table_header(
             self.form.order_table,
@@ -74,8 +76,9 @@ class ItemDialog(BaseDialog):
             BaseDialog.PART_ORDER_COL_WIDTHS,
             len(BaseDialog.PART_ORDER_COL_WIDTHS) - 1,
         )
-
+        self.set_error_frames()
         self.set_visible_add_edit_elements()
+
         self.fill_dialog_fields()
 
         # Set dialog button actions
@@ -91,25 +94,22 @@ class ItemDialog(BaseDialog):
         )
 
         # set dialog element actions
-        self.form.assembly_edit.editingFinished.connect(self.action_assembly_changed)
-        self.form.condition_combo.activated.connect(self.action_condition_changed)
-        self.form.installed_chkbox.stateChanged.connect(self.action_installed_changed)
-        self.form.part_number_combo.activated.connect(self.action_part_number_changed)
-        self.form.quantity_edit.editingFinished.connect(self.action_quantity_changed)
+        self.form.assembly_edit.editingFinished.connect(self.action_assembly_edit)
+        self.form.condition_combo.activated.connect(self.action_condition_combo)
+        self.form.installed_chkbox.stateChanged.connect(self.action_installed_checkbox)
+        self.form.quantity_edit.editingFinished.connect(self.action_quantity_edit)
+        self.form.part_number_combo.activated.connect(self.action_part_number_combo)
+        self.form.remarks_edit.editingFinished.connect(self.action_remarks_edit)
+        self.form.storage_box_edit.editingFinished.connect(self.action_storage_box_edit)
         self.form.record_id_combo.activated.connect(self.action_record_id_changed)
-        self.form.remarks_edit.editingFinished.connect(self.action_remarks_changed)
-        self.form.storage_box_edit.editingFinished.connect(
-            self.action_storage_box_changed
-        )
 
     def action_delete(self) -> None:
         """
-        Delete Item from the database.
+        Delete Item from the parts file.
 
-        The Item selected is deleted from the database, then the dialog
-        is cleared for another entry. If the deletion is not successful,
-        a failure message is displayed.
-        Item's record_id.
+        The Item selected is deleted from the parts file, then the
+        dialog is cleared for another entry. If the deletion is not
+        successful, a failure message is displayed.
         """
         item = self.get_element()
         if self.form.record_id_combo.currentText():
@@ -126,37 +126,28 @@ class ItemDialog(BaseDialog):
 
     def action_save(self, done: int) -> None:
         """
-        Save the Item to the database.
+         Save the Item to the parts file.
 
-        The dialog contents are validated and, if valid, added to the
-        database. If the save is successful, the dialog is closed or
+         The dialog contents are validated and, if valid, added to the
+         parts file. If the save is successful, the dialog is closed or
         cleared for another entry as indicated by 'done'. If not
-        successful, a failure message is displayed.
+         successful, a failure message is displayed.
 
-        Parameters:
-            done (integer) Dialog.SAVE_DONE if finished with dialog,
-                Dialog.SAVE_NEW to do another new item
-        Returns:
-            (int) result of save operation
-                0 - Item successfully saved/updated
-                1 - Item is invalid and needs correction
-                2 - Item saved/updated, but the parameter 'done' has an
-                    incorrect value.
-                3 - Item save/update failed for some reason
+         Parameters:
+             done (integer) Dialog.SAVE_DONE if finished with dialog,
+                 Dialog.SAVE_NEW to do another new item
+         Returns:
+             (int) result of save operation
+                 0 - Item successfully saved/updated
+                 1 - Item is invalid and needs correction
+                 2 - Item saved/updated, but the parameter 'done' has an
+                     incorrect value.
+                 3 - Item save/update failed for some reason
         """
         return_value = -1
         success = False
         item = self.get_element()
         if not item.is_element_valid():
-            # check all entries.
-            self.action_assembly_changed()
-            self.action_condition_changed()
-            self.action_installed_changed()
-            self.action_part_number_changed()
-            self.action_quantity_changed()
-            self.action_remarks_changed()
-            self.action_storage_box_changed()
-            # show error message
             self.message_box_exec(self.message_warning_invalid())
             return_value = 1
         else:
@@ -180,9 +171,54 @@ class ItemDialog(BaseDialog):
                 self.message_box_exec(self.message_warning_failed("Item Save"))
         return return_value
 
-    def action_assembly_changed(self) -> None:
+    def action_record_id_changed(self) -> None:
         """
-        Validate and update assembly entry.
+        Item Number selection has changed.
+
+        If the new record_id has not changed, do nothing.
+
+        If no changes on the dialog entries, repopulate the from with
+        the new Item info.
+
+        If any dialog element has changed, give the user the option of
+        saving the changed item info or cancelling the item number
+        change.
+        """
+        item = self.get_element()
+        new_index = self.form.record_id_combo.currentText()
+        if new_index == "":
+            new_index = -1
+
+        # Are there unsaved edits
+        if not item.have_values_changed():
+            # no changes or changes already saved
+            self.set_element(Item(self.get_datafile(), int(new_index)))
+            self.fill_dialog_fields()
+        else:  # unsaved changes
+            prev_index = item.get_record_id()
+            result = self.message_box_exec(self.message_question_changed("Item Number"))
+
+            if result == QMessageBox.StandardButton.Yes:
+                # save item with previous item number, then change to new item number
+                save_result = item.update()
+                if save_result:
+                    self.set_element(Item(self.get_datafile(), new_index))
+                    self.fill_dialog_fields()
+                else:
+                    self.message_box_exec(self.message_warning_failed("Item Save"))
+
+            elif result == QMessageBox.StandardButton.No:
+                # don't save, change to new item number
+                self.set_element(Item(self.get_datafile(), new_index))
+                self.fill_dialog_fields()
+
+            elif result == QMessageBox.StandardButton.Cancel:
+                # cancel the record_id change, restore previous item number
+                self.form.record_id_combo.setCurrentText(str(prev_index))
+
+    def action_assembly_edit(self) -> None:
+        """
+        Update and validate assembly entry.
 
         The entry is forced to upper case and validated. Error flags are
         set if necessary.
@@ -194,27 +230,20 @@ class ItemDialog(BaseDialog):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        item = self.get_element()
-        # force to upper case and validate
         self.form.assembly_edit.setText(self.form.assembly_edit.text().upper())
-        result = item.set_assembly(self.form.assembly_edit.text())
-        if result["valid"]:
-            self.form.assembly_edit.error = False
-            self.form.assembly_edit.setToolTip(ItemDialog.TOOLTIPS["assembly"])
-        else:
-            self.form.assembly_edit.error = True
-            self.form.assembly_edit.setToolTip(
-                result["msg"] + ";\n" + ItemDialog.TOOLTIPS["assembly"]
-            )
-        return result
+        return self.validate_dialog_entry(
+            self.get_element().set_assembly,
+            self.form.assembly_edit,
+            ItemDialog.TOOLTIPS["assembly"],
+        )
 
-    def action_condition_changed(self) -> None:
+    def action_condition_combo(self) -> None:
         """
-        Update the changed flag for the Condition combo box.
+        Update/validate the 'condition' entry for the dialog.
 
         The Condition entry, selected from one of the choices, is
-        required. If the current value does not match the initial value,
-        the change flag is set.
+        required. If the condition is not set, an error is flagged and
+        error message included in the tooltip.
 
         Returns:
             (dict)
@@ -223,42 +252,31 @@ class ItemDialog(BaseDialog):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        item = self.get_element()
-        result = item.set_condition(self.form.condition_combo.currentText())
-        if result["valid"]:
-            self.form.condition_combo.error = False
-            self.form.condition_combo.setToolTip(ItemDialog.TOOLTIPS["condition"])
-        else:
-            self.form.condition_combo.error = True
-            self.form.condition_combo.setToolTip(
-                result["msg"] + "; " + ItemDialog.TOOLTIPS["condition"]
-            )
-        return result
+        return self.validate_dialog_entry(
+            self.get_element().set_condition,
+            self.form.condition_combo,
+            ItemDialog.TOOLTIPS["condition"],
+        )
 
-    def action_installed_changed(self) -> None:
+    def action_installed_checkbox(self) -> None:
         """
-        Update the changed flag for the 'Installed' entry.
-
-        The entry in the Installed box is validated and the change flag
-        is set if the entry is not the same as the initial entry.
+        Update the Item's installed flag.
 
         Returns:
             (dict)
-                ['entry'] - (str) the updated install state
+                ['entry'] - (str) the updated condition
                 ['valid'] - (bool) True if the entered value is valid,
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        item = self.get_element()
-        result = item.set_installed(self.form.installed_chkbox.isChecked())
-        return result
+        return self.get_element().set_installed(self.form.installed_chkbox.isChecked())
 
-    def action_part_number_changed(self) -> None:
+    def action_part_number_combo(self) -> None:
         """
-        Update the changed flag for the 'Remarks' entry.
+        Validate the "Part Number" entry.
 
-        The entry in the "Part Number" entry is validated and the change
-        flag is set if the entry is not the same as the initial entry.
+        Load the order table and item tables. Must be one of the
+        pre-defined part numbers.
 
         Returns:
             (dict)
@@ -267,126 +285,43 @@ class ItemDialog(BaseDialog):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
+        print(self.form.part_number_combo.currentText())
         item = self.get_element()
-        result = item.set_part_number(self.form.part_number_combo.currentText())
-        print(result)
+        result = self.validate_dialog_entry(
+            self.get_element().set_part_number,
+            self.form.part_number_combo,
+            ItemDialog.TOOLTIPS["part_number"],
+        )
         self.fill_part_fields(result["entry"])
         self.fill_order_table_fields(result["entry"])
-        if result["valid"]:
-            self.form.part_number_combo.error = False
-            self.form.part_number_combo.setToolTip(ItemDialog.TOOLTIPS["part_number"])
-        else:
-            self.form.part_number_combo.error = True
-            self.form.part_number_combo.setToolTip(
-                result["msg"] + "; " + ItemDialog.TOOLTIPS["part_number"]
-            )
         return result
 
-    def action_quantity_changed(self) -> None:
+    def action_quantity_edit(self) -> None:
         """
-        Update the changed flag for the 'Quantity' entry.
-
-        The entry in the Quantity box is validated and the change flag
-        is set if the entry is not the same as the initial entry.
+         Validate the Quantity for this item. May be empty (0).
 
         Returns:
-            (dict)
-                ['entry'] - (str) the updated quantity
-                ['valid'] - (bool) True if the entered value is valid,
-                    False otherwise
-                ['msg'] - (str) Error message if not valid
+             (dict)
+                 ['entry'] - (str) the updated quantity
+                 ['valid'] - (bool) True if the entered value is valid,
+                     False otherwise
+                 ['msg'] - (str) Error message if not valid
         """
         item = self.get_element()
         if self.form.quantity_edit.text() == "":
             self.form.quantity_edit.setText("0")
-        result = item.set_quantity(int(self.form.quantity_edit.text()))
-        if result["valid"]:
-            self.form.quantity_edit.error = False
-            self.form.quantity_edit.setToolTip(ItemDialog.TOOLTIPS["quantity"])
-        else:
-            self.form.quantity_edit.error = True
-            self.form.quantity_edit.setToolTip(
-                result["msg"] + "; " + ItemDialog.TOOLTIPS["quantity"]
-            )
-        return result
+        return self.validate_dialog_entry(
+            self.get_element().set_quantity,
+            self.form.quantity_edit,
+            ItemDialog.TOOLTIPS["quantity"],
+        )
 
-    def action_remarks_changed(self) -> None:
+    def action_storage_box_edit(self) -> None:
         """
-        Update the changed flag for the 'Remarks' entry.
+        Validate the Box entry is validated.
 
-        The entry in the Remarks entry is validated and the change flag
-        is set if the entry is not the same as the initial entry.
-
-        Returns:
-            (dict)
-                ['entry'] - (str) the updated remarks
-                ['valid'] - (bool) True if the entered value is valid,
-                    False otherwise
-                ['msg'] - (str) Error message if not valid
-        """
-        item = self.get_element()
-        result = item.set_remarks(self.form.remarks_edit.text())
-        if result["valid"]:
-            self.form.remarks_edit.error = False
-            self.form.remarks_edit.setToolTip(ItemDialog.TOOLTIPS["remarks"])
-        else:
-            self.form.remarks_edit.error = True
-            self.form.remarks_edit.setToolTip(
-                result["msg"] + "; " + ItemDialog.TOOLTIPS["remarks"]
-            )
-        return result
-
-    def action_record_id_changed(self) -> None:
-        """
-        Item Number selection has changed.
-
-        If the new record_id has not changed, do nothing.
-
-        If no changes on the dialog entries, repopulate the from with
-        the new Item info.
-
-        If any dialog element has changed, give the
-        user the option of saving the changed item info or cancelling
-        the item number change.
-        """
-        item = self.get_element()
-        new_index = self.form.record_id_combo.currentText()
-        if new_index == "":
-            new_index = -1
-
-        # Are there unsaved edits
-        if not item.have_values_changed():
-            # no changes or changes already saved
-            self.set_element(Item(self.get_dbref(), int(new_index)))
-            self.fill_dialog_fields()
-        else:  # unsaved changes
-            prev_index = item.get_record_id()
-            result = self.message_box_exec(self.message_question_changed("Item Number"))
-
-            if result == QMessageBox.StandardButton.Yes:
-                # save item with previous item number, then change to new item number
-                save_result = item.update()
-                if save_result:
-                    self.set_element(Item(self.get_dbref(), new_index))
-                    self.fill_dialog_fields()
-                else:
-                    self.message_box_exec(self.message_warning_failed("Item Save"))
-
-            elif result == QMessageBox.StandardButton.No:
-                # don't save, change to new item number
-                self.set_element(Item(self.get_dbref(), new_index))
-                self.fill_dialog_fields()
-
-            elif result == QMessageBox.StandardButton.Cancel:
-                # cancel the record_id change, restore previous item number
-                self.form.record_id_combo.setCurrentText(str(prev_index))
-
-    def action_storage_box_changed(self) -> None:
-        """
-        Update the changed flag for the 'Box' entry.
-
-        The entry in the Box entry is validated and the change flag is
-        set if the entry is not the same as the initial entry.
+        Optional; if given, must be between 1 and 99. If 0, a blank
+        field is displayed.
 
         Returns:
             (dict)
@@ -398,18 +333,33 @@ class ItemDialog(BaseDialog):
         item = self.get_element()
         if self.form.storage_box_edit.text() == "":
             self.form.storage_box_edit.setText("0")
-        result = item.set_box(self.form.storage_box_edit.text())
+        result = self.validate_dialog_entry(
+            self.get_element().set_box,
+            self.form.storage_box_edit,
+            ItemDialog.TOOLTIPS["box"],
+        )
         if self.form.storage_box_edit.text() == "0":
             self.form.storage_box_edit.setText("")
-        if result["valid"]:
-            self.form.storage_box_edit.error = False
-            self.form.storage_box_edit.setToolTip(ItemDialog.TOOLTIPS["box"])
-        else:
-            self.form.storage_box_edit.error = True
-            self.form.storage_box_edit.setToolTip(
-                result["msg"] + "; " + ItemDialog.TOOLTIPS["box"]
-            )
         return result
+
+    def action_remarks_edit(self) -> dict:
+        """
+        Validate remarks entry.
+
+        Update the error indicator flag as needed.
+
+        Returns:
+            (dict)
+                ['entry'] - (str) the updated remarks
+                ['valid'] - (bool) True if the entered value is valid,
+                    False otherwise
+                ['msg'] - (str) Error message if not valid
+        """
+        return self.validate_dialog_entry(
+            self.get_element().set_remarks,
+            self.form.remarks_edit,
+            ItemDialog.TOOLTIPS["remarks"],
+        )
 
     def fill_dialog_fields(self) -> None:
         """
@@ -421,15 +371,16 @@ class ItemDialog(BaseDialog):
         initial_conditions = deepcopy(item.get_properties())
         self.set_combo_box_selections(
             self.form.record_id_combo,
-            ItemSet(self.get_dbref(), None, None, "record_id").build_option_list(
+            ItemSet(self.get_datafile(), None, None, "record_id").build_option_list(
                 "record_id"
             ),
             str(item.get_record_id()),
         )
+
         self.form.assembly_edit.setText(item.get_assembly())
         self.set_combo_box_selections(
             self.form.condition_combo,
-            ConditionSet(self.get_dbref()).build_option_list("condition"),
+            ConditionSet(self.get_datafile()).build_option_list("condition"),
             item.get_condition(),
         )
         qty = item.get_quantity()
@@ -443,7 +394,9 @@ class ItemDialog(BaseDialog):
             box = ""
         self.form.storage_box_edit.setText(str(box))
         self.form.remarks_edit.setText(item.get_remarks())
+
         self.fill_part_fields(item.get_part_number())
+
         if item.get_part_number():
             self.fill_order_table_fields(item.get_part_number())
 
@@ -465,10 +418,10 @@ class ItemDialog(BaseDialog):
             part_number (String) The part number for the current item,
                 default is None
         """
-        part = Part(self.get_dbref(), part_number, "part_number")
+        part = Part(self.get_datafile(), part_number, "part_number")
         self.set_combo_box_selections(
             self.form.part_number_combo,
-            PartSet(self.get_dbref(), None, None, "part_number").build_option_list(
+            PartSet(self.get_datafile(), None, None, "part_number").build_option_list(
                 "part_number"
             ),
             part_number,
@@ -480,7 +433,7 @@ class ItemDialog(BaseDialog):
 
     def clear_dialog(self) -> None:
         """Clear the dialog entry fields."""
-        self.set_element(Item(self.get_dbref()))
+        self.set_element(Item(self.get_datafile()))
         self.fill_dialog_fields()
 
     def set_visible_add_edit_elements(self) -> None:
@@ -495,9 +448,10 @@ class ItemDialog(BaseDialog):
 
     def set_error_frames(self) -> None:
         """Attach and initialize the error_frames."""
-        self.form.assembly_edit.set_frame(self.form.assembly_frame)
-        self.form.condition_combo.set_frame(self.form.condition_frame)
-        self.form.part_number_combo.set_frame(self.form.part_number_frame)
-        self.form.quantity_edit.set_frame(self.form.quantity_frame)
-        self.form.record_id_combo.set_frame(self.form.record_id_frame)
-        self.form.storage_box_edit.set_frame(self.form.storage_box_frame)
+        self.form.assembly_edit.set_error_frame(self.form.assembly_frame)
+        self.form.condition_combo.set_error_frame(self.form.condition_frame)
+        self.form.part_number_combo.set_error_frame(self.form.part_number_frame)
+        self.form.quantity_edit.set_error_frame(self.form.quantity_frame)
+        self.form.record_id_combo.set_error_frame(self.form.record_id_frame)
+        self.form.storage_box_edit.set_error_frame(self.form.storage_box_frame)
+        self.form.remarks_edit.set_error_frame(self.form.remarks_frame)
