@@ -88,7 +88,6 @@ class Condition(Element):
             properties (dict) the element values; keys must match the
             required keys of the Condition being creates/modified
         """
-        print(properties)
         if properties is not None and isinstance(properties, dict):
             # Handle the 'record_id' and 'remarks' entries
             super().set_properties(properties)
@@ -96,7 +95,6 @@ class Condition(Element):
             for key in properties.keys():
                 if key == "condition":
                     self.set_condition(properties[key])
-        print(self.get_properties(), "\n")
 
     def get_condition(self) -> str:
         """
