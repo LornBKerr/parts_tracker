@@ -7,7 +7,7 @@ Copyright:  (c) 2020 - 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-from lbk_library import Dbal, Dialog
+from lbk_library import DataFile, Dialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
 
@@ -19,7 +19,7 @@ class BaseDialog(Dialog):
     Base class for the Parts System dialogs.
 
     Holds common functions used by all the editing dialogs in the parts
-    database program.
+    parts file program.
     """
 
     PART_ORDER_COL_NAMES = [
@@ -37,15 +37,18 @@ class BaseDialog(Dialog):
     PART_ORDER_COL_WIDTHS = [60, 100, 60, 40, 120, 70, 100, 1]
     """ Widths of the Order Table columns for the Item and Part dialogs."""
 
-    def __init__(self, parent: QMainWindow, dbref: Dbal, operation: int) -> None:
+    def __init__(
+        self, parent: QMainWindow, parts_file: DataFile, operation: int
+    ) -> None:
         """
         Initialize the DialogBase.
 
         Parameters:
             parent(QMainWindow):  the parent window owning this dialog.
-            dbref (Dbal): reference to the database for this item.
+            parts_file (DataFile): reference to the parts file for this item.
         """
-        super().__init__(parent, dbref, operation)
+        super().__init__(parent, parts_file, operation)
+        self.form = None
 
     def set_table_header(
         self,
@@ -92,7 +95,7 @@ class BaseDialog(Dialog):
             part_number (String) The current part part number.
         """
         order_lines = OrderLineSet(
-            self.get_dbref(), "part_number", part_number, "order_number"
+            self.get_datafile(), "part_number", part_number, "order_number"
         )
         if not part_number:
             order_lines.set_property_set([])
@@ -100,7 +103,7 @@ class BaseDialog(Dialog):
         table.setRowCount(order_lines.get_number_elements())
         row = 0
         for order_line in order_lines:
-            order = Order(self.get_dbref(), order_line.get_order_number())
+            order = Order(self.get_datafile(), order_line.get_order_number())
             entry = QTableWidgetItem(order_line.get_order_number())
             entry.setTextAlignment(
                 Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
