@@ -7,19 +7,28 @@ Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
 """
 
-
 import os
 import sys
 
-from lbk_library import Dbal
+from lbk_library import DataFile
 from lbk_library.gui import Dialog
-from PyQt5.QtWidgets import QDialog, QMainWindow, QTableWidget, QWidget
+from lbk_library.testing_support import (
+    datafile_close,
+    datafile_create,
+    filesystem,
+    load_datafile_table,
+)
+from PyQt5 import QtCore, uic
+from PyQt5.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QTableWidget,
+    QWidget,
+)
 from test_setup import (
-    db_close,
-    db_create,
-    db_open,
-    dialog_form,
-    load_db_table,
     order_columns,
     order_line_columns,
     order_line_value_set,
@@ -33,12 +42,13 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from dialogs import BaseDialog
+from pages import table_definition
 
 
 def test_101_01_class_type(qtbot):
-    dbref = Dbal()
+    parts_file = DataFile()
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
+    dialog = BaseDialog(main, parts_file, Dialog.VIEW_ELEMENT)
     qtbot.addWidget(main)
     assert isinstance(dialog, BaseDialog)
     assert isinstance(dialog, Dialog)
@@ -48,9 +58,9 @@ def test_101_01_class_type(qtbot):
 def test_101_02_set_header_names(qtbot):
     column_names = ["col1", "col2"]
     column_widths = [40, 50]
-    dbref = Dbal()
+    parts_file = DataFile()
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
+    dialog = BaseDialog(main, parts_file, Dialog.VIEW_ELEMENT)
     test_table = QTableWidget(2, 7, dialog)
     test_table.resize(80, 80)
     qtbot.addWidget(main)
@@ -63,11 +73,10 @@ def test_101_02_set_header_names(qtbot):
     dialog.set_table_header(test_table, column_names, column_widths, 1)
 
 
-def test_101_03_save_buttons_enable(qtbot, db_create):
-    dbref = db_create
+def test_101_03_save_buttons_enable(qtbot):
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
-    dialog.form = dialog_form(dialog)
+    dialog = BaseDialog(main, None, Dialog.VIEW_ELEMENT)
+    dialog.form = uic.loadUi("tests/base_dialog_test.ui", None)
     dialog.save_buttons_enable(False)
     assert not dialog.form.save_new_button.isEnabled()
     assert not dialog.form.save_done_button.isEnabled()
@@ -77,20 +86,26 @@ def test_101_03_save_buttons_enable(qtbot, db_create):
     dialog.save_buttons_enable(False)
     assert not dialog.form.save_new_button.isEnabled()
     assert not dialog.form.save_done_button.isEnabled()
-    db_close(dbref)
 
 
-def test_101_04_file_order_table_fields(qtbot, db_create):
-    dbref = db_create
+def test_101_04_fill_order_table_fields(qtbot, filesystem):
+    filename = filesystem + "/test_101_04.parts"
+    parts_file = datafile_create(filename, table_definition)
     main = QMainWindow()
-    dialog = BaseDialog(main, dbref, Dialog.VIEW_ELEMENT)
-    dialog.form = dialog_form(dialog)
-    load_db_table(dbref, "order_lines", order_line_columns, order_line_value_set)
-    load_db_table(dbref, "orders", order_columns, order_value_set)
-    load_db_table(dbref, "parts", part_columns, part_value_set)
+    dialog = BaseDialog(main, parts_file, Dialog.VIEW_ELEMENT)
+    dialog.form = uic.loadUi("tests/base_dialog_test.ui", None)
+    dialog.set_table_header(
+        dialog.form.order_table,
+        dialog.PART_ORDER_COL_NAMES,
+        dialog.PART_ORDER_COL_WIDTHS,
+    )
+    load_datafile_table(
+        parts_file, "order_lines", order_line_columns, order_line_value_set
+    )
+    load_datafile_table(parts_file, "orders", order_columns, order_value_set)
+    load_datafile_table(parts_file, "parts", part_columns, part_value_set)
     dialog.fill_order_table_fields(part_value_set[0][1])
     assert dialog.form.order_table.rowCount() == 1
     dialog.fill_order_table_fields("")
     assert dialog.form.order_table.rowCount() == 0
-    db_close(dbref)
-
+    datafile_close(parts_file)
