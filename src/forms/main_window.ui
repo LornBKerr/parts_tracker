@@ -192,7 +192,7 @@
     <string>Open Parts File</string>
    </property>
    <property name="menuRole">
-    <enum>QAction::TextHeuristicRole</enum>
+    <enum>QAction::MenuRole::TextHeuristicRole</enum>
    </property>
   </action>
   <action name="action_file_close">
@@ -232,12 +232,12 @@
   </action>
   <action name="action_edit_conditions">
    <property name="text">
-    <string>Edit Available Item Conditions</string>
+    <string>Add /Edit Item Conditions</string>
    </property>
   </action>
   <action name="action_update_sources">
    <property name="text">
-    <string>Add/Update Part Sources</string>
+    <string>Add / Edit Part Sources</string>
    </property>
   </action>
  </widget>
