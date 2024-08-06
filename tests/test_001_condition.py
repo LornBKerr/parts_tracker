@@ -133,9 +133,13 @@ def test_001_06_set_properties_from_dict(filesystem):
     The inital values can be set from a dict input.
     """
     condition, parts_file = base_setup(filesystem)
-    condition.set_properties(condition_values)
+    set_results = condition.set_properties(condition_values)
     assert condition_values["record_id"] == condition.get_record_id()
     assert condition_values["condition"] == condition.get_condition()
+    assert len(set_results) == 2
+    assert set_results["condition"]["entry"] == condition_values["condition"]
+    assert set_results["condition"]["valid"] == True
+    assert set_results["condition"]["msg"] == ""
     datafile_close(parts_file)
 
 

@@ -90,11 +90,12 @@ class Condition(Element):
         """
         if properties is not None and isinstance(properties, dict):
             # Handle the 'record_id' and 'remarks' entries
-            super().set_properties(properties)
+            set_results = super().set_properties(properties)
             # Handle all the other properties here
             for key in properties.keys():
                 if key == "condition":
-                    self.set_condition(properties[key])
+                    set_results[key] = self.set_condition(properties[key])
+        return set_results
 
     def get_condition(self) -> str:
         """
