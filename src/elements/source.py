@@ -85,11 +85,12 @@ class Source(Element):
         """
         if properties is not None and isinstance(properties, dict):
             # Handle the 'record_id' and 'remarks' entries
-            super().set_properties(properties)
+            set_results = super().set_properties(properties)
             # Handle all the other properties here
             for key in properties.keys():
                 if key == "source":
-                    self.set_source(properties[key])
+                    set_results[key] = self.set_source(properties[key])
+        return set_results
 
     def get_source(self) -> str:
         """
