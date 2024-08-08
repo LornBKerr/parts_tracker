@@ -7,6 +7,12 @@ Copyright:  (c) 2022, 2024 Lorn B Kerr
 License:    MIT, see file License
 """
 
+# ##############
+# ****
+# Change definitions of 'condition' and 'source' from text to integer default 0.
+# ****
+# ##############
+
 table_definition = [
     (
         'CREATE TABLE "conditions" '
@@ -19,7 +25,7 @@ table_definition = [
         'part_number TEXT DEFAULT "", '
         'assembly TEXT DEFAULT "", '
         "quantity INTEGER DEFAULT 0, "
-        'condition TEXT DEFAULT "", '
+        'condition INTEGER DEFAULT 0, '
         "installed INTEGER DEFAULT 0, "
         "box INTEGER DEFAULT 0, "
         'remarks TEXT DEFAULT "")'
@@ -38,7 +44,8 @@ table_definition = [
         'CREATE TABLE "orders" '
         "(record_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
         'order_number TEXT DEFAULT "" UNIQUE, '
-        'date TEXT DEFAULT "", source TEXT DEFAULT "", '
+        'date TEXT DEFAULT "", '
+        'source INTEGER DEFAULT 0, '
         "subtotal FLOAT DEFAULT 0.0, "
         "shipping FLOAT DEFAULT 0.0, "
         "tax FLOAT DEFAULT 0.0, "
@@ -50,7 +57,7 @@ table_definition = [
         'CREATE TABLE "parts" '
         "(record_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
         'part_number TEXT DEFAULT "", '
-        'source TEXT DEFAULT "", '
+        'source INTEGER DEFAULT 0, '
         'description TEXT DEFAULT "", '
         'remarks TEXT DEFAULT "")'
     ),

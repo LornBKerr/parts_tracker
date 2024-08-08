@@ -72,7 +72,7 @@ def test_000_03_items_table(filesystem):
         {"name": "part_number", "type": "TEXT"},
         {"name": "assembly", "type": "TEXT"},
         {"name": "quantity", "type": "INTEGER"},
-        {"name": "condition", "type": "TEXT"},
+        {"name": "condition", "type": "INTEGER"},
         {"name": "installed", "type": "INTEGER"},
         {"name": "box", "type": "INTEGER"},
         {"name": "remarks", "type": "TEXT"},
@@ -84,6 +84,7 @@ def test_000_03_items_table(filesystem):
         if (
             column_info["name"] == items_column_set[0]["name"]
             or column_info["name"] == items_column_set[3]["name"]
+            or column_info["name"] == items_column_set[4]["name"]
             or column_info["name"] == items_column_set[5]["name"]
             or column_info["name"] == items_column_set[6]["name"]
         ):
@@ -91,7 +92,6 @@ def test_000_03_items_table(filesystem):
         elif (
             column_info["name"] == items_column_set[1]["name"]
             or column_info["name"] == items_column_set[2]["name"]
-            or column_info["name"] == items_column_set[4]["name"]
             or column_info["name"] == items_column_set[7]["name"]
         ):
             assert column_info["type"] == "TEXT"
@@ -150,7 +150,7 @@ def test_000_05_orders_table(filesystem):
         {"name": "record_id", "type": "INTEGER"},
         {"name": "order_number", "type": "TEXT"},
         {"name": "date", "type": "TEXT"},
-        {"name": "source", "type": "TEXT"},
+        {"name": "source", "type": "INTEGER"},
         {"name": "subtotal", "type": "FLOAT"},
         {"name": "shipping", "type": "FLOAT"},
         {"name": "tax", "type": "FLOAT"},
@@ -162,12 +162,14 @@ def test_000_05_orders_table(filesystem):
     sqlite_cursor = datafile.sql_query(sql_query)
     columns = datafile.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
-        if column_info["name"] == orders_column_set[0]["name"]:
+        if  (
+            column_info["name"] == orders_column_set[0]["name"]
+            or column_info["name"] == orders_column_set[3]["name"]
+        ):
             assert column_info["type"] == "INTEGER"
         elif (
             column_info["name"] == orders_column_set[1]["name"]
             or column_info["name"] == orders_column_set[2]["name"]
-            or column_info["name"] == orders_column_set[3]["name"]
             or column_info["name"] == orders_column_set[9]["name"]
         ):
             assert column_info["type"] == "TEXT"
@@ -194,7 +196,7 @@ def test_000_06_parts_table(filesystem):
     parts_column_set = [
         {"name": "record_id", "type": "INTEGER"},
         {"name": "part_number", "type": "TEXT"},
-        {"name": "source", "type": "TEXT"},
+        {"name": "source", "type": "INTEGER"},
         {"name": "description", "type": "TEXT"},
         {"name": "remarks", "type": "TEXT"},
     ]
@@ -202,11 +204,13 @@ def test_000_06_parts_table(filesystem):
     sqlite_cursor = datafile.sql_query(sql_query)
     columns = datafile.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
-        if column_info["name"] == parts_column_set[0]["name"]:
+        if (
+            column_info["name"] == parts_column_set[0]["name"]
+            or column_info["name"] == parts_column_set[2]["name"]
+        ):
             assert column_info["type"] == "INTEGER"
         elif (
             column_info["name"] == parts_column_set[1]["name"]
-            or column_info["name"] == parts_column_set[2]["name"]
             or column_info["name"] == parts_column_set[3]["name"]
             or column_info["name"] == parts_column_set[4]["name"]
         ):
