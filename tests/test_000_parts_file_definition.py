@@ -5,20 +5,24 @@ File:       test_000_data_file_definitiion.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2024 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
 
-from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-
-# from test_setup import
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 def test_000_01_table_set(filesystem):
@@ -162,7 +166,7 @@ def test_000_05_orders_table(filesystem):
     sqlite_cursor = datafile.sql_query(sql_query)
     columns = datafile.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
-        if  (
+        if (
             column_info["name"] == orders_column_set[0]["name"]
             or column_info["name"] == orders_column_set[3]["name"]
         ):
