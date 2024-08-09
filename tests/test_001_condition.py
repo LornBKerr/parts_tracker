@@ -5,21 +5,27 @@ File:       test_001_condition.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
 
-from lbk_library import Element
-from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from test_data import condition_value_set
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+from test_data import condition_value_set
+
 from elements import Condition
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 parts_filename = "parts_test.parts"
 
@@ -47,29 +53,10 @@ def test_001_01_constr(filesystem):
     assert isinstance(condition, Condition)
     assert isinstance(condition, Element)
     # default values.
-    assert isinstance(condition.defaults, dict)
-    assert len(condition.defaults) == 2
-    assert condition.defaults["record_id"] == 0
-    assert condition.defaults["condition"] == ""
-    datafile_close(parts_file)
-
-
-def test_001_02_get_parts_file(filesystem):
-    """Condition needs correct database."""
-    parts_file_dir = filesystem + parts_dir
-    parts_file = datafile_create(parts_file_dir, table_definition)
-    condition = Condition(parts_file)
-    assert condition.get_dbref() == parts_file
-    datafile_close(parts_file)
-
-
-def test_001_03_get_table(filesystem):
-    """Condition needs the database table 'conditions'."""
-    parts_file_dir = filesystem + parts_dir
-    parts_file = datafile_create(parts_file_dir, table_definition)
-    condition = Condition(parts_file)
-    assert condition.get_table() == "conditions"
-    datafile_close(parts_file)
+    assert isinstance(condition._defaults, dict)
+    assert len(condition._defaults) == 2
+    assert condition._defaults["record_id"] == 0
+    assert condition._defaults["condition"] == ""
     datafile_close(parts_file)
 
 
@@ -101,7 +88,7 @@ def test_001_04_get_set_condition(filesystem):
     condition._set_property("condition", condition_value_set[0][1])
     assert condition.get_condition() == condition_value_set[0][1]
     condition._set_property("condition", None)
-    assert condition.defaults["condition"] == condition.get_condition()
+    assert condition._defaults["condition"] == condition.get_condition()
     result = condition.set_condition(None)
     assert not result["valid"]
     assert result["entry"] == None
@@ -143,7 +130,7 @@ def test_001_06_set_properties_from_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_001_07_get_properties_size(filesystem):
+def test_001_07_get_properties(filesystem):
     """
     Check the size of the properties dict.
 
@@ -152,6 +139,8 @@ def test_001_07_get_properties_size(filesystem):
     condition, parts_file = base_setup(filesystem)
     data = condition.get_properties()
     assert len(data) == 2
+    assert data["record_id"] == 0
+    assert data["condition"] == ""
     datafile_close(parts_file)
 
 
