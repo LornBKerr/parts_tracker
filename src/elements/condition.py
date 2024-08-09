@@ -5,12 +5,18 @@ File:       condition.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from copy import deepcopy
 from typing import Any
 
 from lbk_library import DataFile, Element
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class Condition(Element):
@@ -49,20 +55,20 @@ class Condition(Element):
         super().__init__(parts_file, "conditions")
 
         # Default values for the Condition
-        self.defaults: dict(str, Any) = {
+        self._defaults: dict(str, Any) = {
             "record_id": 0,
             "condition": "",
         }
 
-        self.set_initial_values(deepcopy(self.defaults))
+        self.set_initial_values(deepcopy(self._defaults))
 
         self.clear_value_valid_flags()
 
         if isinstance(condition_key, dict):
             # make sure there are no missing keys
-            for key in self.defaults:
+            for key in self._defaults:
                 if key not in condition_key:
-                    condition_key[key] = deepcopy(self.defaults[key])
+                    condition_key[key] = deepcopy(self._defaults[key])
 
         if isinstance(condition_key, (int, str)):
             condition_key = self.get_properties_from_datafile(
@@ -70,7 +76,7 @@ class Condition(Element):
             )
 
         if not condition_key:
-            condition_key = deepcopy(self.defaults)
+            condition_key = deepcopy(self._defaults)
 
         self.set_properties(condition_key)
         self.set_initial_values(self.get_properties())
@@ -107,7 +113,7 @@ class Condition(Element):
         """
         condition = self._get_property("condition")
         if condition is None:
-            condition = self.defaults["condition"]
+            condition = self._defaults["condition"]
         return condition
 
     def set_condition(self, condition: str) -> dict[str, Any]:
@@ -132,6 +138,6 @@ class Condition(Element):
         if result["valid"]:
             self._set_property("condition", result["entry"])
         else:
-            self._set_property("condition", self.defaults["condition"])
+            self._set_property("condition", self._defaults["condition"])
         self.update_property_flags("condition", result["entry"], result["valid"])
         return result
