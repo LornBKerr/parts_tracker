@@ -5,23 +5,32 @@ File:       test_03_source.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
 
-from lbk_library import Element
-from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from test_data import source_value_set
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+from test_data import source_value_set
+
 from elements import Source
 from pages import table_definition
 
-source_values = {"record_id": source_value_set[0][0], "source": source_value_set[0][1]}
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
+
+source_values = {
+    "record_id": source_value_set[0][0],
+    "source": source_value_set[0][1],
+}
 
 parts_filename = "parts_test.parts"
 
@@ -38,10 +47,10 @@ def test_003_01_constr(filesystem):
     assert isinstance(source, Source)
     assert isinstance(source, Element)
     # default values.
-    assert isinstance(source.defaults, dict)
-    assert len(source.defaults) == 2
-    assert source.defaults["record_id"] == 0
-    assert source.defaults["source"] == ""
+    assert isinstance(source._defaults, dict)
+    assert len(source._defaults) == 2
+    assert source._defaults["record_id"] == 0
+    assert source._defaults["source"] == ""
     datafile_close(parts_file)
 
 
@@ -69,11 +78,10 @@ def test_003_04_set_source(filesystem):
     The property 'record_id is handled in the Element' base class.
     """
     source, parts_file = base_setup(filesystem)
-    defaults = source.get_initial_values()
     source._set_property("source", source_values["source"])
     assert source_values["source"] == source.get_source()
     source._set_property("source", None)
-    assert source.defaults["source"] == source.get_source()
+    assert source._defaults["source"] == source.get_source()
     result = source.set_source(None)
     assert not result["valid"]
     assert result["entry"] == None

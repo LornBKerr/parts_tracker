@@ -3,14 +3,20 @@ Implement a single Source in the parts file.
 
 File:       source.py
 Author:     Lorn B Kerr
-Copyright:  (c) 2023 Lorn B Kerr
+Copyright:  (c) 2023, 2024 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from copy import deepcopy
 from typing import Any
 
 from lbk_library import DataFile, Element
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class Source(Element):
@@ -47,25 +53,25 @@ class Source(Element):
         super().__init__(parts_file, "sources")
 
         # Default values for the Source
-        self.defaults: dict(str, Any) = {
+        self._defaults: dict(str, Any) = {
             "record_id": 0,
             "source": "",
         }
 
-        self.set_initial_values(deepcopy(self.defaults))
+        self.set_initial_values(deepcopy(self._defaults))
         self.clear_value_valid_flags()
 
         if isinstance(source_key, dict):
             # make sure there are no missing keys
-            for key in self.defaults:
+            for key in self._defaults:
                 if key not in source_key:
-                    source_key[key] = deepcopy(self.defaults[key])
+                    source_key[key] = deepcopy(self._defaults[key])
 
         if isinstance(source_key, (int, str)):
             source_key = self.get_properties_from_datafile("record_id", source_key)
 
         if not source_key:
-            source_key = deepcopy(self.defaults)
+            source_key = deepcopy(self._defaults)
 
         self.set_properties(source_key)
         self.set_initial_values(self.get_properties())
@@ -102,7 +108,7 @@ class Source(Element):
         """
         source = self._get_property("source")
         if source is None:
-            source = self.defaults["source"]
+            source = self._defaults["source"]
         return source
 
     def set_source(self, source: str) -> dict[str, Any]:
@@ -127,6 +133,6 @@ class Source(Element):
         if result["valid"]:
             self._set_property("source", result["entry"])
         else:
-            self._set_property("source", self.defaults["source"])
+            self._set_property("source", self._defaults["source"])
         self.update_property_flags("source", result["entry"], result["valid"])
         return result
