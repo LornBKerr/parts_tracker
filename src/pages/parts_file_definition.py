@@ -5,13 +5,13 @@ File:       parts_table_definition.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2024 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
-# ##############
-# ****
-# Change definitions of 'condition' and 'source' from text to integer default 0.
-# ****
-# ##############
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 table_definition = [
     (
@@ -25,7 +25,7 @@ table_definition = [
         'part_number TEXT DEFAULT "", '
         'assembly TEXT DEFAULT "", '
         "quantity INTEGER DEFAULT 0, "
-        'condition INTEGER DEFAULT 0, '
+        "condition INTEGER DEFAULT 0, "
         "installed INTEGER DEFAULT 0, "
         "box INTEGER DEFAULT 0, "
         'remarks TEXT DEFAULT "")'
@@ -45,7 +45,7 @@ table_definition = [
         "(record_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
         'order_number TEXT DEFAULT "" UNIQUE, '
         'date TEXT DEFAULT "", '
-        'source INTEGER DEFAULT 0, '
+        "source INTEGER DEFAULT 0, "
         "subtotal FLOAT DEFAULT 0.0, "
         "shipping FLOAT DEFAULT 0.0, "
         "tax FLOAT DEFAULT 0.0, "
@@ -57,7 +57,7 @@ table_definition = [
         'CREATE TABLE "parts" '
         "(record_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
         'part_number TEXT DEFAULT "", '
-        'source INTEGER DEFAULT 0, '
+        "source INTEGER DEFAULT 0, "
         'description TEXT DEFAULT "", '
         'remarks TEXT DEFAULT "")'
     ),
