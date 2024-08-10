@@ -5,12 +5,20 @@ File:       item.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from copy import deepcopy
 from typing import Any
 
 from lbk_library import DataFile, Element
+
+# from elements import ConditionSet
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class Item(Element):
@@ -53,7 +61,7 @@ class Item(Element):
             "part_number": "",
             "assembly": "",
             "quantity": 0,
-            "condition": "",
+            "condition": 0,
             "installed": False,
             "remarks": "",
             "box": 0,
@@ -236,22 +244,22 @@ class Item(Element):
         self.update_property_flags("quantity", result["entry"], result["valid"])
         return result
 
-    def get_condition(self) -> str:
+    def get_condition(self) -> int:
         """
-        Get the Item's condition.
+        Get the record_id of the Item's condition.
 
         Returns:
-            (str) The Item's condition as a string or if None, the
-                default value.
+            (int) the record_id of the Item's condition as an int or if
+                None, the default value.
         """
         condition = self._get_property("condition")
-        if condition is None:
+        if condition is None or condition == 0:
             condition = self.defaults["condition"]
         return condition
 
-    def set_condition(self, condition: str) -> dict[str, Any]:
+    def set_condition(self, condition: int | str) -> dict[str, Any]:
         """
-        Set the Item's condition.
+        Set  the record_id of the Item's condition.
 
         The condition is required. The item's condition is selected from
         the set of Conditions in the Condition data file table. The valid
@@ -259,10 +267,10 @@ class Item(Element):
         operation.
 
         Parameters:
-        condition (str) The Item's Condition. The condition is a
-            selection from the 'condition' table in the data file. If the
-            supplied condition is not valid, the condition is set to the
-            default value.
+        condition (int) The the record_id of the Item's condition. The
+            condition is a selection from the 'condition' table in the
+            data file. If the supplied condition is not valid, the
+            condition record_id is set to the default value.
 
         Returns:
             (dict)
@@ -271,7 +279,7 @@ class Item(Element):
                     otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        result = self.validate.text_field(condition, self.validate.REQUIRED, 1, 15)
+        result = self.validate.integer_field(condition, self.validate.REQUIRED, 1, 15)
         if result["valid"]:
             self._set_property("condition", result["entry"])
         else:

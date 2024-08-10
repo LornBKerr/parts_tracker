@@ -5,23 +5,30 @@ File:       test_005_item.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2024 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
 
-from lbk_library import Element
-from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from test_data import item_value_set
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+from test_data import item_value_set
+
 from elements import Item
 from pages import table_definition
 
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
+
 parts_filename = "parts_test.parts"
+
 item_values = {
     "record_id": item_value_set[0][0],
     "part_number": item_value_set[0][1],
@@ -57,7 +64,7 @@ def test_005_01_constr(filesystem):
     assert item.defaults["part_number"] == ""
     assert item.defaults["assembly"] == ""
     assert item.defaults["quantity"] == 0
-    assert item.defaults["condition"] == ""
+    assert item.defaults["condition"] == 0
     assert item.defaults["installed"] == False
     assert item.defaults["remarks"] == ""
     assert item.defaults["box"] == 0
@@ -300,7 +307,7 @@ def test_005_13_item_from_partial_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_001_14_get_properties_from_database(filesystem):
+def test_005_14_get_properties_from_database(filesystem):
     """
     Access the database for the item properties.
 
