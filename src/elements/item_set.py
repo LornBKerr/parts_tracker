@@ -5,11 +5,17 @@ File:       item_set.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from lbk_library import DataFile, ElementSet
 
 from .item import Item
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class ItemSet(ElementSet):
