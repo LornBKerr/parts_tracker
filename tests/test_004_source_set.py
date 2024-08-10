@@ -5,10 +5,15 @@ File:       test_004_source_set.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
+
+src_path = os.path.join(os.path.realpath("."), "src")
+if src_path not in sys.path:
+    sys.path.append(src_path)
 
 from lbk_library import ElementSet
 from lbk_library.testing_support import (
@@ -19,12 +24,13 @@ from lbk_library.testing_support import (
 )
 from test_data import source_columns, source_value_set
 
-src_path = os.path.join(os.path.realpath("."), "src")
-if src_path not in sys.path:
-    sys.path.append(src_path)
-
 from elements import SourceSet
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 parts_filename = "parts_test.parts"
 
