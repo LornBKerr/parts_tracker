@@ -5,10 +5,15 @@ File:       test_009_order_line.py.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
+
+src_path = os.path.join(os.path.realpath("."), "src")
+if src_path not in sys.path:
+    sys.path.append(src_path)
 
 from lbk_library.testing_support import (
     datafile_close,
@@ -18,12 +23,13 @@ from lbk_library.testing_support import (
 )
 from test_data import order_line_columns, order_line_value_set
 
-src_path = os.path.join(os.path.realpath("."), "src")
-if src_path not in sys.path:
-    sys.path.append(src_path)
-
 from elements import OrderLine
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 parts_filename = "parts_test.parts"
 order_line_values = {
@@ -53,15 +59,15 @@ def test_009_01_constr(filesystem):
     order_line, parts_file = base_setup(filesystem)
     assert type(order_line) == OrderLine
     # default values.
-    assert isinstance(order_line.defaults, dict)
-    assert len(order_line.defaults) == 7
-    assert order_line.defaults["record_id"] == 0
-    assert order_line.defaults["order_number"] == ""
-    assert order_line.defaults["line"] == 0
-    assert order_line.defaults["part_number"] == ""
-    assert order_line.defaults["cost_each"] == 0.0
-    assert order_line.defaults["quantity"] == 0
-    assert order_line.defaults["remarks"] == ""
+    assert isinstance(order_line._defaults, dict)
+    assert len(order_line._defaults) == 7
+    assert order_line._defaults["record_id"] == 0
+    assert order_line._defaults["order_number"] == ""
+    assert order_line._defaults["line"] == 0
+    assert order_line._defaults["part_number"] == ""
+    assert order_line._defaults["cost_each"] == 0.0
+    assert order_line._defaults["quantity"] == 0
+    assert order_line._defaults["remarks"] == ""
     datafile_close(parts_file)
 
 
@@ -183,7 +189,7 @@ def test_009_06_get_set_part_number(filesystem):
     order_line._set_property("part_number", order_line_values["part_number"])
     assert order_line_values["part_number"] == order_line.get_part_number()
     order_line._set_property("part_number", None)
-    assert order_line.defaults["part_number"] == order_line.get_part_number()
+    assert order_line._defaults["part_number"] == order_line.get_part_number()
     result = order_line.set_part_number(None)
     assert not result["valid"]
     assert result["entry"] == None

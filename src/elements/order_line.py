@@ -5,12 +5,18 @@ File:       order_line.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from copy import deepcopy
 from typing import Any
 
 from lbk_library import DataFile, Element
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class OrderLine(Element):
@@ -43,7 +49,7 @@ class OrderLine(Element):
         super().__init__(parts_file, "order_lines")
 
         # Default values for the Order
-        self.defaults: dict[str, Any] = {
+        self._defaults: dict[str, Any] = {
             "record_id": 0,
             "order_number": "",
             "line": 0,
@@ -53,14 +59,14 @@ class OrderLine(Element):
             "remarks": "",
         }
 
-        self.set_initial_values(deepcopy(self.defaults))
+        self.set_initial_values(deepcopy(self._defaults))
         self.clear_value_valid_flags()
 
         if isinstance(order_line_key, dict):
             # make sure there are no missing keys
-            for key in self.defaults:
+            for key in self._defaults:
                 if key not in order_line_key:
-                    order_line_key[key] = deepcopy(self.defaults[key])
+                    order_line_key[key] = deepcopy(self._defaults[key])
 
         if isinstance(order_line_key, (int, str)):
             order_line_key = self.get_properties_from_datafile(
@@ -68,7 +74,7 @@ class OrderLine(Element):
             )
 
         if not order_line_key:
-            order_line_key = deepcopy(self.defaults)
+            order_line_key = deepcopy(self._defaults)
 
         self.set_properties(order_line_key)
         self.set_initial_values(self.get_properties())
@@ -115,7 +121,7 @@ class OrderLine(Element):
         """
         order_number = self._get_property("order_number")
         if order_number is None:
-            order_number = self.defaults["order_number"]
+            order_number = self._defaults["order_number"]
         return order_number
 
     def set_order_number(self, order_number: str) -> dict[str, Any]:
@@ -144,7 +150,7 @@ class OrderLine(Element):
             "order_number",
             result["valid"],
             result["entry"],
-            self.defaults["order_number"],
+            self._defaults["order_number"],
         )
         self.update_property_flags("order_number", result["entry"], result["valid"])
         return result
@@ -159,7 +165,7 @@ class OrderLine(Element):
         """
         line = self._get_property("line")
         if line in (None, ""):
-            line = self.defaults["line"]
+            line = self._defaults["line"]
         return line
 
     def set_line(self, line: int) -> dict[str, Any]:
@@ -182,7 +188,7 @@ class OrderLine(Element):
         """
         result = self.validate.integer_field(line, self.validate.REQUIRED, 1)
         self.set_validated_property(
-            "line", result["valid"], result["entry"], self.defaults["line"]
+            "line", result["valid"], result["entry"], self._defaults["line"]
         )
         self.update_property_flags("line", result["entry"], result["valid"])
         return result
@@ -197,7 +203,7 @@ class OrderLine(Element):
         """
         part_number = self._get_property("part_number")
         if part_number is None:
-            part_number = self.defaults["part_number"]
+            part_number = self._defaults["part_number"]
         return part_number
 
     def set_part_number(self, part_number: str) -> dict[str, Any]:
@@ -226,7 +232,7 @@ class OrderLine(Element):
             "part_number",
             result["valid"],
             result["entry"],
-            self.defaults["part_number"],
+            self._defaults["part_number"],
         )
         self.update_property_flags("part_number", result["entry"], result["valid"])
         return result
@@ -241,7 +247,7 @@ class OrderLine(Element):
         """
         cost_each = self._get_property("cost_each")
         if cost_each is None:
-            cost_each = self.defaults["cost_each"]
+            cost_each = self._defaults["cost_each"]
         return cost_each
 
     def set_cost_each(self, cost_each: float | str) -> dict[str, Any]:
@@ -264,12 +270,12 @@ class OrderLine(Element):
         """
         result = self.validate.float_field(cost_each, self.validate.OPTIONAL, 0.0)
         self.set_validated_property(
-            "cost_each", result["valid"], result["entry"], self.defaults["cost_each"]
+            "cost_each", result["valid"], result["entry"], self._defaults["cost_each"]
         )
         if result["valid"]:
             self._set_property("cost_each", result["entry"])
         else:
-            self._set_property("cost_each", self.defaults["cost_each"])
+            self._set_property("cost_each", self._defaults["cost_each"])
         self.update_property_flags("cost_each", result["entry"], result["valid"])
         return result
 
@@ -283,7 +289,7 @@ class OrderLine(Element):
         """
         quantity = self._get_property("quantity")
         if not quantity:
-            quantity = self.defaults["quantity"]
+            quantity = self._defaults["quantity"]
         return quantity
 
     def set_quantity(self, quantity: int | str) -> dict[str, Any]:
@@ -305,7 +311,7 @@ class OrderLine(Element):
         """
         result = self.validate.integer_field(quantity, self.validate.OPTIONAL, 0)
         self.set_validated_property(
-            "quantity", result["valid"], result["entry"], self.defaults["quantity"]
+            "quantity", result["valid"], result["entry"], self._defaults["quantity"]
         )
         self.update_property_flags("quantity", result["entry"], result["valid"])
         return result
