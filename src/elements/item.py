@@ -13,8 +13,6 @@ from typing import Any
 
 from lbk_library import DataFile, Element
 
-# from elements import ConditionSet
-
 file_version = "1.0.0"
 changes = {
     "1.0.0": "Initial release",
