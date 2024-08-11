@@ -5,6 +5,7 @@ File:       part_setl.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from typing import Any
@@ -12,6 +13,11 @@ from typing import Any
 from lbk_library import DataFile, ElementSet
 
 from .part import Part
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class PartSet(ElementSet):
@@ -44,7 +50,6 @@ class PartSet(ElementSet):
         """
         table_name = "parts"  # The parts file table for this element
         element_type = Part
-
         super().__init__(
             parts_file,
             table_name,

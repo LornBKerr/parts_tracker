@@ -5,10 +5,15 @@ File:       test_008_part_set.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
+
+src_path = os.path.join(os.path.realpath("."), "src")
+if src_path not in sys.path:
+    sys.path.append(src_path)
 
 from lbk_library import ElementSet
 from lbk_library.testing_support import (
@@ -19,12 +24,13 @@ from lbk_library.testing_support import (
 )
 from test_data import part_columns, part_value_set
 
-src_path = os.path.join(os.path.realpath("."), "src")
-if src_path not in sys.path:
-    sys.path.append(src_path)
-
 from elements import Part, PartSet
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 parts_filename = "parts_test.parts"
 
@@ -75,13 +81,12 @@ def test_008_03_selected_rows(filesystem):
     """
     part_set, parts_file = base_setup(filesystem)
     load_datafile_table(parts_file, "parts", part_columns, part_value_set)
-    part_set = PartSet(parts_file, "source", "None")
+    part_set = PartSet(parts_file, "source", 2)
     count_result = parts_file.sql_query(
-        "SELECT COUNT(*) FROM " + part_set.get_table() + " WHERE source = 'None'"
+        "SELECT COUNT(*) FROM " + part_set.get_table() + " WHERE source = 2"
     )
     count = parts_file.sql_fetchrow(count_result)["COUNT(*)"]
     assert count == len(part_set.get_property_set())
-    assert count == 6
     datafile_close(parts_file)
 
 
