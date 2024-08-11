@@ -5,10 +5,15 @@ File:       test_007_part.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
+
+src_path = os.path.join(os.path.realpath("."), "src")
+if src_path not in sys.path:
+    sys.path.append(src_path)
 
 from lbk_library import Element
 from lbk_library.testing_support import (
@@ -19,12 +24,13 @@ from lbk_library.testing_support import (
 )
 from test_data import item_columns, item_value_set, part_columns, part_value_set
 
-src_path = os.path.join(os.path.realpath("."), "src")
-if src_path not in sys.path:
-    sys.path.append(src_path)
-
 from elements import ItemSet, Part
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 parts_filename = "parts_test.parts"
 part_values = {
@@ -53,13 +59,13 @@ def test_007_01_constr(filesystem):
     assert isinstance(part, Part)
     assert isinstance(part, Element)
     # default values.
-    assert isinstance(part.defaults, dict)
-    assert len(part.defaults) == len(part_values)
-    assert part.defaults["record_id"] == 0
-    assert part.defaults["part_number"] == ""
-    assert part.defaults["source"] == ""
-    assert part.defaults["description"] == ""
-    assert part.defaults["remarks"] == ""
+    assert isinstance(part._defaults, dict)
+    assert len(part._defaults) == len(part_values)
+    assert part._defaults["record_id"] == 0
+    assert part._defaults["part_number"] == ""
+    assert part._defaults["source"] == 0
+    assert part._defaults["description"] == ""
+    assert part._defaults["remarks"] == ""
     datafile_close(parts_file)
 
 
@@ -87,7 +93,7 @@ def test_007_04_get_set_part_number(filesystem):
     part._set_property("part_number", part_values["part_number"])
     assert part_values["part_number"] == part.get_part_number()
     part._set_property("part_number", None)
-    assert part.defaults["part_number"] == part.get_part_number()
+    assert part._defaults["part_number"] == part.get_part_number()
     result = part.set_part_number(None)
     assert not result["valid"]
     assert result["entry"] == None
@@ -102,16 +108,15 @@ def test_007_05_get_set_source(filesystem):
     """
     Get and set the source property.
 
-    The property 'source' is required and is a string at least 1
-    character long. The allowed source values are held in the 'sources'
-    table in the database.
+    The property 'source' is required and is a small integer. The
+    allowed source values are held in the 'sources' table in the datafile.
     """
     part, parts_file = base_setup(filesystem)
     defaults = part.get_initial_values()
     part._set_property("source", part_values["source"])
     assert part_values["source"] == part.get_source()
     part._set_property("source", None)
-    assert part.defaults["source"] == part.get_source()
+    assert part._defaults["source"] == part.get_source()
     result = part.set_source(None)
     assert not result["valid"]
     assert result["entry"] == None
@@ -134,7 +139,7 @@ def test_007_06_get_set_description(filesystem):
     part._set_property("description", part_values["description"])
     assert part_values["description"] == part.get_description()
     part._set_property("description", None)
-    assert part.defaults["description"] == part.get_description()
+    assert part._defaults["description"] == part.get_description()
     result = part.set_description(None)
     assert not result["valid"]
     assert result["entry"] == None
@@ -217,7 +222,7 @@ def test_007_12_part_from_partial_dict(filesystem):
     part = Part(parts_file, part_values)
     assert part_values["record_id"] == part.get_record_id()
     assert part_values["part_number"] == part.get_part_number()
-    assert "" == part.get_source()
+    assert 0 == part.get_source()
     assert part_values["description"] == part.get_description()
     assert part_values["remarks"] == part.get_remarks()
     datafile_close(parts_file)

@@ -5,6 +5,7 @@ File:       part.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from copy import deepcopy
@@ -13,6 +14,11 @@ from typing import Any
 from lbk_library import DataFile, Element
 
 from .item_set import ItemSet
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class Part(Element):
@@ -58,22 +64,22 @@ class Part(Element):
         super().__init__(parts_file, "parts")
 
         # Default values for the Part
-        self.defaults: dict[str, Any] = {
+        self._defaults: dict[str, Any] = {
             "record_id": 0,
             "part_number": "",
-            "source": "",
+            "source": 0,
             "description": "",
             "remarks": "",
         }
 
-        self.set_initial_values(deepcopy(self.defaults))
+        self.set_initial_values(deepcopy(self._defaults))
         self.clear_value_valid_flags()
 
         if isinstance(part_key, dict):
             # make sure there are no missing keys
-            for key in self.defaults:
+            for key in self._defaults:
                 if key not in part_key:
-                    part_key[key] = deepcopy(self.defaults[key])
+                    part_key[key] = deepcopy(self._defaults[key])
 
         if column is None:
             column = "record_id"
@@ -86,7 +92,7 @@ class Part(Element):
             part_key = self.get_properties_from_datafile(column, part_key)
 
         if not part_key:
-            part_key = deepcopy(self.defaults)
+            part_key = deepcopy(self._defaults)
 
         self.set_properties(part_key)
         self.set_initial_values(self.get_properties())
@@ -129,7 +135,7 @@ class Part(Element):
         """
         part_number = self._get_property("part_number")
         if part_number is None:
-            part_number = self.defaults["part_number"]
+            part_number = self._defaults["part_number"]
         return part_number
 
     def set_part_number(self, part_number: str) -> dict[str, Any]:
@@ -157,7 +163,7 @@ class Part(Element):
         if result["valid"]:
             self._set_property("part_number", result["entry"])
         else:
-            self._set_property("part_number", self.defaults["part_number"])
+            self._set_property("part_number", self._defaults["part_number"])
 
         self.update_property_flags("part_number", result["entry"], result["valid"])
         return result
@@ -167,11 +173,11 @@ class Part(Element):
         Get the Part's source.
 
         Return:
-            (str) The Part's source or, if None, an empty string
+            (int) The record_id of the Part's source or, if None, 0
         """
         source = self._get_property("source")
         if source is None:
-            source = self.defaults["source"]
+            source = self._defaults["source"]
         return source
 
     def set_source(self, source: str) -> dict[str, Any]:
@@ -194,11 +200,11 @@ class Part(Element):
                 ['msg'] (Str) Error message if not valid
             }
         """
-        result = self.validate.text_field(source, self.validate.REQUIRED)
+        result = self.validate.integer_field(source, self.validate.REQUIRED, 1, 99)
         if result["valid"]:
             self._set_property("source", result["entry"])
         else:
-            self._set_property("source", self.defaults["source"])
+            self._set_property("source", self._defaults["source"])
         self.update_property_flags("source", result["entry"], result["valid"])
         return result
 
@@ -211,7 +217,7 @@ class Part(Element):
         """
         description = self._get_property("description")
         if description is None:
-            description = self.defaults["description"]
+            description = self._defaults["description"]
         return description
 
     def set_description(self, description: str) -> dict[str, Any]:
@@ -239,7 +245,7 @@ class Part(Element):
         if result["valid"]:
             self._set_property("description", result["entry"])
         else:
-            self._set_property("description", self.defaults["description"])
+            self._set_property("description", self._defaults["description"])
         self.update_property_flags("description", result["entry"], result["valid"])
         return result
 
