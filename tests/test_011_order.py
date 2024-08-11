@@ -5,21 +5,27 @@ File:       test_011_order.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
 
-from lbk_library import Element
-from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from test_data import order_value_set
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+from lbk_library import Element
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+from test_data import order_value_set
+
 from elements import Order
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 parts_filename = "parts_test.parts"
 order_values = {
@@ -53,17 +59,17 @@ def test_011_01_constr(filesystem):
     assert isinstance(order, Order)
     assert isinstance(order, Element)
     # default values.
-    assert isinstance(order.defaults, dict)
-    assert len(order.defaults) == 10
-    assert order.defaults["record_id"] == 0
-    assert order.defaults["order_number"] == ""
-    assert order.defaults["date"] == ""
-    assert order.defaults["source"] == ""
-    assert order.defaults["subtotal"] == 0.0
-    assert order.defaults["shipping"] == 0.0
-    assert order.defaults["tax"] == 0.0
-    assert order.defaults["total"] == 0.0
-    assert order.defaults["remarks"] == ""
+    assert isinstance(order._defaults, dict)
+    assert len(order._defaults) == 10
+    assert order._defaults["record_id"] == 0
+    assert order._defaults["order_number"] == ""
+    assert order._defaults["date"] == ""
+    assert order._defaults["source"] == 0
+    assert order._defaults["subtotal"] == 0.0
+    assert order._defaults["shipping"] == 0.0
+    assert order._defaults["tax"] == 0.0
+    assert order._defaults["total"] == 0.0
+    assert order._defaults["remarks"] == ""
     datafile_close(parts_file)
 
 
@@ -93,7 +99,7 @@ def test_011_04_get_set_order_number(filesystem):
     order._set_property("order_number", order_values["order_number"])
     assert order_values["order_number"] == order.get_order_number()
     order._set_property("order_number", None)
-    assert order.defaults["order_number"] == order.get_order_number()
+    assert order._defaults["order_number"] == order.get_order_number()
     result = order.set_order_number(None)
     assert not result["valid"]
     assert result["entry"] == None
@@ -145,15 +151,16 @@ def test_011_06_get_set_source(filesystem):
     """
     Get and set the source property.
 
-    The property 'source' is required and is a string at least 1
-    character long. The allowed source values are held in the 'sources'
-    table in the database.
+    The property 'source' is required and is the record_id of a Source
+    entry in the datafile, a small intege. The allowed source values
+    are held in the 'sources' table in the datafile.
     """
     order, parts_file = base_setup(filesystem)
     defaults = order.get_initial_values()
     order._set_property("source", None)
     assert defaults["source"] == order.get_source()
     result = order.set_source(None)
+
     assert not result["valid"]
     assert result["entry"] is None
     assert order.get_source() == defaults["source"]
@@ -353,7 +360,7 @@ def test_011_15_set_order_from_partial_dict(filesystem):
     order = Order(parts_file, order_values)
     assert order.get_record_id() == order_values["record_id"]
     assert order.get_order_number() == order_values["order_number"]
-    assert order.get_source() == ""
+    assert order.get_source() == 0
     assert order.get_date() == "08/22/2006"
     assert order.get_subtotal() == order_values["subtotal"]
     assert order.get_tax() == order_values["tax"]

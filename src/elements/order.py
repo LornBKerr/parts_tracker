@@ -5,6 +5,7 @@ File:       order.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import re
@@ -12,6 +13,11 @@ from copy import deepcopy
 from typing import Any
 
 from lbk_library import DataFile, Element
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class Order(Element):
@@ -61,11 +67,11 @@ class Order(Element):
         super().__init__(parts_file, "orders")
 
         # Default values for the Order
-        self.defaults: dict[str, Any] = {
+        self._defaults: dict[str, Any] = {
             "record_id": 0,
             "order_number": "",
             "date": "",
-            "source": "",
+            "source": 0,
             "subtotal": 0.00,
             "shipping": 0.00,
             "discount": 0.00,
@@ -74,14 +80,14 @@ class Order(Element):
             "remarks": "",
         }
 
-        self.set_initial_values(deepcopy(self.defaults))
+        self.set_initial_values(deepcopy(self._defaults))
         self.clear_value_valid_flags()
 
         if isinstance(order_key, dict):
             # make sure there are no missing keys
-            for key in self.defaults:
+            for key in self._defaults:
                 if key not in order_key:
-                    order_key[key] = deepcopy(self.defaults[key])
+                    order_key[key] = deepcopy(self._defaults[key])
 
         if column is None:
             column = "order_number"
@@ -94,7 +100,7 @@ class Order(Element):
             order_key = self.get_properties_from_datafile(column, order_key)
 
         if not order_key:
-            order_key = deepcopy(self.defaults)
+            order_key = deepcopy(self._defaults)
 
         self.set_properties(order_key)
         self.set_initial_values(self.get_properties())
@@ -147,7 +153,7 @@ class Order(Element):
         """
         order_number = self._get_property("order_number")
         if order_number is None:
-            order_number = self.defaults["order_number"]
+            order_number = self._defaults["order_number"]
         return order_number
 
     def set_order_number(self, order_number: str) -> dict[str, Any]:
@@ -175,7 +181,7 @@ class Order(Element):
         if result["valid"]:
             self._set_property("order_number", result["entry"])
         else:
-            self._set_property("order_number", self.defaults["order_number"])
+            self._set_property("order_number", self._defaults["order_number"])
         self.update_property_flags("order_number", result["entry"], result["valid"])
         return result
 
@@ -201,7 +207,7 @@ class Order(Element):
         if result["valid"]:
             date = result["entry"]
         else:
-            date = self.defaults["date"]
+            date = self._defaults["date"]
 
         return date
 
@@ -231,21 +237,21 @@ class Order(Element):
         if result["valid"]:
             self._set_property("date", result["entry"])
         else:
-            self._set_property("date", self.defaults["date"])
+            self._set_property("date", self._defaults["date"])
         self.update_property_flags("date", result["entry"], result["valid"])
         return result
 
-    def get_source(self) -> str:
+    def get_source(self) -> int:
         """
         Get the source (vendor) of this Order.
 
         Returns:
-            (str) the source if assigned, otherwise the default
-                empty string.
+            (int) the record_id of the source entry if assigned,
+                otherwise 0.
         """
         source = self._get_property("source")
         if source is None:
-            source = self.defaults["source"]
+            source = self._defaults["source"]
         return source
 
     def set_source(self, source) -> dict[str, Any]:
@@ -266,11 +272,11 @@ class Order(Element):
                     False otherwise.
                 ['msg'] - (str) Error message if not valid.
         """
-        result = self.validate.text_field(source, self.validate.REQUIRED, 1, 256)
+        result = self.validate.integer_field(source, self.validate.REQUIRED, 1, 99)
         if result["valid"]:
             self._set_property("source", result["entry"])
         else:
-            self._set_property("source", self.defaults["source"])
+            self._set_property("source", self._defaults["source"])
         self.update_property_flags("source", result["entry"], result["valid"])
         return result
 
@@ -284,7 +290,7 @@ class Order(Element):
         """
         subtotal = self._get_property("subtotal")
         if subtotal in (None, ""):
-            subtotal = self.defaults["subtotal"]
+            subtotal = self._defaults["subtotal"]
         return subtotal
 
     def set_subtotal(self, subtotal: float | str) -> dict[str, Any]:
@@ -307,14 +313,14 @@ class Order(Element):
                 ['msg'] - (str) Error message if not valid.
         """
         if subtotal in (None, ""):
-            subtotal = self.defaults["subtotal"]
+            subtotal = self._defaults["subtotal"]
         else:
             subtotal = float(subtotal)
         result = self.validate.float_field(subtotal, self.validate.OPTIONAL, 0.0)
         if result["valid"]:
             self._set_property("subtotal", result["entry"])
         else:
-            self._set_property("subtotal", self.defaults["subtotal"])
+            self._set_property("subtotal", self._defaults["subtotal"])
         self.update_property_flags("subtotal", result["entry"], result["valid"])
         return result
 
@@ -328,7 +334,7 @@ class Order(Element):
         """
         shipping = self._get_property("shipping")
         if shipping in (None, ""):
-            shipping = self.defaults["shipping"]
+            shipping = self._defaults["shipping"]
         return shipping
 
     def set_shipping(self, shipping: str | float) -> dict[str, Any]:
@@ -350,7 +356,7 @@ class Order(Element):
                 ['msg'] - (str) Error message if not valid.
         """
         if shipping in (None, ""):
-            shipping = self.defaults["shipping"]
+            shipping = self._defaults["shipping"]
         else:
             shipping = float(shipping)
 
@@ -358,7 +364,7 @@ class Order(Element):
         if result["valid"]:
             self._set_property("shipping", result["entry"])
         else:
-            self._set_property("shipping", self.defaults["shipping"])
+            self._set_property("shipping", self._defaults["shipping"])
         self.update_property_flags("shipping", result["entry"], result["valid"])
         return result
 
@@ -372,7 +378,7 @@ class Order(Element):
         """
         discount = self._get_property("discount")
         if discount in (None, ""):
-            discount = self.defaults["discount"]
+            discount = self._defaults["discount"]
         return discount
 
     def set_discount(self, discount: str | float) -> dict[str, Any]:
@@ -395,7 +401,7 @@ class Order(Element):
                 ['msg'] - (str) Error message if not valid.
         """
         if discount in (None, ""):
-            discount = self.defaults["discount"]
+            discount = self._defaults["discount"]
         else:
             discount = float(discount)
 
@@ -405,7 +411,7 @@ class Order(Element):
         if result["valid"]:
             self._set_property("discount", result["entry"])
         else:
-            self._set_property("discount", self.defaults["discount"])
+            self._set_property("discount", self._defaults["discount"])
         self.update_property_flags("discount", result["entry"], result["valid"])
         return result
 
@@ -419,7 +425,7 @@ class Order(Element):
         """
         tax = self._get_property("tax")
         if tax in (None, ""):
-            tax = self.defaults["tax"]
+            tax = self._defaults["tax"]
         return tax
 
     def set_tax(self, tax: str | float) -> dict[str, Any]:
@@ -440,14 +446,14 @@ class Order(Element):
                 ['msg'] - (str) Error message if not valid.
         """
         if tax in (None, ""):
-            tax = self.defaults["tax"]
+            tax = self._defaults["tax"]
         else:
             tax = float(tax)
         result = self.validate.float_field(tax, self.validate.REQUIRED, 0.0)
         if result["valid"]:
             self._set_property("tax", result["entry"])
         else:
-            self._set_property("tax", self.defaults["tax"])
+            self._set_property("tax", self._defaults["tax"])
         self.update_property_flags("tax", result["entry"], result["valid"])
         return result
 
@@ -461,7 +467,7 @@ class Order(Element):
         """
         total = self._get_property("total")
         if total in (None, ""):
-            total = self.defaults["total"]
+            total = self._defaults["total"]
         return total
 
     def set_total(self, total: str | float) -> dict[str, Any]:
@@ -483,13 +489,13 @@ class Order(Element):
                 ['msg'] - (str) Error message if not valid.
         """
         if total in (None, ""):
-            total = self.defaults["total"]
+            total = self._defaults["total"]
         else:
             total = float(total)
         result = self.validate.float_field(total, self.validate.REQUIRED, 0.0)
         if result["valid"]:
             self._set_property("total", result["entry"])
         else:
-            self._set_property("total", self.defaults["total"])
+            self._set_property("total", self._defaults["total"])
         self.update_property_flags("total", result["entry"], result["valid"])
         return result
