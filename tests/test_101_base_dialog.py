@@ -10,6 +10,10 @@ License:    MIT, see file License
 import os
 import sys
 
+src_path = os.path.join(os.path.realpath("."), "src")
+if src_path not in sys.path:
+    sys.path.append(src_path)
+
 from lbk_library import DataFile
 from lbk_library.gui import Dialog
 from lbk_library.testing_support import (
@@ -18,7 +22,7 @@ from lbk_library.testing_support import (
     filesystem,
     load_datafile_table,
 )
-from PyQt5 import QtCore, uic
+from PyQt5 import uic  # QtCore,
 from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
@@ -37,12 +41,13 @@ from test_setup import (
     part_value_set,
 )
 
-src_path = os.path.join(os.path.realpath("."), "src")
-if src_path not in sys.path:
-    sys.path.append(src_path)
-
 from dialogs import BaseDialog
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 def test_101_01_class_type(qtbot):

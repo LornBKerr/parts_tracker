@@ -5,6 +5,7 @@ File:       base_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2020 - 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from lbk_library import DataFile, Dialog
@@ -12,6 +13,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
 
 from elements import Order, OrderLineSet
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class BaseDialog(Dialog):
