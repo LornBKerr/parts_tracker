@@ -15,10 +15,11 @@ This module contains the following classes
     Source extends lbk_library.Element
     SourceSet extends lbk_library.ElementSet
 
-File       __init__.py
-Author     Lorn B Kerr
-Copyright  (c) 2023 Lorn B Kerr
-License    MIT (https://opensource.org/licenses/MIT)
+File:       __init__.py
+Author:     Lorn B Kerr
+Copyright:  (c) 2023 Lorn B Kerr
+License:    MIT (https://opensource.org/licenses/MIT)
+Version:    1.0.0
 """
 
 from .condition import Condition
@@ -33,3 +34,8 @@ from .part import Part
 from .part_set import PartSet
 from .source import Source
 from .source_set import SourceSet
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
