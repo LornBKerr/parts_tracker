@@ -5,6 +5,7 @@ File:       order_line_set.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from typing import Any
@@ -12,6 +13,11 @@ from typing import Any
 from lbk_library import DataFile, ElementSet
 
 from .order_line import OrderLine
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class OrderLineSet(ElementSet):
