@@ -4,7 +4,8 @@ Test the BaseDialog class.
 File:       test_101_base_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
+Version     1.0.0
 """
 
 import os
