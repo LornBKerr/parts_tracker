@@ -5,43 +5,52 @@ File:       test_102_item_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
 
-# import pytest
-from lbk_library import DataFile, Element
-from lbk_library.gui import Dialog, ErrorFrame
-from lbk_library.testing_support import (
-    datafile_close,
-    datafile_create,
-    filesystem,
-    load_datafile_table,
-    long_string,
-    test_string,
-)
-from PyQt5.QtWidgets import QDialog, QMainWindow, QMessageBox
-
-# from pytestqt import qtbot
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from test_setup import (
+from lbk_library import DataFile, Element
+from lbk_library.gui import Dialog, ErrorFrame
+from lbk_library.testing_support import (  # load_datafile_table,; ;
+    datafile_close,
+    datafile_create,
+    filesystem,
+    long_string,
+    test_string,
+)
+from PyQt5.QtWidgets import QDialog, QMainWindow, QMessageBox
+from test_setup import (  # item_columns,; part_columns,
     condition_value_set,
     datafile_name,
-    item_columns,
     item_value_set,
     load_all_datafile_tables,
-    part_columns,
     part_value_set,
+    source_value_set,
 )
 
 from dialogs import BaseDialog, ItemDialog
-from elements import ConditionSet, Item, ItemSet, OrderLineSet, Part, PartSet
+from elements import (
+    Condition,
+    ConditionSet,
+    Item,
+    ItemSet,
+    OrderLineSet,
+    Part,
+    PartSet,
+    Source,
+)
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 def setup_item_dialog(qtbot, filesystem):
@@ -61,6 +70,7 @@ def test_102_01_class_type(qtbot, filesystem):
     assert isinstance(dialog, BaseDialog)
     assert isinstance(dialog, Dialog)
     assert isinstance(dialog, QDialog)
+    datafile_close(datafile)
 
 
 def test_102_02_set_error_frames(qtbot, filesystem):
@@ -105,7 +115,9 @@ def test_102_04_fill_part_fields(qtbot, filesystem):
     assert dialog.form.total_qty_text.text() == "0"
     dialog.fill_part_fields(part_value_set[0][1])
     assert dialog.form.part_number_combo.currentText() == part_value_set[0][1]
-    assert dialog.form.source_text.text() == part_value_set[0][2]
+    assert (
+        dialog.form.source_text.text() == source_value_set[part_value_set[0][2] - 1][1]
+    )
     assert dialog.form.description_text.text() == part_value_set[0][3]
     assert dialog.form.remarks_text.text() == part_value_set[0][4]
     qty = 0
@@ -132,7 +144,7 @@ def test_102_05_fill_dialog_fields(qtbot, filesystem):
     dialog.fill_dialog_fields()
     assert dialog.form.record_id_combo.currentText() == str(item_value_set[0][0])
     assert dialog.form.assembly_edit.text() == item_value_set[0][2]
-    assert dialog.form.condition_combo.currentText() == item_value_set[0][4]
+    assert dialog.form.condition_combo.currentText() == "New"
     assert dialog.form.quantity_edit.text() == str(item_value_set[0][3])
     assert dialog.form.installed_chkbox.isChecked() == bool(int(item_value_set[0][5]))
     assert dialog.form.part_number_combo.currentText() == item_value_set[0][1]
@@ -187,7 +199,6 @@ def test_102_05_action_condition_combo(qtbot, filesystem):
     )
     assert not dialog.form.condition_combo.error
     assert dialog.form.condition_combo.currentText() == test_value
-
     assert dialog.form.condition_combo.toolTip() == dialog.TOOLTIPS["condition"]
 
     test_value = -1
@@ -242,7 +253,6 @@ def test_102_07_action_installed_checkbox(qtbot, filesystem):
     dialog.form.installed_chkbox.stateChanged.emit(not current_state)
     assert not dialog.form.installed_chkbox.isChecked() == current_state
     assert dialog.form.installed_chkbox.toolTip() == dialog.TOOLTIPS["installed"]
-
     current_state = dialog.form.installed_chkbox.isChecked()
     dialog.form.installed_chkbox.setChecked(not current_state)
     assert not dialog.form.installed_chkbox.isChecked() == current_state
@@ -315,7 +325,10 @@ def test_102_11_action_part_number_combo(qtbot, filesystem):
     dialog.form.part_number_combo.activated.emit(
         dialog.form.part_number_combo.currentIndex()
     )
-    assert dialog.form.source_text.text() == part.get_source()
+    assert (
+        dialog.form.source_text.text()
+        == Source(datafile, part.get_source()).get_source()
+    )
     assert dialog.form.description_text.text() == part.get_description()
     assert dialog.form.remarks_text.text() == part.get_remarks()
     assert dialog.form.total_qty_text.text() == str(part.get_total_quantity())
@@ -333,7 +346,10 @@ def test_102_11_action_part_number_combo(qtbot, filesystem):
     assert dialog.form.part_number_combo.currentText() == part.get_part_number()
     result = dialog.action_part_number_combo()
     assert result["entry"] == part.get_part_number()
-    assert dialog.form.source_text.text() == part.get_source()
+    assert (
+        dialog.form.source_text.text()
+        == Source(datafile, part.get_source()).get_source()
+    )
     assert dialog.form.description_text.text() == part.get_description()
     assert dialog.form.remarks_text.text() == part.get_remarks()
     assert dialog.form.total_qty_text.text() == str(part.get_total_quantity())
@@ -352,7 +368,10 @@ def test_102_11_action_part_number_combo(qtbot, filesystem):
     assert dialog.form.part_number_combo.currentText() == part.get_part_number()
     result = dialog.action_part_number_combo()
     assert result["entry"] == part.get_part_number()
-    assert dialog.form.source_text.text() == part.get_source()
+    assert (
+        dialog.form.source_text.text()
+        == Source(datafile, part.get_source()).get_source()
+    )
     assert dialog.form.description_text.text() == part.get_description()
     assert dialog.form.remarks_text.text() == part.get_remarks()
     assert dialog.form.total_qty_text.text() == str(part.get_total_quantity())
@@ -463,7 +482,10 @@ def test_102_16a_action_record_id_changed(qtbot, filesystem, mocker):
     assert dialog.form.record_id_combo.currentText() == str(item_value_set[2][0])
     assert dialog.form.assembly_edit.text() == item_value_set[2][2]
     assert dialog.form.assembly_edit.text() == item_value_set[2][2]
-    assert dialog.form.condition_combo.currentText() == item_value_set[2][4]
+    assert (
+        dialog.form.condition_combo.currentText()
+        == Condition(datafile, item_value_set[2][4]).get_condition()
+    )
     # check that old item was saved with new value
     item = Item(datafile, item_value_set[0][0])
     assert item.get_assembly() == item_value_set[1][2]
@@ -484,7 +506,10 @@ def test_102_16c_action_record_id_changed(qtbot, filesystem, mocker):
     # form should have new item; spot check the asembly and condition
     assert dialog.form.record_id_combo.currentText() == str(item_value_set[2][0])
     assert dialog.form.assembly_edit.text() == item_value_set[2][2]
-    assert dialog.form.condition_combo.currentText() == str(item_value_set[2][4])
+    assert (
+        dialog.form.condition_combo.currentText()
+        == Condition(datafile, item_value_set[2][4]).get_condition()
+    )
 
 
 def test_102_16d_action_record_id_changed(qtbot, filesystem, mocker):
