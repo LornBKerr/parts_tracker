@@ -8,7 +8,8 @@ License:    MIT, see file License
 Version:    1.0.0
 """
 
-from lbk_library import DataFile, Dialog
+from lbk_library import DataFile
+from lbk_library.gui import Dialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
 
@@ -17,6 +18,7 @@ from elements import Order, OrderLineSet
 file_version = "1.0.0"
 changes = {
     "1.0.0": "Initial release",
+    "1.0.1": "Revised Dialog import from lbk_library to lbk_library.gui",
 }
 
 
