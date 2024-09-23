@@ -792,7 +792,7 @@
   <customwidget>
    <class>ComboBox</class>
    <extends>QComboBox</extends>
-   <header>lbk_library/gui/</header>
+   <header>lbk_library/gui/combo_box</header>
   </customwidget>
   <customwidget>
    <class>LineEdit</class>
