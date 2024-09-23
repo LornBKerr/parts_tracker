@@ -193,3 +193,4 @@ class EditConditionsDialog(Dialog):
         Close the form when the "close" button is clicked.
         """
         self.close()
+
