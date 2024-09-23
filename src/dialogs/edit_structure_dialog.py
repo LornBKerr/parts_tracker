@@ -5,14 +5,15 @@ File:       edit_structure_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 from typing import Callable
 
-from lbk_library import Dbal
+from lbk_library import DataFile
 from lbk_library.gui import Dialog
 from PyQt5 import uic
-from PyQt5.QtWidgets import QFrame, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 from elements import Item
 
@@ -35,7 +36,7 @@ class EditStructureDialog(Dialog):
 
     def __init__(
         self,
-        dbref: Dbal,
+        datafile: DataFile,
         update_tree: callable,
         operation: int = Dialog.EDIT_ELEMENT,
     ) -> None:
@@ -44,15 +45,14 @@ class EditStructureDialog(Dialog):
 
         Parameters:
             parent (QMainWindow) the owning dialog.
-            dbref (Dbal) reference to the current open database.
+            datafile (DataFile) reference to the current open data file.
             update_tree (callable) reference to the AssemblyTreePage
                 update_tree() method.
         """
-        super().__init__(None, dbref, operation)
-
+        super().__init__(None, datafile, operation)
         self.closed = False  # used to suppport testing
         """Indicate the dialog is closed."""
-        self.set_element(Item(dbref))
+        self.set_element(Item(datafile))
         """Start with empty item."""
 
         self.form = uic.loadUi("./src/forms/edit_structure.ui", self)
@@ -62,7 +62,7 @@ class EditStructureDialog(Dialog):
         self.form.new_assy_edit.editingFinished.connect(self.action_new_assy_changed)
         self.form.close_button.clicked.connect(self.action_close)
         self.form.change_button.clicked.connect(
-            lambda: self.action_change(update_tree, dbref)
+            lambda: self.action_change(update_tree, datafile)
         )
 
     def action_close(self) -> None:
@@ -126,7 +126,7 @@ class EditStructureDialog(Dialog):
             )
         return result
 
-    def action_change(self, update_tree: Callable, dbref: Dbal) -> int:
+    def action_change(self, update_tree: Callable, datafile: DataFile) -> int:
         """
         Change the Assembly Id throughout from start prefix to end prefix.
 
@@ -137,7 +137,7 @@ class EditStructureDialog(Dialog):
         Parameters:
             update_tree (Callable): reference to the
                 AssemblyTreePage.update_tree() method
-            dbref (Dbal): reference to the current open database
+            datafile (DataFile): reference to the current open data file
         """
         error = False
         msg_1 = "Old Assembly ID and New Assembly ID are the Same.\nNothing to do."
@@ -157,13 +157,13 @@ class EditStructureDialog(Dialog):
             self.new_assy_edit.error = True
 
         if not error:
-            return self.change_assembly_ids(update_tree, dbref)
+            return self.change_assembly_ids(update_tree, datafile)
         else:
             self.message_box_exec(self.message_warning_invalid(msg_text))
 
-    def change_assembly_ids(self, update_tree: Callable, dbref: Dbal) -> None:
+    def change_assembly_ids(self, update_tree: Callable, datafile: DataFile) -> None:
         """
-        Change the selected Assembly IDs in the database to new assembly.
+        Change the selected Assembly IDs in the data file to new assembly.
 
         The Assembly tree on the main page is updated upon success. A
         warming message is shown if a failure to change or save an
@@ -173,7 +173,7 @@ class EditStructureDialog(Dialog):
         Parameters:
             update_tree (callable): reference to the
                 AssemblyTreePage.update_tree() method
-            dbref (Dbal): reference to the current open database
+            datafile (DataFile): reference to the current open data file
 
         Returns:
             (int) The actual number of items updated.
@@ -185,7 +185,7 @@ class EditStructureDialog(Dialog):
         old_end = old + "ZZZZ"
 
         # Get the item set
-        itemset = self.get_itemset(old, old_end, dbref)
+        itemset = self.get_itemset(old, old_end, datafile)
 
         valid = True
         old_len = len(old)
@@ -229,7 +229,7 @@ class EditStructureDialog(Dialog):
         self,
         beginning_assy: str,
         ending_assy: str,
-        dbref: Dbal,
+        datafile: DataFile,
     ) -> list[Item]:
         """
         Build an item list containing a subset of items selected by assembly.
@@ -237,7 +237,7 @@ class EditStructureDialog(Dialog):
         Parameters:
             beginning_assy (str): the beginning assembly value
             ending_assy (str): the end point of the selection
-            dbref (Dbal): reference to the current open database
+            datafile (DataFile): reference to the current open data file
 
         Returns:
             (list) the item list with the selected items
@@ -251,15 +251,15 @@ class EditStructureDialog(Dialog):
             + ending_assy
             + "'"
         )
-        sql_result = dbref.sql_query(sql, [])
-        resultset = dbref.sql_fetchrowset(sql_result)
+        sql_result = datafile.sql_query(sql, [])
+        resultset = datafile.sql_fetchrowset(sql_result)
 
         for result in resultset:
-            itemset.append(Item(dbref, result))
+            itemset.append(Item(datafile, result))
 
         return itemset
 
     def set_error_frames(self) -> None:
         """Attach and initialize the error_frames."""
-        self.form.old_assy_edit.set_frame(self.form.old_assy_frame)
-        self.form.new_assy_edit.set_frame(self.form.new_assy_frame)
+        self.form.old_assy_edit.set_error_frame(self.form.old_assy_frame)
+        self.form.new_assy_edit.set_error_frame(self.form.new_assy_frame)

@@ -10,21 +10,20 @@ License:    MIT, see file License
 import os
 import sys
 
-# import pytest
-# from lbk_library import Dbal, Element
-from lbk_library.gui import Dialog
-from PyQt5.QtWidgets import QDialog, QMainWindow, QMessageBox
-
-# from pytestqt import qtbot
-#
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from test_setup import db_close, db_create, db_open, item_value_set, load_all_db_tables
+from lbk_library import DataFile, Element
+from lbk_library.gui import Dialog, ErrorFrame
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+from PyQt5.QtWidgets import QDialog, QMessageBox  # , QMainWindow
+from test_data import item_value_set
+from test_setup import datafile_name, load_all_datafile_tables
 
 from dialogs import EditStructureDialog
 from elements import Item
+from pages import table_definition
 
 
 # dummy function to represent the assembly tree page updating.
@@ -32,27 +31,36 @@ def assy_tree_update_tree():
     return
 
 
-def setup_edit_structure_dialog(qtbot, db_create):
-    dbref = db_create
-    load_all_db_tables(dbref)
-    main = QMainWindow()
-    dialog = EditStructureDialog(dbref, None, Dialog.EDIT_ELEMENT)
-    qtbot.addWidget(main)
+def setup_edit_structure_dialog(qtbot, filesystem):
+    filename = filesystem + "/" + datafile_name
+    parts_file = datafile_create(filename, table_definition)
+    load_all_datafile_tables(parts_file)
+    #    main = QMainWindow()
+    dialog = EditStructureDialog(parts_file, None, Dialog.EDIT_ELEMENT)
+    #    qtbot.addWidget(main)
     qtbot.addWidget(dialog)
-    return (dbref, main, dialog)
+    return (parts_file, dialog)
 
 
-def test_103_01_class_type(qtbot, db_create):
-    dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
+def test_104_01_class_type(qtbot, filesystem):
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     assert isinstance(dialog, EditStructureDialog)
     assert isinstance(dialog, Dialog)
     assert isinstance(dialog, QDialog)
-    db_close(dbref)
+    datafile_close(parts_file)
 
 
-def test_103_02_action_cancel(qtbot, db_create):
-    dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
+def test_104_02_set_error_frames(qtbot, filesystem):
+    datafile, dialog = setup_edit_structure_dialog(qtbot, filesystem)
+
+    dialog.set_error_frames()
+    assert isinstance(dialog.form.old_assy_frame, ErrorFrame)
+    assert isinstance(dialog.form.new_assy_frame, ErrorFrame)
+
+
+def test_104_03_action_close(qtbot, filesystem):
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     def dialog_closed():
         assert dialog.isHidden()
@@ -62,11 +70,11 @@ def test_103_02_action_cancel(qtbot, db_create):
     dialog.close_button.click()
     qtbot.waitUntil(dialog_closed)
     assert dialog.closed
-    db_close(dbref)
+    datafile_close(parts_file)
 
 
-def test_103_03_action_old_assy_changed(qtbot, db_create):
-    dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
+def test_104_04_action_old_assy_changed(qtbot, filesystem):
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     test_value = "s"  # valid test: single character using editFinished signal
     dialog.form.old_assy_edit.setText(test_value)
@@ -114,8 +122,8 @@ def test_103_03_action_old_assy_changed(qtbot, db_create):
     assert dialog.form.old_assy_frame.error
 
 
-def test_103_04_action_new_assy_changed(qtbot, db_create):
-    dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
+def test_104_05_action_new_assy_changed(qtbot, filesystem):
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     test_value = "s"  # valid test: single character using editFinished signal
     dialog.form.new_assy_edit.setText(test_value)
@@ -163,8 +171,8 @@ def test_103_04_action_new_assy_changed(qtbot, db_create):
     assert dialog.form.new_assy_frame.error
 
 
-def test_103_05_get_itemset(qtbot, db_create):
-    dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
+def test_104_06_get_itemset(qtbot, filesystem):
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     count = 0  # get expected length
     for item in item_value_set:
@@ -172,7 +180,7 @@ def test_103_05_get_itemset(qtbot, db_create):
             count += 1
 
     itemset = dialog.get_itemset(
-        item_value_set[2][2], item_value_set[2][2] + "ZZZ", dbref
+        item_value_set[2][2], item_value_set[2][2] + "ZZZ", parts_file
     )
     assert len(itemset) == count
     for item in itemset:
@@ -182,8 +190,8 @@ def test_103_05_get_itemset(qtbot, db_create):
         )
 
 
-def test_103_06_change_assembly_ids(qtbot, db_create, mocker):
-    dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
+def test_104_07_change_assembly_ids(qtbot, filesystem, mocker):
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     assy_id_1 = "B"
     assy_id_2 = "Z"
@@ -191,13 +199,13 @@ def test_103_06_change_assembly_ids(qtbot, db_create, mocker):
     dialog.form.old_assy_edit.setText(assy_id_1)
     dialog.form.new_assy_edit.setText(assy_id_2)
 
-    orig_itemset = dialog.get_itemset(assy_id_1, assy_id_1 + "ZZZZ", dbref)
+    orig_itemset = dialog.get_itemset(assy_id_1, assy_id_1 + "ZZZZ", parts_file)
     item_set_len = len(orig_itemset)
 
     mocker.patch.object(Dialog, "message_box_exec")
     dialog.message_box_exec.return_value = QMessageBox.StandardButton.No
-    dialog.change_assembly_ids(assy_tree_update_tree, dbref)
-    new_itemset = dialog.get_itemset(assy_id_2, assy_id_2 + "ZZZZ", dbref)
+    dialog.change_assembly_ids(assy_tree_update_tree, parts_file)
+    new_itemset = dialog.get_itemset(assy_id_2, assy_id_2 + "ZZZZ", parts_file)
     assert len(orig_itemset) == len(new_itemset)
     for i in range(0, len(new_itemset) - 1):
         new_assy = new_itemset[i].get_assembly()
@@ -209,14 +217,14 @@ def test_103_06_change_assembly_ids(qtbot, db_create, mocker):
             assert new_assy == assy_id_2 + new_assy[len(assy_id_1) :]
     assert dialog.closed
 
-    dialog = EditStructureDialog(dbref, None, Dialog.EDIT_ELEMENT)
+    dialog = EditStructureDialog(parts_file, None, Dialog.EDIT_ELEMENT)
     dialog.form.old_assy_edit.setText(assy_id_2)
     dialog.form.new_assy_edit.setText(assy_id_3)
-    orig_itemset = dialog.get_itemset(assy_id_2, assy_id_2 + "ZZZZ", dbref)
+    orig_itemset = dialog.get_itemset(assy_id_2, assy_id_2 + "ZZZZ", parts_file)
     dialog.message_box_exec.return_value = QMessageBox.StandardButton.Yes
-    number_changed = dialog.change_assembly_ids(assy_tree_update_tree, dbref)
+    number_changed = dialog.change_assembly_ids(assy_tree_update_tree, parts_file)
     assert number_changed == len(orig_itemset)
-    new_itemset = dialog.get_itemset(assy_id_3, assy_id_3 + "ZZZZ", dbref)
+    new_itemset = dialog.get_itemset(assy_id_3, assy_id_3 + "ZZZZ", parts_file)
     assert len(orig_itemset) == len(new_itemset)
     for i in range(0, len(new_itemset) - 1):
         new_assy = new_itemset[i].get_assembly()
@@ -232,16 +240,16 @@ def test_103_06_change_assembly_ids(qtbot, db_create, mocker):
     dialog.message_box_exec.return_value = QMessageBox.StandardButton.Ok
     mocker.patch.object(Item, "update")
     Item.update.return_value = False
-    dialog = EditStructureDialog(dbref, None, Dialog.EDIT_ELEMENT)
+    dialog = EditStructureDialog(parts_file, None, Dialog.EDIT_ELEMENT)
     dialog.form.old_assy_edit.setText(assy_id_3)
     dialog.form.new_assy_edit.setText(assy_id_1)
-    orig_itemset = dialog.get_itemset(assy_id_3, assy_id_3 + "ZZZZ", dbref)
-    number_changed = dialog.change_assembly_ids(assy_tree_update_tree, dbref)
+    orig_itemset = dialog.get_itemset(assy_id_3, assy_id_3 + "ZZZZ", parts_file)
+    number_changed = dialog.change_assembly_ids(assy_tree_update_tree, parts_file)
     assert number_changed == 0
 
 
-def test_103_07_action_change(qtbot, db_create, mocker):
-    dbref, main, dialog = setup_edit_structure_dialog(qtbot, db_create)
+def test_104_08_action_change(qtbot, filesystem, mocker):
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     mocker.patch.object(Dialog, "message_box_exec")
     dialog.message_box_exec.return_value = QMessageBox.StandardButton.Ok
@@ -280,15 +288,17 @@ def test_103_07_action_change(qtbot, db_create, mocker):
     dialog.form.new_assy_edit.editingFinished.emit()
     assert not dialog.old_assy_edit.error
     assert not dialog.new_assy_edit.error
-    number_items_changed = dialog.action_change(assy_tree_update_tree, dbref)
+    number_items_changed = dialog.action_change(assy_tree_update_tree, parts_file)
     assert number_items_changed == 0
 
     # move 'B' to 'P', number of items in 'P' should equal number of
     # items in 'B' and 'B' should result in len 0.
-    b_len = len(dialog.get_itemset("B", "B" + "ZZZZ", dbref))
+    b_len = len(dialog.get_itemset("B", "B" + "ZZZZ", parts_file))
     dialog.form.old_assy_edit.setText("B")
     dialog.form.old_assy_edit.editingFinished.emit()
-    number_items_changed = dialog.action_change(assy_tree_update_tree, dbref)
+    number_items_changed = dialog.action_change(assy_tree_update_tree, parts_file)
     assert number_items_changed == b_len
-    assert number_items_changed == len(dialog.get_itemset("P", "P" + "ZZZZ", dbref))
-    assert len(dialog.get_itemset("B", "B" + "ZZZZ", dbref)) == 0
+    assert number_items_changed == len(
+        dialog.get_itemset("P", "P" + "ZZZZ", parts_file)
+    )
+    assert len(dialog.get_itemset("B", "B" + "ZZZZ", parts_file)) == 0
