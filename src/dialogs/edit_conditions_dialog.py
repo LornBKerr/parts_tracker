@@ -189,8 +189,5 @@ class EditConditionsDialog(Dialog):
             self.__change_in_process = False
 
     def close_form(self) -> None:
-        """
-        Close the form when the "close" button is clicked.
-        """
+        """Close the form when the "close" button is clicked."""
         self.close()
-
