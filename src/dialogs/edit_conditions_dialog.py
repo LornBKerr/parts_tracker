@@ -13,14 +13,14 @@ from lbk_library.gui import Dialog, TableModel
 from PyQt5 import uic
 from PyQt5.QtCore import QModelIndex, Qt
 from PyQt5.QtGui import QBrush, QColor
-from PyQt5.QtWidgets import QHeaderView  # QAbstractItemView,
+from PyQt5.QtWidgets import QHeaderView
 
 from elements import Condition, ConditionSet
 
-# file_version = "1.0.0"
-# changes = {
-#    "1.0.0": "Initial release",
-# }
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class EditConditionsDialog(Dialog):
