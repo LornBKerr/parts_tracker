@@ -17,7 +17,7 @@ if src_path not in sys.path:
 from lbk_library import DataFile, Element
 from lbk_library.gui import Dialog, ErrorFrame
 from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from PyQt5.QtWidgets import QDialog, QMessageBox  # , QMainWindow
+from PyQt5.QtWidgets import QDialog, QMessageBox
 from test_data import item_value_set
 from test_setup import datafile_name, load_all_datafile_tables
 
@@ -52,11 +52,12 @@ def test_104_01_class_type(qtbot, filesystem):
 
 
 def test_104_02_set_error_frames(qtbot, filesystem):
-    datafile, dialog = setup_edit_structure_dialog(qtbot, filesystem)
+    parts_file, dialog = setup_edit_structure_dialog(qtbot, filesystem)
 
     dialog.set_error_frames()
     assert isinstance(dialog.form.old_assy_frame, ErrorFrame)
     assert isinstance(dialog.form.new_assy_frame, ErrorFrame)
+    datafile_close(parts_file)
 
 
 def test_104_03_action_close(qtbot, filesystem):
