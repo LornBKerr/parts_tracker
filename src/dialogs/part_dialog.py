@@ -11,7 +11,7 @@ Version:    1.0.0
 from copy import deepcopy
 from typing import ClassVar
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
@@ -60,7 +60,7 @@ class PartDialog(BaseDialog):
     def __init__(
         self,
         parent: QMainWindow,
-        datafile: DataFile,
+        parts_file: PartsFile,
         record_id: int = None,
         operation: int = Dialog.EDIT_ELEMENT,
     ) -> None:
@@ -69,7 +69,7 @@ class PartDialog(BaseDialog):
 
         Parameters:
             parent (QMainWindow): the parent window owning this dialog.
-            datafile (DataFile): reference to the data file for this item.
+            parts_file (PartsFile): reference to the data file for this item.
             record_id (integer): the index into the data file for the
                 item to be edited, default is None
             operation (integer): either the constant Dialog.ADD_ELEMENT
@@ -77,8 +77,8 @@ class PartDialog(BaseDialog):
                 Dialog.EDIT_ELEMENT for editing an existing item,
                 defaults to Dialog.EDIT_ELEMENT
         """
-        super().__init__(parent, datafile, operation)
-        self.set_element(Part(datafile, record_id))
+        super().__init__(parent, parts_file, operation)
+        self.set_element(Part(parts_file, record_id))
         self.form = uic.loadUi("./src/forms/part.ui", self)
         self.set_tooltips()
         self.set_error_frames()
@@ -195,7 +195,7 @@ class PartDialog(BaseDialog):
         Handle the entry of a new part number in the text box. update
         the changed and valid flags as needed.
         """
-        partset = PartSet(self.get_datafile(), None, None, "part_number")
+        partset = PartSet(self.get_parts_file(), None, None, "part_number")
         part_number_list = partset.build_option_list("part_number")
         part_number = self.form.part_number_edit.text()
 
@@ -234,7 +234,8 @@ class PartDialog(BaseDialog):
 
         # Are there unsaved edits
         if not part.have_values_changed():
-            self.set_element(Part(self.get_datafile(), new_part_number, "part_number"))
+            self.set_element(
+                Part(self.get_parts_file(), new_part_number, "part_number"))
             self.fill_dialog_fields()
         else:
             prev_part_number = part.get_part_number()
@@ -244,7 +245,7 @@ class PartDialog(BaseDialog):
                 save_result = part.update()
                 if save_result:
                     self.set_element(
-                        Part(self.get_datafile(), new_part_number, "part_number")
+                        Part(self.get_parts_file(), new_part_number, "part_number")
                     )
                     self.fill_dialog_fields()
                 else:
@@ -252,7 +253,7 @@ class PartDialog(BaseDialog):
             elif result == QMessageBox.StandardButton.No:
                 # don't save, change to new part number
                 self.set_element(
-                    Part(self.get_datafile(), new_part_number, "part_number")
+                    Part(self.get_parts_file(), new_part_number, "part_number")
                 )
                 self.fill_dialog_fields()
             elif result == QMessageBox.StandardButton.Cancel:
@@ -273,7 +274,7 @@ class PartDialog(BaseDialog):
                 ['msg'] - (str) Error message if not valid
         """
         result = {"entry": "", "valid": False, "msg": ""}
-        indices = SourceSet(self.get_datafile()).build_option_list("record_id")
+        indices = SourceSet(self.get_parts_file()).build_option_list("record_id")
         combo_index = self.form.source_combo.currentIndex()
         if combo_index >= 0 and combo_index < len(indices):
             index = int(indices[combo_index])
@@ -342,17 +343,17 @@ class PartDialog(BaseDialog):
         self.form.part_number_edit.setText(part.get_part_number())
         self.set_combo_box_selections(
             self.form.part_number_combo,
-            PartSet(self.get_datafile(), None, None, "part_number").build_option_list(
+            PartSet(self.get_parts_file(), None, None, "part_number").build_option_list(
                 "part_number"
             ),
             part.get_part_number(),
         )
         self.set_combo_box_selections(
             self.form.source_combo,
-            SourceSet(self.get_datafile(), None, None, "source").build_option_list(
+            SourceSet(self.get_parts_file(), None, None, "source").build_option_list(
                 "source"
             ),
-            Source(self.get_datafile(), part.get_source()).get_source(),
+            Source(self.get_parts_file(), part.get_source()).get_source(),
         )
         self.form.description_edit.setText(part.get_description())
         self.form.remarks_edit.setText(part.get_remarks())
@@ -380,7 +381,7 @@ class PartDialog(BaseDialog):
         table.clearContents()
         if part_number:
             itemset = ItemSet(
-                self.get_datafile(), "part_number", part_number, "assembly"
+                self.get_parts_file(), "part_number", part_number, "assembly"
             )
             table.setRowCount(itemset.get_number_elements())
             if len(itemset.get_property_set()) > 0:
@@ -404,7 +405,7 @@ class PartDialog(BaseDialog):
 
     def clear_dialog(self) -> None:
         """Clear the dialog entry fields."""
-        self.set_element(Part(self.get_datafile()))
+        self.set_element(Part(self.get_parts_file()))
         self.fill_dialog_fields()
 
     def set_visible_add_edit_elements(self) -> None:
