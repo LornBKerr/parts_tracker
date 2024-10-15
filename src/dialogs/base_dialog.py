@@ -8,7 +8,7 @@ License:    MIT, see file License
 Version:    1.0.0
 """
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QMainWindow, QTableWidget, QTableWidgetItem
@@ -46,17 +46,21 @@ class BaseDialog(Dialog):
     """ Widths of the Order Table columns for the Item and Part dialogs."""
 
     def __init__(
-        self, parent: QMainWindow, parts_file: DataFile, operation: int
+        self, parent: QMainWindow, parts_file: PartsFile, operation: int
     ) -> None:
         """
         Initialize the DialogBase.
 
         Parameters:
             parent(QMainWindow):  the parent window owning this dialog.
-            parts_file (DataFile): reference to the parts file for this item.
+            parts_file (PartsFile): reference to the parts file for this item.
         """
         super().__init__(parent, parts_file, operation)
         self.form = None
+
+    def get_parts_file(self) -> PartsFile:
+        """Alias for Dialog.get_datafile() function for consistent naming."""
+        return self.get_datafile()
 
     def set_table_header(
         self,
@@ -103,7 +107,7 @@ class BaseDialog(Dialog):
             part_number (String) The current part part number.
         """
         order_lines = OrderLineSet(
-            self.get_datafile(), "part_number", part_number, "order_number"
+            self.get_parts_file(), "part_number", part_number, "order_number"
         )
         if not part_number:
             order_lines.set_property_set([])
@@ -111,7 +115,7 @@ class BaseDialog(Dialog):
         table.setRowCount(order_lines.get_number_elements())
         row = 0
         for order_line in order_lines:
-            order = Order(self.get_datafile(), order_line.get_order_number())
+            order = Order(self.get_parts_file(), order_line.get_order_number())
             entry = QTableWidgetItem(order_line.get_order_number())
             entry.setTextAlignment(
                 Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
