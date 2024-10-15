@@ -10,11 +10,12 @@ Version:    1.0.0
 
 from typing import Callable
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMessageBox
 
+from dialogs import BaseDialog
 from elements import Item
 
 
@@ -36,7 +37,7 @@ class EditStructureDialog(Dialog):
 
     def __init__(
         self,
-        datafile: DataFile,
+        datafile: PartsFile,
         update_tree: callable,
         operation: int = Dialog.EDIT_ELEMENT,
     ) -> None:
@@ -45,7 +46,7 @@ class EditStructureDialog(Dialog):
 
         Parameters:
             parent (QMainWindow) the owning dialog.
-            datafile (DataFile) reference to the current open data file.
+            datafile (PartsFile) reference to the current open data file.
             update_tree (callable) reference to the AssemblyTreePage
                 update_tree() method.
         """
@@ -137,7 +138,7 @@ class EditStructureDialog(Dialog):
         Parameters:
             update_tree (Callable): reference to the
                 AssemblyTreePage.update_tree() method
-            datafile (DataFile): reference to the current open data file
+            datafile (PartsFile): reference to the current open data file
         """
         error = False
         msg_1 = "Old Assembly ID and New Assembly ID are the Same.\nNothing to do."
@@ -161,7 +162,7 @@ class EditStructureDialog(Dialog):
         else:
             self.message_box_exec(self.message_warning_invalid(msg_text))
 
-    def change_assembly_ids(self, update_tree: Callable, datafile: DataFile) -> None:
+    def change_assembly_ids(self, update_tree: Callable, datafile: PartsFile) -> None:
         """
         Change the selected Assembly IDs in the data file to new assembly.
 
@@ -173,7 +174,7 @@ class EditStructureDialog(Dialog):
         Parameters:
             update_tree (callable): reference to the
                 AssemblyTreePage.update_tree() method
-            datafile (DataFile): reference to the current open data file
+            datafile (PartsFile): reference to the current open data file
 
         Returns:
             (int) The actual number of items updated.
@@ -229,7 +230,7 @@ class EditStructureDialog(Dialog):
         self,
         beginning_assy: str,
         ending_assy: str,
-        datafile: DataFile,
+        datafile: PartsFile,
     ) -> list[Item]:
         """
         Build an item list containing a subset of items selected by assembly.
@@ -237,7 +238,7 @@ class EditStructureDialog(Dialog):
         Parameters:
             beginning_assy (str): the beginning assembly value
             ending_assy (str): the end point of the selection
-            datafile (DataFile): reference to the current open data file
+            datafile (PartsFile): reference to the current open data file
 
         Returns:
             (list) the item list with the selected items
