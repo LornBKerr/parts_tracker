@@ -12,7 +12,7 @@ import base64
 import csv
 import os
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
 from PyQt5 import uic
 from PyQt5.QtCore import QSettings
@@ -60,7 +60,7 @@ class AssemblyListDialog(BaseDialog):
     def __init__(
         self,
         parent: QMainWindow,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         config: QSettings,
         operation: int = Dialog.EDIT_ELEMENT,
     ) -> None:
@@ -69,7 +69,7 @@ class AssemblyListDialog(BaseDialog):
 
         Parameters:
             parent (QMainWindow) the owning dialog.
-            parts_file (DataFile) reference to the current open data file.
+            parts_file (PartsFile) reference to the current open data file.
             config (QSettings) the current configuration settings.
         """
         super().__init__(parent, parts_file, Dialog.EDIT_ELEMENT)
