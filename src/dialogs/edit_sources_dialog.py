@@ -8,7 +8,7 @@ License:    MIT, see file License
 Version:    1.0.0
 """
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog, TableModel
 from PyQt5 import uic
 from PyQt5.QtCore import QModelIndex, Qt
@@ -50,12 +50,12 @@ class EditSourcesDialog(Dialog):
     NORMAL_BACKGROUND = QBrush(QColor("white"))
     ERROR_BACKGROUND = QBrush(QColor(0xF0C0C0))
 
-    def __init__(self, parts_file: DataFile) -> None:
+    def __init__(self, parts_file: PartsFile) -> None:
         """
         Initialize the dialog.
 
         Parameters:
-            parts_file (DataFile) reference to the current open data file.
+            parts_file (PartsFile) reference to the current open data file.
         """
         super().__init__(None, parts_file, None)
         self.parts_file = parts_file
