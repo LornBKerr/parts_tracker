@@ -11,7 +11,7 @@ Version:    1.0.0
 from copy import deepcopy
 from typing import ClassVar
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
@@ -53,7 +53,7 @@ class ItemDialog(BaseDialog):
     def __init__(
         self,
         parent: QMainWindow,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         record_id: int = None,
         operation: int = Dialog.EDIT_ELEMENT,
     ) -> None:
@@ -62,7 +62,7 @@ class ItemDialog(BaseDialog):
 
         Parameters:
             parent(QMainWindow): the parent window owning this dialog.
-            parts_file (DataFile): reference to the parts file for this
+            parts_file (PartsFile): reference to the parts file for this
                 item.
             record_id (integer): the index into the parts file for the
                 item to be edited, default is None
@@ -207,14 +207,14 @@ class ItemDialog(BaseDialog):
                 # save item with previous item number, then change to new item number
                 save_result = item.update()
                 if save_result:
-                    self.set_element(Item(self.get_datafile(), new_index))
+                    self.set_element(Item(self.get_parts_file(), new_index))
                     self.fill_dialog_fields()
                 else:
                     self.message_box_exec(self.message_warning_failed("Item Save"))
 
             elif result == QMessageBox.StandardButton.No:
                 # don't save, change to new item number
-                self.set_element(Item(self.get_datafile(), new_index))
+                self.set_element(Item(self.get_parts_file(), new_index))
                 self.fill_dialog_fields()
 
             elif result == QMessageBox.StandardButton.Cancel:
@@ -258,7 +258,7 @@ class ItemDialog(BaseDialog):
                 ['msg'] - (str) Error message if not valid
         """
         result = {"entry": "", "valid": False, "msg": ""}
-        indices = ConditionSet(self.get_datafile()).build_option_list("record_id")
+        indices = ConditionSet(self.get_parts_file()).build_option_list("record_id")
         combo_index = self.form.condition_combo.currentIndex()
         if combo_index >= 0 and combo_index < len(indices):
             index = int(indices[combo_index])
@@ -387,7 +387,7 @@ class ItemDialog(BaseDialog):
         initial_conditions = deepcopy(item.get_properties())
         self.set_combo_box_selections(
             self.form.record_id_combo,
-            ItemSet(self.get_datafile(), None, None, "record_id").build_option_list(
+            ItemSet(self.get_parts_file(), None, None, "record_id").build_option_list(
                 "record_id"
             ),
             str(item.get_record_id()),
@@ -395,8 +395,8 @@ class ItemDialog(BaseDialog):
         self.form.assembly_edit.setText(item.get_assembly())
         self.set_combo_box_selections(
             self.form.condition_combo,
-            ConditionSet(self.get_datafile()).build_option_list("condition"),
-            Condition(self.get_datafile(), item.get_condition()).get_condition(),
+            ConditionSet(self.get_parts_file()).build_option_list("condition"),
+            Condition(self.get_parts_file(), item.get_condition()).get_condition(),
         )
         qty = item.get_quantity()
         self.form.quantity_edit.setText(str(qty))
@@ -433,15 +433,15 @@ class ItemDialog(BaseDialog):
             part_number (String) The part number for the current item,
                 default is None
         """
-        part = Part(self.get_datafile(), part_number, "part_number")
+        part = Part(self.get_parts_file(), part_number, "part_number")
         self.set_combo_box_selections(
             self.form.part_number_combo,
-            PartSet(self.get_datafile(), None, None, "part_number").build_option_list(
+            PartSet(self.get_parts_file(), None, None, "part_number").build_option_list(
                 "part_number"
             ),
             part_number,
         )
-        source = Source(self.get_datafile(), part.get_source()).get_source()
+        source = Source(self.get_parts_file(), part.get_source()).get_source()
         self.form.source_text.setText(source)
         self.form.description_text.setText(part.get_description())
         self.form.remarks_text.setText(part.get_remarks())
@@ -449,7 +449,7 @@ class ItemDialog(BaseDialog):
 
     def clear_dialog(self) -> None:
         """Clear the dialog entry fields."""
-        self.set_element(Item(self.get_datafile()))
+        self.set_element(Item(self.get_parts_file()))
         self.fill_dialog_fields()
 
     def set_visible_add_edit_elements(self) -> None:
