@@ -11,7 +11,8 @@ Version:    1.0.0
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import DataFile, Element
+from lbk_library import DataFile as PartsFile
+from lbk_library import Element
 
 file_version = "1.0.0"
 changes = {
@@ -29,7 +30,7 @@ class Condition(Element):
     listed in the parts file.
     """
 
-    def __init__(self, parts_file: DataFile, condition_key: str = None) -> None:
+    def __init__(self, parts_file: PartsFile, condition_key: str = None) -> None:
         """
         Implement a single Condition.
 
@@ -47,7 +48,7 @@ class Condition(Element):
         default values.
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding the element
+            parts_file (PartsFile): reference to the parts file holding the element
             condition_key (str | dict): the record_id of the Condition
                 being constructed or a dict object of the values for a
                 Condition for insertion into the properties array.
