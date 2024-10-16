@@ -11,7 +11,8 @@ Version:    1.0.0
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import DataFile, Element
+from lbk_library import DataFile as PartsFile
+from lbk_library import Element
 
 file_version = "1.0.0"
 changes = {
@@ -22,7 +23,7 @@ changes = {
 class OrderLine(Element):
     """Implements single OrderLine in the parts file."""
 
-    def __init__(self, parts_file: DataFile, order_line_key: Any = None) -> None:
+    def __init__(self, parts_file: PartsFile, order_line_key: Any = None) -> None:
         """
         Implement a single OrderLine.
 
@@ -40,7 +41,7 @@ class OrderLine(Element):
         values.
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding the element
+            parts_file (PartsFile): reference to the parts file holding the element
             order_line_key (int | str | dict): the specific key of the
                 OrderLine being constructed or an dict object of the
                 values for an OrderLine for direct insertion into the
