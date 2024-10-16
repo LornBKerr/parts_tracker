@@ -15,7 +15,6 @@ from lbk_library.gui import Dialog
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMessageBox
 
-from dialogs import BaseDialog
 from elements import Item
 
 
@@ -127,7 +126,7 @@ class EditStructureDialog(Dialog):
             )
         return result
 
-    def action_change(self, update_tree: Callable, datafile: DataFile) -> int:
+    def action_change(self, update_tree: Callable, datafile: PartsFile) -> int:
         """
         Change the Assembly Id throughout from start prefix to end prefix.
 

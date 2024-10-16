@@ -235,7 +235,8 @@ class PartDialog(BaseDialog):
         # Are there unsaved edits
         if not part.have_values_changed():
             self.set_element(
-                Part(self.get_parts_file(), new_part_number, "part_number"))
+                Part(self.get_parts_file(), new_part_number, "part_number")
+            )
             self.fill_dialog_fields()
         else:
             prev_part_number = part.get_part_number()

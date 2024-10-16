@@ -5,6 +5,7 @@ File:       test_103_edit_structure_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
@@ -16,14 +17,25 @@ if src_path not in sys.path:
 
 from lbk_library import DataFile, Element
 from lbk_library.gui import Dialog, ErrorFrame
-from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+from lbk_library.testing_support import (
+    datafile_close,
+    datafile_create,
+    filesystem,
+    long_string,
+    test_string,
+)
 from PyQt5.QtWidgets import QDialog, QMessageBox
 from test_data import item_value_set
 from test_setup import datafile_name, load_all_datafile_tables
 
-from dialogs import EditStructureDialog
+from dialogs import BaseDialog, EditStructureDialog
 from elements import Item
 from pages import table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 # dummy function to represent the assembly tree page updating.
