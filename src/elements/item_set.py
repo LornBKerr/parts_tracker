@@ -8,7 +8,8 @@ License:    MIT, see file License
 Version:    1.0.0
 """
 
-from lbk_library import DataFile, ElementSet
+from lbk_library import DataFile as PartsFile
+from lbk_library import ElementSet
 
 from .item import Item
 
@@ -23,7 +24,7 @@ class ItemSet(ElementSet):
 
     def __init__(
         self,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         where_column: str = None,
         where_value: str = None,
         order_by_column: str = None,
@@ -34,7 +35,7 @@ class ItemSet(ElementSet):
         Build a set of Items from the parts file table 'items'.
 
         Parameters:
-            parts_file (DataFile): the dababase instance to use.
+            parts_file (PartsFile): the dababase instance to use.
             where_column (str): The key column of the table containing
                 the key value to determine the elements being retrieved.
                 If None, all rows are retrieved.
