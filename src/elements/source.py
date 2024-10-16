@@ -11,7 +11,8 @@ Version:    1.0.0
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import DataFile, Element
+from lbk_library import DataFile as PartsFile
+from lbk_library import Element
 
 file_version = "1.0.0"
 changes = {
@@ -26,7 +27,7 @@ class Source(Element):
     A source is where a part is bought.
     """
 
-    def __init__(self, parts_file: DataFile, source_key: str = None) -> None:
+    def __init__(self, parts_file: PartsFile, source_key: str = None) -> None:
         """
         Build a single Source.
 
@@ -44,7 +45,7 @@ class Source(Element):
         default values.
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding
+            parts_file (PartsFile): reference to the parts file holding
                 the element.
             source_key (str | dict): the record_id of the Source
                 being constructed or an dict object of the values for a

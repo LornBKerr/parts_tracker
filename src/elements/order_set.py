@@ -8,7 +8,8 @@ License:    MIT, see file License
 Version:    1.0.0
 """
 
-from lbk_library import DataFile, ElementSet
+from lbk_library import DataFile as PartsFile
+from lbk_library import ElementSet
 
 from .order import Order
 
@@ -23,7 +24,7 @@ class OrderSet(ElementSet):
 
     def __init__(
         self,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         where_column: str = None,
         where_value: str = None,
         order_by_column: str = None,
@@ -34,7 +35,7 @@ class OrderSet(ElementSet):
         Build a set of Orders from the parts file table 'orders'.
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding the Orders.
+            parts_file (PartsFile): reference to the parts file holding the Orders.
             where_column (str): The key column of the table containing
                 the key value to determine the elements being retrieved,
                 default is all rows are retrieved.

@@ -8,7 +8,8 @@ License:    MIT, see file License
 Version:    1.0.0
 """
 
-from lbk_library import DataFile, ElementSet
+from lbk_library import DataFile as PartsFile
+from lbk_library import ElementSet
 
 from .source import Source
 
@@ -23,7 +24,7 @@ class SourceSet(ElementSet):
 
     def __init__(
         self,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         where_column: str = None,
         where_value: str | int = None,
         order_by_column: str = None,
@@ -35,7 +36,7 @@ class SourceSet(ElementSet):
         when creating the set.
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding the element
+            parts_file (PartsFile): reference to the parts file holding the element
             where_column (str): The key column of the table containing
                 the key value to determine the elements being retrieved.
                 Default is all rows are retrieved.

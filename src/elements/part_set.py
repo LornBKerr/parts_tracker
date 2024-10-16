@@ -10,7 +10,8 @@ Version:    1.0.0
 
 from typing import Any
 
-from lbk_library import DataFile, ElementSet
+from lbk_library import DataFile as PartsFile
+from lbk_library import ElementSet
 
 from .part import Part
 
@@ -25,7 +26,7 @@ class PartSet(ElementSet):
 
     def __init__(
         self,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         where_column: str = None,
         where_value: Any = None,
         order_by_column: str = None,
@@ -36,7 +37,7 @@ class PartSet(ElementSet):
         Build a set of Parts from the parts file table 'parts'.
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding the parts
+            parts_file (PartsFile): reference to the parts file holding the parts
             where_column (String): The key column of the table
                 containing the key value to determine the elements being
                 retrieved. Default is all rows are retrieved.

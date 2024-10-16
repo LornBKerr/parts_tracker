@@ -10,7 +10,8 @@ Version:    1.0.0
 
 from typing import Any
 
-from lbk_library import DataFile, ElementSet
+from lbk_library import DataFile as PartsFile
+from lbk_library import ElementSet
 
 from .order_line import OrderLine
 
@@ -25,7 +26,7 @@ class OrderLineSet(ElementSet):
 
     def __init__(
         self,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         where_column: str = None,
         where_value: Any = None,
         order_by_column: str = None,
@@ -36,7 +37,7 @@ class OrderLineSet(ElementSet):
         Build a set of OrderLines from the parts file table 'order_lines'.
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding the element.
+            parts_file (PartsFile): reference to the parts file holding the element.
             where_column (str): The key column of the table containing
                 the key value to determine the elements being retrieved,
                 defaults to all rows are retrieved.
