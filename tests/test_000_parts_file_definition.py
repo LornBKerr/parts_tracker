@@ -29,31 +29,31 @@ def test_000_01_table_set(filesystem):
     """Create an empty parts file and verify the required set of tables."""
     base_directory = filesystem
     filepath = base_directory + "/testfile.parts"
-    datafile = datafile_create(filepath, table_definition)
+    parts_file = datafile_create(filepath, table_definition)
     table_names = ["conditions", "items", "order_lines", "orders", "parts", "sources"]
 
     sql_query = "SELECT name FROM sqlite_master WHERE type='table' and name != 'sqlite_sequence';"
-    sqlite_cursor = datafile.sql_query(sql_query)
-    tables = datafile.sql_fetchrowset(sqlite_cursor)
+    sqlite_cursor = parts_file.sql_query(sql_query)
+    tables = parts_file.sql_fetchrowset(sqlite_cursor)
     assert len(tables) == len(table_names)
     for table_entry in tables:
         assert table_entry["name"] in table_names
-    datafile_close(datafile)
+    datafile_close(parts_file)
 
 
 def test_000_02_conditions_table(filesystem):
     """Create an empty parts file and verify the required set of tables."""
     base_directory = filesystem
     filepath = base_directory + "/testfile.db"
-    datafile = datafile_create(filepath, table_definition)
+    parts_file = datafile_create(filepath, table_definition)
 
     condition_column_set = [
         {"name": "record_id", "type": "INTEGER"},
         {"name": "condition", "type": "TEXT"},
     ]
     sql_query = "SELECT * FROM pragma_table_info('conditions')"
-    sqlite_cursor = datafile.sql_query(sql_query)
-    columns = datafile.sql_fetchrowset(sqlite_cursor)
+    sqlite_cursor = parts_file.sql_query(sql_query)
+    columns = parts_file.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
         if column_info["name"] == condition_column_set[0]["name"]:
             assert column_info["type"] == "INTEGER"
@@ -62,14 +62,14 @@ def test_000_02_conditions_table(filesystem):
         else:
             print(column_info["name"] + " not in defined column names.")
             assert False
-    datafile_close(datafile)
+    datafile_close(parts_file)
 
 
 def test_000_03_items_table(filesystem):
     """Create an empty parts file and verify the required set of tables."""
     base_directory = filesystem
     filepath = base_directory + "/testfile.db"
-    datafile = datafile_create(filepath, table_definition)
+    parts_file = datafile_create(filepath, table_definition)
 
     items_column_set = [
         {"name": "record_id", "type": "INTEGER"},
@@ -82,8 +82,8 @@ def test_000_03_items_table(filesystem):
         {"name": "remarks", "type": "TEXT"},
     ]
     sql_query = "SELECT * FROM pragma_table_info('items')"
-    sqlite_cursor = datafile.sql_query(sql_query)
-    columns = datafile.sql_fetchrowset(sqlite_cursor)
+    sqlite_cursor = parts_file.sql_query(sql_query)
+    columns = parts_file.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
         if (
             column_info["name"] == items_column_set[0]["name"]
@@ -102,14 +102,14 @@ def test_000_03_items_table(filesystem):
         else:
             print(column_info["name"] + " not in defined column names.")
             assert False
-    datafile_close(datafile)
+    datafile_close(parts_file)
 
 
 def test_000_04_orderlines_table(filesystem):
     """Create an empty parts file and verify the required set of tables."""
     base_directory = filesystem
     filepath = base_directory + "/testfile.db"
-    datafile = datafile_create(filepath, table_definition)
+    parts_file = datafile_create(filepath, table_definition)
 
     orderlines_column_set = [
         {"name": "record_id", "type": "INTEGER"},
@@ -121,8 +121,8 @@ def test_000_04_orderlines_table(filesystem):
         {"name": "remarks", "type": "TEXT"},
     ]
     sql_query = "SELECT * FROM pragma_table_info('order_lines')"
-    sqlite_cursor = datafile.sql_query(sql_query)
-    columns = datafile.sql_fetchrowset(sqlite_cursor)
+    sqlite_cursor = parts_file.sql_query(sql_query)
+    columns = parts_file.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
         if (
             column_info["name"] == orderlines_column_set[0]["name"]
@@ -141,14 +141,14 @@ def test_000_04_orderlines_table(filesystem):
         else:
             print(column_info["name"] + " not in defined column names.")
             assert False
-    datafile_close(datafile)
+    datafile_close(parts_file)
 
 
 def test_000_05_orders_table(filesystem):
     """Create an empty parts file and verify the required set of tables."""
     base_directory = filesystem
     filepath = base_directory + "/testfile.db"
-    datafile = datafile_create(filepath, table_definition)
+    parts_file = datafile_create(filepath, table_definition)
 
     orders_column_set = [
         {"name": "record_id", "type": "INTEGER"},
@@ -163,8 +163,8 @@ def test_000_05_orders_table(filesystem):
         {"name": "remarks", "type": "TEXT"},
     ]
     sql_query = "SELECT * FROM pragma_table_info('orders')"
-    sqlite_cursor = datafile.sql_query(sql_query)
-    columns = datafile.sql_fetchrowset(sqlite_cursor)
+    sqlite_cursor = parts_file.sql_query(sql_query)
+    columns = parts_file.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
         if (
             column_info["name"] == orders_column_set[0]["name"]
@@ -188,14 +188,14 @@ def test_000_05_orders_table(filesystem):
         else:
             print(column_info["name"] + " not in defined column names.")
             assert False
-    datafile_close(datafile)
+    datafile_close(parts_file)
 
 
 def test_000_06_parts_table(filesystem):
     """Create an empty parts file and verify the required set of tables."""
     base_directory = filesystem
     filepath = base_directory + "/testfile.db"
-    datafile = datafile_create(filepath, table_definition)
+    parts_file = datafile_create(filepath, table_definition)
 
     parts_column_set = [
         {"name": "record_id", "type": "INTEGER"},
@@ -205,8 +205,8 @@ def test_000_06_parts_table(filesystem):
         {"name": "remarks", "type": "TEXT"},
     ]
     sql_query = "SELECT * FROM pragma_table_info('parts')"
-    sqlite_cursor = datafile.sql_query(sql_query)
-    columns = datafile.sql_fetchrowset(sqlite_cursor)
+    sqlite_cursor = parts_file.sql_query(sql_query)
+    columns = parts_file.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
         if (
             column_info["name"] == parts_column_set[0]["name"]
@@ -222,22 +222,22 @@ def test_000_06_parts_table(filesystem):
         else:
             print(column_info["name"] + " not in defined column names.")
             assert False
-    datafile_close(datafile)
+    datafile_close(parts_file)
 
 
 def test_000_07_sources_table(filesystem):
     """Create an empty parts file and verify the required set of tables."""
     base_directory = filesystem
     filepath = base_directory + "/testfile.db"
-    datafile = datafile_create(filepath, table_definition)
+    parts_file = datafile_create(filepath, table_definition)
 
     sources_column_set = [
         {"name": "record_id", "type": "INTEGER"},
         {"name": "source", "type": "TEXT"},
     ]
     sql_query = "SELECT * FROM pragma_table_info('sources')"
-    sqlite_cursor = datafile.sql_query(sql_query)
-    columns = datafile.sql_fetchrowset(sqlite_cursor)
+    sqlite_cursor = parts_file.sql_query(sql_query)
+    columns = parts_file.sql_fetchrowset(sqlite_cursor)
     for column_info in columns:
         if column_info["name"] == sources_column_set[0]["name"]:
             assert column_info["type"] == "INTEGER"
@@ -246,4 +246,4 @@ def test_000_07_sources_table(filesystem):
         else:
             print(column_info["name"] + " not in defined column names.")
             assert False
-    datafile_close(datafile)
+    datafile_close(parts_file)
