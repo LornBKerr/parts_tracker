@@ -11,7 +11,8 @@ Version:    1.0.0
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import DataFile, Element
+from lbk_library import DataFile as PartsFile
+from lbk_library import Element
 
 from .item_set import ItemSet
 
@@ -25,7 +26,7 @@ class Part(Element):
     """Implement a single Part in the parts_file."""
 
     def __init__(
-        self, parts_file: DataFile, part_key: Any = None, column: str = None
+        self, parts_file: PartsFile, part_key: Any = None, column: str = None
     ) -> None:
         """
         Initialize a single Part.
@@ -49,7 +50,7 @@ class Part(Element):
         given by 'column' and 'part_key'
 
         Parameters:
-            parts_file (DataFile): reference to the parts_file holding
+            parts_file (PartsFile): reference to the parts_file holding
                 the element
             part_key (Mixed): the specific key of the Part being
                 constructed or an dict object of the values for an Part

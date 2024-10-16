@@ -109,7 +109,8 @@ def test_007_05_get_set_source(filesystem):
     Get and set the source property.
 
     The property 'source' is required and is a small integer. The
-    allowed source values are held in the 'sources' table in the datafile.
+    allowed source values are held in the 'sources' table in the parts
+    file.
     """
     part, parts_file = base_setup(filesystem)
     defaults = part.get_initial_values()
