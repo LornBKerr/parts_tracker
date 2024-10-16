@@ -4,16 +4,22 @@ This is the list displaying the Parts in the database.
 File:       parts_list_page.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
+Version:    1.0.0
 """
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog, TableWidgetIntItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QTableWidget, QTableWidgetItem
 
 from dialogs import PartDialog
-from elements import PartSet
+from elements import PartSet, Source
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class PartsListPage:
@@ -28,16 +34,16 @@ class PartsListPage:
         "Part Remarks",
     ]
 
-    def __init__(self, table: QTableWidget, parts_file: DataFile) -> None:
+    def __init__(self, table: QTableWidget, parts_file: PartsFile) -> None:
         """
         Initialize and display the Part List.
 
         Parameters
             main_window (QMainWindow): the parent window
-            parts_file (DataFile): reference to theparts file.
+            parts_file (PartsFile): reference to theparts file.
         """
         #        self.main_window: QMainWindow = main_window
-        self.parts_file: DataFile = parts_file
+        self.parts_file: PartsFile = parts_file
         self.table = table
 
         # set the table headers and load the table
@@ -47,7 +53,7 @@ class PartsListPage:
             self.update_table()
 
         # connect the table signal for 'part clicked'
-        # self.table.itemClicked.connect(self.action_part_clicked)
+        self.table.itemClicked.connect(self.action_part_clicked)
 
     def update_table(self) -> None:
         """Update the display table from database."""
@@ -77,7 +83,8 @@ class PartsListPage:
             self.table.setItem(row, col, QTableWidgetItem(part.get_description()))
 
             col += 1
-            self.table.setItem(row, col, QTableWidgetItem(part.get_source()))
+            source = Source(self.parts_file, part.get_source()).get_source()
+            self.table.setItem(row, col, QTableWidgetItem(source))
 
             col += 1
             quantity = part.get_total_quantity()
@@ -141,6 +148,6 @@ class PartsListPage:
         """
         Return the parts file reference.
 
-        Return (DataFile): the current parts file reference.
+        Return (PartsFile): the current parts file reference.
         """
         return self.parts_file

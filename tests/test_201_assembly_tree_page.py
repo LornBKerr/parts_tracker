@@ -4,23 +4,29 @@ Test the assembly_tree_page class.
 File:       test_201_assembly_tree_page.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023, 2024 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
+Version:    1.0.0
 """
 
 import os
 import sys
 
-from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
-from test_setup import item_value_set, load_all_datafile_tables
-
 src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+from lbk_library.testing_support import datafile_close, datafile_create, filesystem
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
+from test_setup import item_value_set, load_all_datafile_tables
+
 from dialogs import ItemDialog
-from elements import Item, ItemSet, Part
+from elements import Condition, Item, ItemSet, Part
 from pages import AssemblyTreePage, table_definition
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 parts_filename = "parts_test.parts"
 
@@ -78,7 +84,17 @@ def test_201_03_set_tree_headers(qtbot, filesystem):
     datafile_close(parts_file)
 
 
-def test_201_04_set_part_description(qtbot, filesystem):
+def test_201_04_set_condition_description(qtbot, filesystem):
+    parts_file, tree, page = setup_page(qtbot, filesystem)
+    item_number = item_value_set[0][0]
+    condition_id = item_value_set[0][4]
+    item = Item(parts_file, item_number)
+    condition = Condition(parts_file, item.get_condition())
+    item_properties = page.set_condition_description(item.get_properties())
+    assert item_properties["condition"] == condition.get_condition()
+
+
+def test_201_05_set_part_description(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     item_number = item_value_set[0][0]
     part_number = item_value_set[0][1]
@@ -88,7 +104,7 @@ def test_201_04_set_part_description(qtbot, filesystem):
     assert item_properties["description"] == part.get_description()
 
 
-def test_201_05_set_installed_entry(qtbot, filesystem):
+def test_201_06_set_installed_entry(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     item_number = item_value_set[0][0]
     item = Item(parts_file, item_number)
@@ -100,10 +116,11 @@ def test_201_05_set_installed_entry(qtbot, filesystem):
     assert item_properties["installed"] == ""
 
 
-def test_201_06_set_item_values(qtbot, filesystem):
+def test_201_07_set_item_values(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     item_number = item_value_set[0][0]
     item = Item(parts_file, item_number)
+    item_properties = page.set_condition_description(item.get_properties())
     item_properties = page.set_part_description(item.get_properties())
     item_properties = page.set_installed_entry(item_properties)
     item_values = page.set_item_values(item_properties)
@@ -112,7 +129,7 @@ def test_201_06_set_item_values(qtbot, filesystem):
     datafile_close(parts_file)
 
 
-def test_201_07_find_parent_assy(qtbot, filesystem):
+def test_201_08_find_parent_assy(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     tree_items = {}
     assembly = "A"
@@ -130,11 +147,12 @@ def test_201_07_find_parent_assy(qtbot, filesystem):
     datafile_close(parts_file)
 
 
-def test_201_08_add_item_to_tree(qtbot, filesystem):
+def test_201_09_add_item_to_tree(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     tree_items = {}
     item_set = ItemSet(parts_file, None, None, "assembly")
     item = item_set.get(0)
+    item_properties = page.set_condition_description(item.get_properties())
     item_properties = page.set_part_description(item.get_properties())
     assembly1 = item_properties["assembly"]
     item_properties = page.set_installed_entry(item_properties)
@@ -143,6 +161,7 @@ def test_201_08_add_item_to_tree(qtbot, filesystem):
     tree_items = page.add_item_to_tree(assembly1, item_values, parent, tree_items)
     assert tree_items[assembly1].parent() is None
     item = item_set.get(1)
+    item_properties = page.set_condition_description(item.get_properties())
     item_properties = page.set_part_description(item.get_properties())
     assembly2 = item_properties["assembly"]
     item_properties = page.set_installed_entry(item_properties)
@@ -153,7 +172,7 @@ def test_201_08_add_item_to_tree(qtbot, filesystem):
     datafile_close(parts_file)
 
 
-def test_201_09_fill_tree_widget(qtbot, filesystem):
+def test_201_10_fill_tree_widget(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     item_set = ItemSet(parts_file, None, None, "assembly")
     tree_items = page.fill_tree_widget(item_set)
@@ -163,7 +182,7 @@ def test_201_09_fill_tree_widget(qtbot, filesystem):
     datafile_close(parts_file)
 
 
-def test_201_10_update_tree(qtbot, filesystem):
+def test_201_11_update_tree(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     item_set = ItemSet(parts_file, None, None, "assembly")
     tree_items = page.fill_tree_widget(item_set)
@@ -178,7 +197,7 @@ def test_201_10_update_tree(qtbot, filesystem):
     datafile_close(parts_file)
 
 
-def test_201_11_clear_tree(qtbot, filesystem):
+def test_201_12_clear_tree(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
     item_set = ItemSet(parts_file, None, None, "assembly")
     tree_items = page.fill_tree_widget(item_set)
@@ -190,7 +209,7 @@ def test_201_11_clear_tree(qtbot, filesystem):
     datafile_close(parts_file)
 
 
-def test_201_12_action_item_clicked(qtbot, filesystem):
+def test_201_13_action_item_clicked(qtbot, filesystem):
     parts_file, tree, page = setup_page(qtbot, filesystem)
 
     item_set = ItemSet(parts_file, None, None, "assembly")

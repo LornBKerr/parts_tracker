@@ -4,20 +4,26 @@ Test the parts_list_page class.
 File:       test_202_parts_list_page.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023, 2024 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
+Version:    1.0.0
 """
 
 import os
 import sys
 
+src_path = os.path.join(os.path.realpath("."), "src")
+if src_path not in sys.path:
+    sys.path.append(src_path)
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
+
 from lbk_library.testing_support import datafile_close, datafile_create, filesystem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidget
 from test_setup import load_all_datafile_tables, part_value_set
-
-src_path = os.path.join(os.path.realpath("."), "src")
-if src_path not in sys.path:
-    sys.path.append(src_path)
 
 from dialogs import PartDialog
 from elements import Part, PartSet

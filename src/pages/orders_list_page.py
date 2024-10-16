@@ -4,16 +4,22 @@ This is the list displaying the Orders in the database.
 File:       orders_list_page.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
+Version:    1.0.0
 """
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog, TableWidgetIntItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QTableWidget, QTableWidgetItem
 
 from dialogs import OrderDialog
-from elements import OrderLineSet, OrderSet
+from elements import OrderLineSet, OrderSet, Source
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class OrdersListPage:
@@ -28,15 +34,15 @@ class OrdersListPage:
         "Order Remarks",
     ]
 
-    def __init__(self, table: QTableWidget, parts_file: DataFile) -> None:
+    def __init__(self, table: QTableWidget, parts_file: PartsFile) -> None:
         """
         Initialize and display the Order List.
 
         Parameters:
             main_window (QMainWindow): the parent window.
-            parts_file (DataFile): reference to the parts file.
+            parts_file (PartsFile): reference to the parts file.
         """
-        self.parts_file: DataFile = parts_file
+        self.parts_file: PartsFile = parts_file
         self.table = table
 
         # # set up the Orders Listing Table
@@ -75,7 +81,8 @@ class OrdersListPage:
             self.table.setItem(row, col, QTableWidgetItem(order.get_date()))
 
             col += 1
-            self.table.setItem(row, col, QTableWidgetItem(order.get_source()))
+            source = Source(self.parts_file, order.get_source()).get_source()
+            self.table.setItem(row, col, QTableWidgetItem(source))
 
             col += 1
             num_lines = self.get_number_lines(order.get_order_number())
@@ -152,10 +159,10 @@ class OrdersListPage:
         self.update_table()
         return dialog
 
-    def get_parts_file(self) -> DataFile:
+    def get_parts_file(self) -> PartsFile:
         """
         Return the parts file reference.
 
-        Return (DataFile): the current parts file reference.
+        Return (PartsFile): the current parts file reference.
         """
         return self.parts_file

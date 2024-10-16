@@ -4,13 +4,14 @@ Build and execute the Main Window for the Parts Tracker Program.
 File:       main_window.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
+Version:    1.0.0
 """
 
 import os
 from pathlib import Path
 
-from lbk_library import DataFile
+from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
 from PyQt5 import uic
 from PyQt5.QtCore import QSettings  # QPoint,
@@ -39,6 +40,11 @@ from .orders_list_page import OrdersListPage
 from .parts_file_definition import table_definition
 from .parts_list_page import PartsListPage
 
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
+
 
 class MainWindow(QMainWindow):
     """Build the Main Window for the Parts Tracker Program."""
@@ -46,15 +52,14 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         """Initialize the main window for the Program."""
         super().__init__()
-        self.form = uic.loadUi("src/forms/main_window.ui", self)
-
         self.config = QSettings("Unnamed Branch", "PartsTracker")
         """The configuration setup."""
-        self.parts_file: DataFile = DataFile()
+        self.parts_file: PartsFile = PartsFile()
         """The parts file of the set of parts information."""
         self.__number_recent_files = 4
         """ The number of recent files listed in the recent Files menu."""
 
+        self.form = uic.loadUi("src/forms/main_window.ui", self)
         self.tab_widget: QTabWidget
         self.assembly_tree_widget: QTreeWidget = QTreeWidget()
         self.orders_list_widget: QTableWidget = QTableWidget()
@@ -123,7 +128,6 @@ class MainWindow(QMainWindow):
         self.form.action_update_order_table.triggered.connect(
             lambda: (self.order_list.update_table())
         )
-        # show the window
         self.show()
 
     def initialize_config_file(self) -> None:
@@ -143,8 +147,8 @@ class MainWindow(QMainWindow):
                      newest to oldest as full paths. Initially set to
                      empty strings.
                  file1: (str) - Most recent or current file open(ed).
-                 file2: (str) - next most recent file
-                 file3: (str)
+                 file2: (str) - next most recent file.
+                 file3: (str) - 3rd most recent file.
                  file4: (str) - 4th most recent file opened.
              },
              'Geometry': l(list[int])
@@ -154,7 +158,7 @@ class MainWindow(QMainWindow):
                  height: int - height of the window, default is 920
         """
         self.config.beginGroup("settings")
-        self.config.setValue("parts_file_dir", "Documents/PartsTracker")
+        self.config.setValue("parts_file_dir", "Documents/PartsTracker/parts_files")
         self.config.setValue("list_files_dir", "Documents/PartsTracker/parts_listings")
         self.config.endGroup()
 
@@ -174,7 +178,7 @@ class MainWindow(QMainWindow):
 
         return self.config
 
-    def open_file(self) -> DataFile:
+    def open_file(self) -> PartsFile:
         """
         Load the last used file.
 
@@ -182,7 +186,7 @@ class MainWindow(QMainWindow):
         parts file. Otherwise, leave the connection closed
 
         Returns:
-            (DataFile): The parts file reference
+            (PartsFile): The parts file reference
         """
         if not self.config.value("recent_files/file1") == "":
             # use first filename to open the parts file
@@ -360,7 +364,7 @@ class MainWindow(QMainWindow):
         file_name = self.get_new_filename()
         if Path(file_name).is_file():
             os.remove(file_name)
-        DataFile.new_file(file_name, table_definition)
+        PartsFile.new_file(file_name, table_definition)
         self.load_file(file_name)
 
     def recent_file_1_action(self) -> None:
@@ -487,7 +491,7 @@ class MainWindow(QMainWindow):
         Returns:
             (dialog) the opened EditSourceDialog object
         """
-        dialog = EditSourcesDialog(self, self.parts_file, Dialog.ADD_ELEMENT)
+        dialog = EditSourcesDialog(self.parts_file)
         dialog.open()
         return dialog
 
@@ -497,7 +501,6 @@ class MainWindow(QMainWindow):
 
          Parameters:
             parent (QMainWindow) the parent window owning this dialog.
-            parts_file (DataFile) reference to the parts file for this item.
         """
         dialog = ChangePartNumberDialog(self, self.parts_file)
         dialog.open()
@@ -511,10 +514,6 @@ class MainWindow(QMainWindow):
         Activate the Order Editing form.
 
         Parameters:
-            parent (QMainWindow) the parent window owning this dialog.
-            parts_file (DataFile) reference to the parts file for this order.
-            resources (AppResources) reference to the app resources for
-               this dialog.
             record_id (int) the index into the parts file for the order
                 to be edited, default is None
             add_order (int) The constant Dialog.Dialog.ADD_ELEMENT if a new

@@ -4,17 +4,24 @@ Display the Items in a tree parentat by assembly order.
 File:       assembly_tree_page.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
-License:    MIT, see file License
+License:    MIT, see file LICENSE
+Version:    1.0.0
 """
 
 from typing import Any
 
-from lbk_library import DataFile, Dialog
+from lbk_library import DataFile as PartsFile
+from lbk_library.gui import Dialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 from dialogs import ItemDialog
-from elements import Item, ItemSet, Part
+from elements import Condition, Item, ItemSet, Part
+
+file_version = "1.0.0"
+changes = {
+    "1.0.0": "Initial release",
+}
 
 
 class AssemblyTreePage:
@@ -32,19 +39,18 @@ class AssemblyTreePage:
     ]
     """ Names of the tree columns."""
 
-    def __init__(self, tree: QTreeWidget, parts_file: DataFile) -> None:
+    def __init__(self, tree: QTreeWidget, parts_file: PartsFile) -> None:
         """
         Initialize the assembly tree widget.
 
         Parameters:
             tree (QTreeWidget): the tree to be filled with info
-            parts_file (DataFile):  database reference for the parts file.
+            parts_file (PartsFile):  database reference for the parts file.
         """
         super().__init__()
 
-        self.parts_file: DataFile = parts_file
+        self.parts_file: PartsFile = parts_file
         self.tree = tree
-
         self.resize_columns()
         self.set_tree_headers()
 
@@ -64,6 +70,7 @@ class AssemblyTreePage:
 
         # display the revised item set
         item_set = ItemSet(self.parts_file, None, None, "assembly")
+
         return self.fill_tree_widget(item_set)
 
     def fill_tree_widget(self, item_set: ItemSet) -> dict[str, list[Item]]:
@@ -84,6 +91,7 @@ class AssemblyTreePage:
         """
         tree_items = {}  # the set of tree widget items
         for item in item_set:
+            item_properties = self.set_condition_description(item.get_properties())
             item_properties = self.set_part_description(item.get_properties())
             item_properties = self.set_installed_entry(item_properties)
             item_values = self.set_item_values(item_properties)
@@ -93,6 +101,23 @@ class AssemblyTreePage:
             )
         self.resize_columns()
         return tree_items
+
+    def set_condition_description(
+        self, item_properties: dict[str, Any]
+    ) -> dict[str, Any]:
+        """
+        Add the condition description to the item_properties.
+
+        Parameters:
+            item_properties: dict[str, Any]: the set of properties to
+                display for the current item entry.
+
+        Returns:
+            The updated set of properties.
+        """
+        condition = Condition(self.parts_file, item_properties["condition"])
+        item_properties["condition"] = condition.get_condition()
+        return item_properties
 
     def set_part_description(self, item_properties: dict[str, Any]) -> dict[str, Any]:
         """
@@ -280,6 +305,6 @@ class AssemblyTreePage:
         """
         Return the parts file reference.
 
-        Return (DataFile): the current parts file reference.
+        Return (PartsFile): the current parts file reference.
         """
         return self.parts_file
