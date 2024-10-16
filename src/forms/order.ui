@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OrderForm</class>
+ <widget class="QDialog" name="OrderForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>998</width>
+    <height>705</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Edit an Order</string>
+  </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
+  <widget class="QFrame" name="button_frame">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>645</y>
+     <width>980</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <widget class="QPushButton" name="cancel_button">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>10</y>
+      <width>104</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Close the form, optionally saving any changed Close the form, optionally saving any changed information</string>
+    </property>
+    <property name="text">
+     <string>Cancel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_new_button">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>10</y>
+      <width>104</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Save the current order, then clear the form</string>
+    </property>
+    <property name="text">
+     <string>Save | New</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_done_button">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>10</y>
+      <width>104</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Save the current order, then clost the form</string>
+    </property>
+    <property name="text">
+     <string>Save | Done</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="delete_button">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>10</y>
+      <width>103</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Permanently DELETE the current order and all the lines from the database.</string>
+    </property>
+    <property name="text">
+     <string>Delete Order</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="order_info_box">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>5</y>
+     <width>795</width>
+     <height>115</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>  Order Info</string>
+   </property>
+   <widget class="QLabel" name="order_number_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>30</y>
+      <width>130</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Order Number:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="date_label">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>70</y>
+      <width>130</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Date:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="ErrorFrame" name="order_number_frame">
+    <property name="geometry">
+     <rect>
+      <x>143</x>
+      <y>28</y>
+      <width>154</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="LineEdit" name="order_number_edit">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>150</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Required: (dd-ddd) -&gt; 2 digit year dash 3 digit sequence</string>
+     </property>
+    </widget>
+    <widget class="ComboBox" name="order_number_combo">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>150</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Select Order Number, Required</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="ErrorFrame" name="date_edit_frame">
+    <property name="geometry">
+     <rect>
+      <x>143</x>
+      <y>68</y>
+      <width>154</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <widget class="LineEdit" name="date_edit">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>150</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Required: mm/dd/yyyy</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="source_label">
+    <property name="geometry">
+     <rect>
+      <x>365</x>
+      <y>30</y>
+      <width>110</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Source:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="remarks_label">
+    <property name="geometry">
+     <rect>
+      <x>385</x>
+      <y>70</y>
+      <width>110</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remarks:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="ErrorFrame" name="source_combo_frame">
+    <property name="geometry">
+     <rect>
+      <x>503</x>
+      <y>28</y>
+      <width>279</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="ComboBox" name="source_combo">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>275</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Required: select from options</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="ErrorFrame" name="remarks_edit_frame">
+    <property name="geometry">
+     <rect>
+      <x>503</x>
+      <y>68</y>
+      <width>279</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="LineEdit" name="remarks_edit">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>2</y>
+       <width>275</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Optional: up to 255 characters</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLineEdit" name="record_id_edit">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>30</y>
+      <width>110</width>
+      <height>36</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="items_ordered_box">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>125</y>
+     <width>980</width>
+     <height>293</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>  Items On Order</string>
+   </property>
+   <widget class="QTableView" name="order_line_table">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>980</width>
+      <height>273</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="total_label">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>595</y>
+     <width>90</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Total:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QFrame" name="summation_line">
+   <property name="geometry">
+    <rect>
+     <x>785</x>
+     <y>592</y>
+     <width>188</width>
+     <height>2</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::HLine</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="lineWidth">
+    <number>2</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="subtotal_label">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>432</y>
+     <width>90</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Subtotal</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="discount_label">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>472</y>
+     <width>90</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Discount</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="tax_label">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>558</y>
+     <width>90</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Tax</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="shipping_label">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>512</y>
+     <width>90</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Shipping</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="LineEdit" name="total_edit">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>600</y>
+     <width>110</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Read Only: Automatically filled from sum of above charges</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+   <property name="placeholderText">
+    <string>Automatically Filled</string>
+   </property>
+  </widget>
+  <widget class="ErrorFrame" name="discount_frame">
+   <property name="geometry">
+    <rect>
+     <x>858</x>
+     <y>470</y>
+     <width>114</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="LineEdit" name="discount_edit">
+    <property name="geometry">
+     <rect>
+      <x>2</x>
+      <y>2</y>
+      <width>110</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Optional: dollars and cents (0.00 minimum)</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="ErrorFrame" name="tax_frame">
+   <property name="geometry">
+    <rect>
+     <x>858</x>
+     <y>550</y>
+     <width>114</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="LineEdit" name="tax_edit">
+    <property name="geometry">
+     <rect>
+      <x>2</x>
+      <y>2</y>
+      <width>110</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Optional: dollars and cents (0.00 minimum)</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="ErrorFrame" name="shipping_frame">
+   <property name="geometry">
+    <rect>
+     <x>858</x>
+     <y>510</y>
+     <width>114</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="LineEdit" name="shipping_edit">
+    <property name="geometry">
+     <rect>
+      <x>2</x>
+      <y>2</y>
+      <width>110</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Optional: dollars and cents (0.00 minimum)</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="LineEdit" name="subtotal_edit">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>430</y>
+     <width>110</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Read Only: Automatically filled from sum of the order lines</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+   <property name="placeholderText">
+    <string>Automatically Filled</string>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>lbk_library/gui/</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lbk_library/gui/line_edit</header>
+  </customwidget>
+  <customwidget>
+   <class>ErrorFrame</class>
+   <extends>QFrame</extends>
+   <header>lbk_library/gui/error_frame</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>order_number_combo</tabstop>
+  <tabstop>order_number_edit</tabstop>
+  <tabstop>date_edit</tabstop>
+  <tabstop>source_combo</tabstop>
+  <tabstop>remarks_edit</tabstop>
+  <tabstop>subtotal_edit</tabstop>
+  <tabstop>discount_edit</tabstop>
+  <tabstop>shipping_edit</tabstop>
+  <tabstop>tax_edit</tabstop>
+  <tabstop>total_edit</tabstop>
+  <tabstop>cancel_button</tabstop>
+  <tabstop>save_new_button</tabstop>
+  <tabstop>save_done_button</tabstop>
+  <tabstop>delete_button</tabstop>
+  <tabstop>record_id_edit</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

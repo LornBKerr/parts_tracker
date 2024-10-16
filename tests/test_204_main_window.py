@@ -5,11 +5,16 @@ File:       test_204_main_window.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
+Version:    1.0.0
 """
 
 import os
 import sys
 from pathlib import Path
+
+src_path = os.path.join(os.path.realpath("."), "src")
+if src_path not in sys.path:
+    sys.path.append(src_path)
 
 from lbk_library import DataFile
 from lbk_library.gui import Dialog
@@ -28,16 +33,10 @@ from test_setup import (
     load_all_datafile_tables,
     order_value_set,
     part_value_set,
+    restore_config_file,
+    save_config_file,
+    saved_config_file,
 )
-
-### import pytest
-### from PyQt5.QtCore import Qt
-### from pytestqt import qtbot
-
-
-src_path = os.path.join(os.path.realpath("."), "src")
-if src_path not in sys.path:
-    sys.path.append(src_path)
 
 from dialogs import (
     AssemblyListDialog,
@@ -99,7 +98,7 @@ def test_204_01_class_type(filesystem, qtbot):
     assert isinstance(main, MainWindow)
     assert isinstance(main, QMainWindow)
     assert type(main.parts_file) == DataFile
-    save_config_file(QSettings("Unnamed Branch", "PartsTracker"))
+    save_config_file(QSettings("Unnamed Branch", "PartsTrackerTest"))
     datafile_close(main.parts_file)
 
 
