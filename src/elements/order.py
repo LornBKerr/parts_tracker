@@ -12,7 +12,8 @@ import re
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import DataFile, Element
+from lbk_library import DataFile as PartsFile
+from lbk_library import Element
 
 file_version = "1.0.0"
 changes = {
@@ -25,7 +26,7 @@ class Order(Element):
 
     def __init__(
         self,
-        parts_file: DataFile,
+        parts_file: PartsFile,
         order_key: int | dict[str, Any] = None,
         column: str = None,
     ) -> None:
@@ -53,7 +54,7 @@ class Order(Element):
         given by 'column' and 'record_id'
 
         Parameters:
-            parts_file (DataFile): reference to the parts file holding the element.
+            parts_file (PartsFile): reference to the parts file holding the element.
             order_key (int | dict[str, Any]): the specific key of the
                 Order being constructed or an dict object of the values
                 for an Order for direct insertion into the properties
