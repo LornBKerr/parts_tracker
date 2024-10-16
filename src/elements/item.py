@@ -11,7 +11,8 @@ Version:    1.0.0
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import DataFile, Element
+from lbk_library import DataFile as PartsFile
+from lbk_library import Element
 
 file_version = "1.0.0"
 changes = {
@@ -28,7 +29,7 @@ class Item(Element):
     """
 
     def __init__(
-        self, parts_file: DataFile, item_key: str | dict[str, Any] = None
+        self, parts_file: PartsFile, item_key: str | dict[str, Any] = None
     ) -> None:
         """
         Define a single replacable Item from the car.
@@ -46,7 +47,7 @@ class Item(Element):
         filled from the default values.
 
         Parameters:
-            parts_file (DataFile): reference to the data file holding the element
+            parts_file (PartsFile): reference to the data file holding the element
             item_key (int | str | dict) the item number of the Item being
                 constructed or an dict object of the values for an Item
                 for direct insertion into the properties array.

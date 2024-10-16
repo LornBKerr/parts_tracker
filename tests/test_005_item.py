@@ -71,7 +71,7 @@ def test_005_01_constr(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_02_get_datafile(filesystem):
+def test_005_02_get_parts_file(filesystem):
     """Item needs correct database."""
     item, parts_file = base_setup(filesystem)
     assert item.get_datafile() == parts_file
