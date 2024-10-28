@@ -13,7 +13,7 @@ from lbk_library.gui import Dialog, TableModel
 from PyQt5 import uic
 from PyQt5.QtCore import QModelIndex, Qt
 from PyQt5.QtGui import QBrush, QColor
-from PyQt5.QtWidgets import QHeaderView
+from PyQt5.QtWidgets import QHeaderView, QMainWindow
 
 from elements import Condition, ConditionSet
 
@@ -50,11 +50,12 @@ class EditConditionsDialog(Dialog):
     NORMAL_BACKGROUND = QBrush(QColor("white"))
     ERROR_BACKGROUND = QBrush(QColor(0xF0C0C0))
 
-    def __init__(self, parts_file: PartsFile) -> None:
+    def __init__(self, parent: QMainWindow, parts_file: PartsFile) -> None:
         """
         Initialize the dialog.
 
         Parameters:
+            parent (QMainWindow:) the owning dialog
             parts_file (PartsFile) reference to the current open data file.
         """
         super().__init__(None, parts_file, None)
