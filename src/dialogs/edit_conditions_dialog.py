@@ -58,7 +58,7 @@ class EditConditionsDialog(Dialog):
             parent (QMainWindow:) the owning dialog
             parts_file (PartsFile) reference to the current open data file.
         """
-        super().__init__(None, parts_file, None)
+        super().__init__(parent, parts_file, None)
         self.parts_file = parts_file
         self.form = uic.loadUi("./src/forms/simple_tableview.ui", self)
         self.conditions = ConditionSet(parts_file)
