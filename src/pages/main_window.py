@@ -24,12 +24,10 @@ from PyQt5.QtWidgets import (
     QTreeWidget,
 )
 
-from dialogs import (
+from dialogs import (  # ChangePartNumberDialog,; EditStructureDialog,
     AssemblyListDialog,
-    ChangePartNumberDialog,
     EditConditionsDialog,
     EditSourcesDialog,
-    EditStructureDialog,
     ItemDialog,
     OrderDialog,
     PartDialog,
@@ -93,9 +91,9 @@ class MainWindow(QMainWindow):
             lambda: self.item_dialog_action(None, Dialog.EDIT_ELEMENT)
         )
         self.form.action_edit_conditions.triggered.connect(self.edit_conditions_action)
-        self.form.action_edit_assembly_tree.triggered.connect(
-            self.edit_assembly_tree_action
-        )
+        #        self.form.action_edit_assembly_tree.triggered.connect(
+        #            self.edit_assembly_tree_action
+        #        )
         self.form.action_save_assembly_list.triggered.connect(
             self.save_assembly_list_action
         )
@@ -111,9 +109,9 @@ class MainWindow(QMainWindow):
             lambda: self.part_dialog_action(None, Dialog.EDIT_ELEMENT)
         )
         self.form.action_update_sources.triggered.connect(self.update_sources_action)
-        self.form.action_change_part_number.triggered.connect(
-            self.part_change_pn_dialog_action
-        )
+        #        self.form.action_change_part_number.triggered.connect(
+        #            self.part_change_pn_dialog_action
+        #        )
         self.form.action_update_part_list_table.triggered.connect(
             self.part_list.update_table
         )
@@ -424,20 +422,21 @@ class MainWindow(QMainWindow):
         Returns:
             (dialog) the opened EditConditionDialog object
         """
-        dialog = EditConditionsDialog(self.parts_file)
+        dialog = EditConditionsDialog(self, self.parts_file)
         dialog.open()
         return dialog
 
-    def edit_assembly_tree_action(self) -> None:
-        """
-        Revise the assembly structure of the tree.
-
-        Returns:
-            (dialog) the opened EditStructureDialog object
-        """
-        dialog = EditStructureDialog(self.parts_file, self.assembly_tree.update_tree)
-        dialog.open()
-        return dialog
+    #    def edit_assembly_tree_action(self) -> None:
+    #        """
+    #        Revise the assembly structure of the tree.
+    #
+    #        Returns:
+    #            (dialog) the opened EditStructureDialog object
+    #        """
+    #        dialog = EditStructureDialog(self, self.parts_file)
+    #        dialog.open()
+    #        self.assembly_tree.update_tree()
+    #        return dialog
 
     def save_assembly_list_action(self) -> None:
         """
@@ -451,6 +450,7 @@ class MainWindow(QMainWindow):
         """
         dialog = AssemblyListDialog(self, self.parts_file, self.config)
         dialog.open()
+        self.assembly_tree.update_tree()
         return dialog
 
     def update_assembly_tree_action(self) -> None:
@@ -491,23 +491,23 @@ class MainWindow(QMainWindow):
         Returns:
             (dialog) the opened EditSourceDialog object
         """
-        dialog = EditSourcesDialog(self.parts_file)
+        dialog = EditSourcesDialog(self, self.parts_file)
         dialog.open()
         return dialog
 
-    def part_change_pn_dialog_action(self) -> None:
-        """
-        Change a part number throughout the parts file.
-
-         Parameters:
-            parent (QMainWindow) the parent window owning this dialog.
-        """
-        dialog = ChangePartNumberDialog(self, self.parts_file)
-        dialog.open()
-        self.assembly_tree.update_tree()
-        self.part_list.update_table()
-        self.order_list.update_table()
-        return dialog
+    #    def part_change_pn_dialog_action(self) -> None:
+    #        """
+    #        Change a part number throughout the parts file.
+    #
+    #         Parameters:
+    #            parent (QMainWindow) the parent window owning this dialog.
+    #        """
+    #        dialog = ChangePartNumberDialog(self, self.parts_file)
+    #        dialog.open()
+    #        self.assembly_tree.update_tree()
+    #        self.part_list.update_table()
+    #        self.order_list.update_table()
+    #        return dialog
 
     def order_dialog_action(self, record_id: int, add_order: int) -> None:
         """

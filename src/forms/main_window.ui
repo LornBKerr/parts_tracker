@@ -52,10 +52,7 @@
     <addaction name="action_new_item"/>
     <addaction name="action_edit_item"/>
     <addaction name="action_edit_conditions"/>
-    <addaction name="separator"/>
-    <addaction name="action_edit_assembly_tree"/>
     <addaction name="action_save_assembly_list"/>
-    <addaction name="separator"/>
     <addaction name="action_update_assemby_tree"/>
    </widget>
    <widget class="QMenu" name="menu_parts">
@@ -65,8 +62,6 @@
     <addaction name="action_new_part"/>
     <addaction name="action_edit_part"/>
     <addaction name="action_update_sources"/>
-    <addaction name="separator"/>
-    <addaction name="action_change_part_number"/>
     <addaction name="action_update_part_list_table"/>
    </widget>
    <widget class="QMenu" name="menu_orders">
@@ -75,7 +70,6 @@
     </property>
     <addaction name="action_new_order"/>
     <addaction name="action_edit_order"/>
-    <addaction name="separator"/>
     <addaction name="action_update_order_table"/>
    </widget>
    <widget class="QMenu" name="menu_file">
@@ -94,9 +88,7 @@
     <addaction name="action_file_open"/>
     <addaction name="action_file_close"/>
     <addaction name="action_file_new"/>
-    <addaction name="separator"/>
     <addaction name="menu_file_recent"/>
-    <addaction name="separator"/>
     <addaction name="action_file_exit"/>
    </widget>
    <addaction name="menu_file"/>
@@ -134,11 +126,6 @@
     <string>Delete</string>
    </property>
   </action>
-  <action name="action_edit_assembly_tree">
-   <property name="text">
-    <string>Edit Assembly Structure</string>
-   </property>
-  </action>
   <action name="action_update_part_list_table">
    <property name="text">
     <string>Update List</string>
@@ -157,11 +144,6 @@
   <action name="ActionPartDelete">
    <property name="text">
     <string>Delete</string>
-   </property>
-  </action>
-  <action name="action_change_part_number">
-   <property name="text">
-    <string>Change Part Number</string>
    </property>
   </action>
   <action name="action_update_order_table">

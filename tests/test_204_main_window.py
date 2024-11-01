@@ -38,12 +38,10 @@ from test_setup import (
     saved_config_file,
 )
 
-from dialogs import (
+from dialogs import (  # ChangePartNumberDialog,; EditStructureDialog,
     AssemblyListDialog,
-    ChangePartNumberDialog,
     EditConditionsDialog,
     EditSourcesDialog,
-    EditStructureDialog,
     ItemDialog,
     OrderDialog,
     PartDialog,
@@ -685,15 +683,15 @@ def test_204_24_action_edit_conditions(qtbot, filesystem):
     datafile_close(main.parts_file)
 
 
-def test_204_25_edit_assembly_tree_action(qtbot, filesystem):
-    main, source, parts_file_path = set_environment(filesystem, qtbot)
-
-    dialog = main.edit_assembly_tree_action()
-    assert isinstance(dialog, EditStructureDialog)
-    dialog.close()
-
-    restore_config_file(main.config)
-    datafile_close(main.parts_file)
+# def test_204_25_edit_assembly_tree_action(qtbot, filesystem):
+#    main, source, parts_file_path = set_environment(filesystem, qtbot)
+#
+#    dialog = main.edit_assembly_tree_action()
+#    assert isinstance(dialog, EditStructureDialog)
+#    dialog.close()
+#
+#    restore_config_file(main.config)
+#    datafile_close(main.parts_file)
 
 
 def test_204_26_save_assembly_list_action(qtbot, filesystem):
@@ -763,14 +761,14 @@ def test_204_29_update_sources_action(qtbot, filesystem):
     datafile_close(main.parts_file)
 
 
-def test_204_30_part_change_pn_action(qtbot, filesystem):
-    main, source, parts_file_path = set_environment(filesystem, qtbot)
-
-    dialog = main.part_change_pn_dialog_action()
-    assert isinstance(dialog, ChangePartNumberDialog)
-
-    restore_config_file(main.config)
-    datafile_close(main.parts_file)
+# def test_204_30_part_change_pn_action(qtbot, filesystem):
+#    main, source, parts_file_path = set_environment(filesystem, qtbot)
+#
+#    dialog = main.part_change_pn_dialog_action()
+#    assert isinstance(dialog, ChangePartNumberDialog)
+#
+#    restore_config_file(main.config)
+#    datafile_close(main.parts_file)
 
 
 def test_204_31_update_parts_list_table_action(qtbot, filesystem):
