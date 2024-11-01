@@ -35,7 +35,7 @@ def setup_table_tests(qtbot, filesystem):
     datafile = datafile_create(filename, table_definition)
     load_all_datafile_tables(datafile)
     data_set = SourceSet(datafile)
-    dialog = EditSourcesDialog(datafile)
+    dialog = EditSourcesDialog(None, datafile)
     qtbot.addWidget(dialog)
     return (dialog, datafile, data_set)
 
