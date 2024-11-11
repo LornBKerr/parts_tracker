@@ -63,7 +63,7 @@ class EditSourcesDialog(Dialog):
         self.form = uic.loadUi("./src/forms/simple_tableview.ui", self)
         self.sources = SourceSet(parts_file)
         self.source_list = self.sources.get_property_set()
-        self.dataset = self.build_data_set(self.sources)
+        self.dataset = self.build_data_set()
 
         self.table = self.form.table_view
         self.model = TableModel(
