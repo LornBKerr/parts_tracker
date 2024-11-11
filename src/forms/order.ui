@@ -89,7 +89,7 @@
      <string>Delete Order</string>
     </property>
    </widget>
-  </widget>
+  </widget> 
   <widget class="QGroupBox" name="order_info_box">
    <property name="geometry">
     <rect>
@@ -316,7 +316,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>  Items On Order</string>
+    <string>  Items Ordered</string>
    </property>
    <widget class="QTableView" name="order_line_table">
     <property name="geometry">
