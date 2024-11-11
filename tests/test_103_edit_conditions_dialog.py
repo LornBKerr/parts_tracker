@@ -55,7 +55,7 @@ def test_103_01_class_type(qtbot, filesystem):
 def test_103_02_build_data_set(qtbot, filesystem):
     dialog, parts_file, data_set = setup_table_tests(qtbot, filesystem)
 
-    dataset = dialog.build_data_set(dialog.conditions)
+    dataset = dialog.build_data_set()
     set = dialog.conditions.get_property_set()
     for row in range(len(set)):
         for column in range(len(set[row].get_properties())):
