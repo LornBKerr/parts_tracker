@@ -86,7 +86,7 @@ class ItemDialog(BaseDialog):
         )
         self.fill_dialog_fields()
 
-        #        # Set dialog button actions
+        # Set dialog button actions
         self.form.cancel_button.clicked.connect(
             lambda: self.action_cancel(self.action_save, Dialog.SAVE_DONE)
         )
