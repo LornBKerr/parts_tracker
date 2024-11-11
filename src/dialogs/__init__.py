@@ -6,7 +6,7 @@ This module contains the following classes:
         selected portions of the listing
     BaseDialog - Base class for all dialogs.
     EditConditionsDialog - Change the set of available Item Conditions
-    EditSourcesDialog - Edit the set of Part Sources 
+    EditSourcesDialog - Edit the set of Part Sources
     ItemDialog - Edit an Item in the parts file.
     PartDialog - Edit a Part in the parts file.
     OrderDialog - Edit an Order in the parts file.
