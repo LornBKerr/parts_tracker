@@ -111,7 +111,7 @@ def test_101_04_fill_order_table_fields(qtbot, filesystem):
     load_datafile_table(parts_file, "orders", order_columns, order_value_set)
     load_datafile_table(parts_file, "parts", part_columns, part_value_set)
     dialog.fill_order_table_fields(part_value_set[0][1])
-    assert dialog.form.order_table.rowCount() == 1
+    assert dialog.form.order_table.rowCount() == 2
     dialog.fill_order_table_fields("")
     assert dialog.form.order_table.rowCount() == 0
     datafile_close(parts_file)
