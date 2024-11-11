@@ -88,16 +88,13 @@ class EditSourcesDialog(Dialog):
         # this is used in processing the 'dataChanged" signal
         self.__change_in_process = False
 
-    def build_data_set(self, source_set: SourceSet) -> list[list[str]]:
+    def build_data_set(self) -> list[list[str]]:
         """
-        Convert the properties of the SourceSet to an array.
-
-        Parameters:
-            source_set (SourceSet): the set to convert to an array
+        Convert the properties of the SourceSet to a list of lists.
 
         Returns:
             (list[list[str]]) The set of source properties as an
-                array of strings.
+                list of lists of strings in table column order.
         """
         data_set = []
         for i in range(len(self.source_list)):

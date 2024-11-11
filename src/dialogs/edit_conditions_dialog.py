@@ -88,16 +88,13 @@ class EditConditionsDialog(Dialog):
         # this is used in processing the 'dataChanged" signal
         self.__change_in_process = False
 
-    def build_data_set(self, condition_set: ConditionSet) -> list[list[str]]:
+    def build_data_set(self) -> list[list[str]]:
         """
-        Convert the properties of the ConditionSet to an array.
-
-        Parameters:
-            condition_set (ConditionSet): the set to convert to an array
+        Convert the properties of the ConditionSet to a list of lists.
 
         Returns:
             (list[list[str]]) The set of condition properties as an
-                array of strings.
+                list of lists of strings in table column order.
         """
         data_set = []
         for i in range(len(self.condition_list)):
