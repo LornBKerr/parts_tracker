@@ -63,7 +63,7 @@ class EditConditionsDialog(Dialog):
         self.form = uic.loadUi("./src/forms/simple_tableview.ui", self)
         self.conditions = ConditionSet(parts_file)
         self.condition_list = self.conditions.get_property_set()
-        self.dataset = self.build_data_set(self.condition_list)
+        self.dataset = self.build_data_set()
 
         self.table = self.form.table_view
         self.model = TableModel(
