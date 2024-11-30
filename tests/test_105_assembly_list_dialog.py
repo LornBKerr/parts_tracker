@@ -19,8 +19,8 @@ if src_path not in sys.path:
 from lbk_library import DataFile  # , Element
 from lbk_library.gui import Dialog
 from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QDialog, QFileDialog, QMainWindow, QMessageBox
+from PyQt6.QtCore import QSettings
+from PyQt6.QtWidgets import QDialog, QFileDialog, QMainWindow, QMessageBox
 from test_setup import datafile_name, item_value_set, load_all_datafile_tables
 
 from dialogs import AssemblyListDialog, BaseDialog

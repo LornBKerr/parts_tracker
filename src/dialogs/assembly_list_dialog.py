@@ -14,10 +14,10 @@ import os
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt5 import uic
-from PyQt5.QtCore import QSettings
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from PyQt6 import uic
+from PyQt6.QtCore import QSettings
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
 from elements import Item, Part
 

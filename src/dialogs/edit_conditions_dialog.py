@@ -10,10 +10,10 @@ Version:    1.0.0
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog, TableModel
-from PyQt5 import uic
-from PyQt5.QtCore import QModelIndex, Qt
-from PyQt5.QtGui import QBrush, QColor
-from PyQt5.QtWidgets import QHeaderView, QMainWindow
+from PyQt6 import uic
+from PyQt6.QtCore import QModelIndex, Qt
+from PyQt6.QtGui import QBrush, QColor
+from PyQt6.QtWidgets import QHeaderView, QMainWindow
 
 from elements import Condition, ConditionSet
 

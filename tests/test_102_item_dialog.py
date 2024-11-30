@@ -25,7 +25,7 @@ from lbk_library.testing_support import (
     long_string,
     test_string,
 )
-from PyQt5.QtWidgets import QDialog, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QDialog, QMainWindow, QMessageBox
 from test_setup import (
     condition_value_set,
     datafile_name,

@@ -13,9 +13,9 @@ from typing import ClassVar
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt5 import uic
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
+from PyQt6 import uic
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
 
 from elements import ItemSet, Part, PartSet, Source, SourceSet
 

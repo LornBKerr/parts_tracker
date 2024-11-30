@@ -23,7 +23,7 @@ from lbk_library.testing_support import (
     long_string,
     test_string,
 )
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from test_setup import (
     datafile_name,
     load_all_datafile_tables,

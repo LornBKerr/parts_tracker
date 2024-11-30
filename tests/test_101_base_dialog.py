@@ -23,8 +23,8 @@ from lbk_library.testing_support import (
     filesystem,
     load_datafile_table,
 )
-from PyQt5 import uic  # QtCore,
-from PyQt5.QtWidgets import (
+from PyQt6 import uic  # QtCore,
+from PyQt6.QtWidgets import (
     QComboBox,
     QDialog,
     QLabel,

@@ -13,10 +13,10 @@ from pathlib import Path
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt5 import uic
-from PyQt5.QtCore import QSettings  # QPoint,
-from PyQt5.QtGui import QMoveEvent, QResizeEvent
-from PyQt5.QtWidgets import (
+from PyQt6 import uic
+from PyQt6.QtCore import QSettings  # QPoint,
+from PyQt6.QtGui import QMoveEvent, QResizeEvent
+from PyQt6.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QTableWidget,

@@ -12,8 +12,8 @@ from typing import Any
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 from dialogs import ItemDialog
 from elements import Condition, Item, ItemSet, Part

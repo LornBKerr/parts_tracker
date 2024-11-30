@@ -21,8 +21,8 @@ changes = {
 }
 
 from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QTableWidget
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QTableWidget
 from test_setup import load_all_datafile_tables, part_value_set
 
 from dialogs import PartDialog

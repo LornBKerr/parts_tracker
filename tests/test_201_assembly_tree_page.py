@@ -16,7 +16,7 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from lbk_library.testing_support import datafile_close, datafile_create, filesystem
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
+from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem
 from test_setup import item_value_set, load_all_datafile_tables
 
 from dialogs import ItemDialog

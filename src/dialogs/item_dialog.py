@@ -13,8 +13,8 @@ from typing import ClassVar
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt6 import uic
+from PyQt6.QtWidgets import QMainWindow, QMessageBox
 
 from elements import Condition, ConditionSet, Item, ItemSet, Part, PartSet, Source
 
