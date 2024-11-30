@@ -10,7 +10,7 @@ Version:    1.0.0
 
 import sys
 
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 from pages import MainWindow
 
