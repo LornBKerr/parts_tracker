@@ -177,7 +177,7 @@ def test_106_05_fill_dialog_fields(qtbot, filesystem):
     )
     assert dialog.form.description_edit.text() == part_value_set[1][3]
     assert dialog.form.remarks_edit.text() == part_value_set[1][4]
-    assert dialog.form.order_table.rowCount() == 0
+    assert dialog.form.order_table.rowCount() == 1
     assert dialog.form.item_table.rowCount() == 1
     datafile_close(parts_file)
 
