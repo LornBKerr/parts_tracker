@@ -393,7 +393,9 @@ class PartDialog(BaseDialog):
                     table.setItem(row, 1, QTableWidgetItem(str(item.get_record_id())))
 
                     entry = QTableWidgetItem(str(item.get_quantity()))
-                    entry.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                    entry.setTextAlignment(
+                        Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
+                    )
                     table.setItem(row, 2, entry)
 
                     installed = item.get_installed()
