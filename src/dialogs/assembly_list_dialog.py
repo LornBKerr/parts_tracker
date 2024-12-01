@@ -17,7 +17,7 @@ from lbk_library.gui import Dialog
 from PyQt6 import uic
 from PyQt6.QtCore import QSettings
 from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QLineEdit, QMainWindow, QMessageBox
 
 from elements import Item, Part
 
@@ -83,7 +83,7 @@ class AssemblyListDialog(BaseDialog):
         folder_open_pixmap.loadFromData(base64.b64decode(self.FOLDER_OPEN_PNG))
 
         self.new_location_action = self.form.save_location_edit.addAction(
-            QIcon(folder_open_pixmap), self.form.save_location_edit.TrailingPosition
+            QIcon(folder_open_pixmap), QLineEdit.ActionPosition.TrailingPosition
         )
         self.form.save_location_edit.setText(config.value("settings/list_files_dir"))
 
@@ -119,7 +119,7 @@ class AssemblyListDialog(BaseDialog):
             self,
             "Open Directory",
             location,
-            QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks,
+            QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontResolveSymlinks,
         )
         if directory:
             self.form.save_location_edit.setText(directory)
