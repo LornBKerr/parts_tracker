@@ -35,21 +35,22 @@ changes = {
 parts_filename = "parts_test.parts"
 
 
-def base_setup(filesystem):
-    filename = filesystem + "/" + parts_filename
+def base_setup(tmp_path):
+    base_directory = filesystem(tmp_path)
+    filename = base_directory + "/" + parts_filename
     parts_file = datafile_create(filename, table_definition)
     item_set = ItemSet(parts_file)
     return (item_set, parts_file)
 
 
-def test_006_01_constructor(filesystem):
+def test_006_01_constructor(tmp_path):
     """
     ItemSet Extends ElementSet.
 
     The 'table' must be "items" and 'parts_file' needs to be the
     initializing parts_file.
     """
-    item_set, parts_file = base_setup(filesystem)
+    item_set, parts_file = base_setup(tmp_path)
     assert isinstance(item_set, ItemSet)
     assert isinstance(item_set, ElementSet)
     assert item_set.get_table() == "items"
@@ -57,12 +58,12 @@ def test_006_01_constructor(filesystem):
     datafile_close(parts_file)
 
 
-def test_006_02_set_property_set_empty(filesystem):
+def test_006_02_set_property_set_empty(tmp_path):
     """
     The 'property_set', a list of 'Items'", is empty when set to
     None or when the table is empty.
     """
-    item_set, parts_file = base_setup(filesystem)
+    item_set, parts_file = base_setup(tmp_path)
     assert isinstance(item_set.get_property_set(), list)
     item_set.set_property_set(None)
     assert isinstance(item_set.get_property_set(), list)
@@ -74,12 +75,12 @@ def test_006_02_set_property_set_empty(filesystem):
     datafile_close(parts_file)
 
 
-def test_006_03_selected_rows(filesystem):
+def test_006_03_selected_rows(tmp_path):
     """
     The 'property_set', a list of 'Items', should contain the
     requested subset of Items.
     """
-    item_set, parts_file = base_setup(filesystem)
+    item_set, parts_file = base_setup(tmp_path)
     load_datafile_table(parts_file, "items", item_columns, item_value_set)
     item_set = ItemSet(parts_file, "part_number", "BTB1108")
     count_result = parts_file.sql_query(
@@ -92,12 +93,12 @@ def test_006_03_selected_rows(filesystem):
     datafile_close(parts_file)
 
 
-def test_006_04_ordered_selected_rows(filesystem):
+def test_006_04_ordered_selected_rows(tmp_path):
     """
     The 'property_set', a list of 'Items', should contain the
     requested subset of Items ordered by assembly.
     """
-    item_set, parts_file = base_setup(filesystem)
+    item_set, parts_file = base_setup(tmp_path)
     load_datafile_table(parts_file, "items", item_columns, item_value_set)
     item_set = ItemSet(parts_file, "part_number", "BTB1108", "assembly")
     count_result = parts_file.sql_query(
@@ -115,13 +116,13 @@ def test_006_04_ordered_selected_rows(filesystem):
     datafile_close(parts_file)
 
 
-def test_006_05_selected_rows_limit(filesystem):
+def test_006_05_selected_rows_limit(tmp_path):
     """
     The 'property_set', a list of 'Items', should contain the
     requested subset of Items ordered by record_id and the number of
     rows given by 'limit'.
     """
-    item_set, parts_file = base_setup(filesystem)
+    item_set, parts_file = base_setup(tmp_path)
     load_datafile_table(parts_file, "items", item_columns, item_value_set)
     limit = 5
     item_set = ItemSet(parts_file, None, None, "record_id", limit)
@@ -130,13 +131,13 @@ def test_006_05_selected_rows_limit(filesystem):
     datafile_close(parts_file)
 
 
-def test_006_06_selected_rows_limit_offset(filesystem):
+def test_006_06_selected_rows_limit_offset(tmp_path):
     """
     The 'property_set', a list of 'Items', should contain the
     requested subset of Items ordered by record_id and the number of
     rows given by 'limit' starting at 'offset' number of records.
     """
-    item_set, parts_file = base_setup(filesystem)
+    item_set, parts_file = base_setup(tmp_path)
     load_datafile_table(parts_file, "items", item_columns, item_value_set)
     limit = 5
     offset = 2

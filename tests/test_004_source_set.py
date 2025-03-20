@@ -27,29 +27,32 @@ from test_data import source_columns, source_value_set
 from elements import SourceSet
 from pages import table_definition
 
-file_version = "1.0.0"
+file_version = "1.0.1"
 changes = {
     "1.0.0": "Initial release",
+    "1.0.1": "Changed all test funtions to have 'tmp_path' as parameter instead of 'filesystem' and as parameter to filesystem in the body.",
 }
+
 
 parts_filename = "parts_test.parts"
 
 
-def base_setup(filesystem):
-    filename = filesystem + "/" + parts_filename
+def base_setup(tmp_path):
+    base_directory = filesystem(tmp_path)
+    filename = base_directory + "/" + parts_filename
     parts_file = datafile_create(filename, table_definition)
     source_set = SourceSet(parts_file)
     return (source_set, parts_file)
 
 
-def test_004_01_constr(filesystem):
+def test_004_01_constr(tmp_path):
     """
     SourceSet Extends ElementSet.
 
     The 'table' must be "conditions" and 'parts_file' needs to be the
     initializing parts_file.
     """
-    source_set, parts_file = base_setup(filesystem)
+    source_set, parts_file = base_setup(tmp_path)
     assert isinstance(source_set, SourceSet)
     assert isinstance(source_set, ElementSet)
     assert source_set.get_table() == "sources"
@@ -57,12 +60,12 @@ def test_004_01_constr(filesystem):
     datafile_close(parts_file)
 
 
-def test_004_02_set_property_set_empty(filesystem):
+def test_004_02_set_property_set_empty(tmp_path):
     """
     The 'property_set', a list of 'Sources', is empty when set to
     None or when the table is empty.
     """
-    source_set, parts_file = base_setup(filesystem)
+    source_set, parts_file = base_setup(tmp_path)
     assert isinstance(source_set.get_property_set(), list)
     source_set.set_property_set(None)
     assert isinstance(source_set.get_property_set(), list)
@@ -76,12 +79,12 @@ def test_004_02_set_property_set_empty(filesystem):
     datafile_close(parts_file)
 
 
-def test_004_03_selected_rows(filesystem):
+def test_004_03_selected_rows(tmp_path):
     """
     The 'property_set', a list of 'Sources', should contain the
     requested subset of conditions.
     """
-    source_set, parts_file = base_setup(filesystem)
+    source_set, parts_file = base_setup(tmp_path)
     load_datafile_table(parts_file, "sources", source_columns, source_value_set)
     source_set = SourceSet(parts_file, "source", "British Car Parts")
     count_result = parts_file.sql_query(

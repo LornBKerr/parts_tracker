@@ -41,20 +41,21 @@ item_values = {
 }
 
 
-def base_setup(filesystem):
-    filename = filesystem + "/" + parts_filename
+def base_setup(tmp_path):
+    base_directory = filesystem(tmp_path)
+    filename = base_directory + "/" + parts_filename
     parts_file = datafile_create(filename, table_definition)
     item = Item(parts_file)
     return (item, parts_file)
 
 
-def test_005_01_constr(filesystem):
+def test_005_01_constr(tmp_path):
     """
     Item Extends Element.
 
     Check the types of class variables and default values.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     assert isinstance(item, Item)
     assert isinstance(item, Element)
     # default values.
@@ -71,28 +72,28 @@ def test_005_01_constr(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_02_get_parts_file(filesystem):
+def test_005_02_get_parts_file(tmp_path):
     """Item needs correct database."""
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     assert item.get_datafile() == parts_file
     datafile_close(parts_file)
 
 
-def test_005_03_get_table(filesystem):
+def test_005_03_get_table(tmp_path):
     """Item needs the database table 'items'."""
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     assert item.get_table() == "items"
     datafile_close(parts_file)
 
 
-def test_005_04_get_set_part_number(filesystem):
+def test_005_04_get_set_part_number(tmp_path):
     """
     Get and set the part_number property.
 
     The property 'part_number' is required and is a string between 1 and
     30 characters long.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     defaults = item.get_initial_values()
     item._set_property("part_number", item_values["part_number"])
     assert item_values["part_number"] == item.get_part_number()
@@ -108,14 +109,14 @@ def test_005_04_get_set_part_number(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_05_get_set_assembly(filesystem):
+def test_005_05_get_set_assembly(tmp_path):
     """
     Get and set the assembly property.
 
     The property 'assembly' is required and is a string between 1 and
     15 characters long. It is forced to all uppercase.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     defaults = item.get_initial_values()
     item._set_property("assembly", item_values["assembly"])
     assert item_values["assembly"] == item.get_assembly()
@@ -131,14 +132,14 @@ def test_005_05_get_set_assembly(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_06_get_set_quantity(filesystem):
+def test_005_06_get_set_quantity(tmp_path):
     """
     Get and set the quantity property.
 
     The property 'quantity' is required and is a integer between 0 and
     999.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     defaults = item.get_initial_values()
     item._set_property("quantity", item_values["quantity"])
     assert item_values["quantity"] == item.get_quantity()
@@ -157,14 +158,14 @@ def test_005_06_get_set_quantity(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_07_get_set_condition(filesystem):
+def test_005_07_get_set_condition(tmp_path):
     """
     Get and set the condition property.
 
     The property 'condition' is required and is a string selected from
     one of the values held in the "condtions' database table.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     defaults = item.get_initial_values()
     item._set_property("condition", item_values["condition"])
     assert item_values["condition"] == item.get_condition()
@@ -180,14 +181,14 @@ def test_005_07_get_set_condition(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_08_get_set_installed(filesystem):
+def test_005_08_get_set_installed(tmp_path):
     """
     Get and set the installed property.
 
     The property 'installed' is required and is a boolean value. If the
     item is installed in the car, it is True, otherwise False.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     defaults = item.get_initial_values()
     item._set_property("installed", item_values["installed"])
     assert item_values["installed"] == item.get_installed()
@@ -206,7 +207,7 @@ def test_005_08_get_set_installed(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_09_get_set_box(filesystem):
+def test_005_09_get_set_box(tmp_path):
     """
     Get and set the storage box property.
 
@@ -215,7 +216,7 @@ def test_005_09_get_set_box(filesystem):
     item not in storage box.If it is stored in a box,then the values can
     be between 1 and 99.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     defaults = item.get_initial_values()
     item._set_property("box", item_values["box"])
     assert item_values["box"] == item.get_box()
@@ -234,14 +235,14 @@ def test_005_09_get_set_box(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_10_get_default_property_values(filesystem):
+def test_005_10_get_default_property_values(tmp_path):
     """
     Check the default values.
 
     With no properties given to constructor, the initial values should
     be the default values.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     defaults = item.get_initial_values()
     assert item.get_record_id() == defaults["record_id"]
     assert item.get_remarks() == defaults["remarks"]
@@ -254,13 +255,13 @@ def test_005_10_get_default_property_values(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_11_set_properties_from_dict(filesystem):
+def test_005_11_set_properties_from_dict(tmp_path):
     """
     Check the 'set_properties' function.
 
     The inital values can be set from a dict input.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     item.set_properties(item_values)
     assert item_values["record_id"] == item.get_record_id()
     assert item_values["part_number"] == item.get_part_number()
@@ -273,25 +274,25 @@ def test_005_11_set_properties_from_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_12_item_get_properties_size(filesystem):
+def test_005_12_item_get_properties_size(tmp_path):
     """
     Check the size of the properties dict.
 
     There should be 8 members.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     assert len(item.get_properties()) == len(item_values)
     datafile_close(parts_file)
 
 
-def test_005_13_item_from_partial_dict(filesystem):
+def test_005_13_item_from_partial_dict(tmp_path):
     """
     Initialize a new Item with a sparse dict of values.
 
     The resulting properties should mach the input values with the
     missing values replaced with default values.
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     assembly = item_values["assembly"]
     del item_values["assembly"]
     item = Item(parts_file, item_values)
@@ -307,7 +308,7 @@ def test_005_13_item_from_partial_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_005_14_get_properties_from_database(filesystem):
+def test_005_14_get_properties_from_database(tmp_path):
     """
     Access the database for the item properties.
 
@@ -315,7 +316,7 @@ def test_005_14_get_properties_from_database(filesystem):
     record_id key. The actual read and write funtions are in the
     base class "Element".
     """
-    item, parts_file = base_setup(filesystem)
+    item, parts_file = base_setup(tmp_path)
     item = Item(parts_file, item_values)
     record_id = item.add()
     assert record_id == 1

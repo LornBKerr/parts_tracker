@@ -25,9 +25,9 @@ changes = {
 }
 
 
-def test_000_01_table_set(filesystem):
+def test_000_01_table_set(tmp_path):
     """Create an empty parts file and verify the required set of tables."""
-    base_directory = filesystem
+    base_directory = filesystem(tmp_path)
     filepath = base_directory + "/testfile.parts"
     parts_file = datafile_create(filepath, table_definition)
     table_names = ["conditions", "items", "order_lines", "orders", "parts", "sources"]
@@ -41,9 +41,9 @@ def test_000_01_table_set(filesystem):
     datafile_close(parts_file)
 
 
-def test_000_02_conditions_table(filesystem):
+def test_000_02_conditions_table(tmp_path):
     """Create an empty parts file and verify the required set of tables."""
-    base_directory = filesystem
+    base_directory = filesystem(tmp_path)
     filepath = base_directory + "/testfile.db"
     parts_file = datafile_create(filepath, table_definition)
 
@@ -65,9 +65,9 @@ def test_000_02_conditions_table(filesystem):
     datafile_close(parts_file)
 
 
-def test_000_03_items_table(filesystem):
+def test_000_03_items_table(tmp_path):
     """Create an empty parts file and verify the required set of tables."""
-    base_directory = filesystem
+    base_directory = filesystem(tmp_path)
     filepath = base_directory + "/testfile.db"
     parts_file = datafile_create(filepath, table_definition)
 
@@ -105,9 +105,9 @@ def test_000_03_items_table(filesystem):
     datafile_close(parts_file)
 
 
-def test_000_04_orderlines_table(filesystem):
+def test_000_04_orderlines_table(tmp_path):
     """Create an empty parts file and verify the required set of tables."""
-    base_directory = filesystem
+    base_directory = filesystem(tmp_path)
     filepath = base_directory + "/testfile.db"
     parts_file = datafile_create(filepath, table_definition)
 
@@ -144,9 +144,9 @@ def test_000_04_orderlines_table(filesystem):
     datafile_close(parts_file)
 
 
-def test_000_05_orders_table(filesystem):
+def test_000_05_orders_table(tmp_path):
     """Create an empty parts file and verify the required set of tables."""
-    base_directory = filesystem
+    base_directory = filesystem(tmp_path)
     filepath = base_directory + "/testfile.db"
     parts_file = datafile_create(filepath, table_definition)
 
@@ -191,9 +191,9 @@ def test_000_05_orders_table(filesystem):
     datafile_close(parts_file)
 
 
-def test_000_06_parts_table(filesystem):
+def test_000_06_parts_table(tmp_path):
     """Create an empty parts file and verify the required set of tables."""
-    base_directory = filesystem
+    base_directory = filesystem(tmp_path)
     filepath = base_directory + "/testfile.db"
     parts_file = datafile_create(filepath, table_definition)
 
@@ -225,9 +225,9 @@ def test_000_06_parts_table(filesystem):
     datafile_close(parts_file)
 
 
-def test_000_07_sources_table(filesystem):
+def test_000_07_sources_table(tmp_path):
     """Create an empty parts file and verify the required set of tables."""
-    base_directory = filesystem
+    base_directory = filesystem(tmp_path)
     filepath = base_directory + "/testfile.db"
     parts_file = datafile_create(filepath, table_definition)
 

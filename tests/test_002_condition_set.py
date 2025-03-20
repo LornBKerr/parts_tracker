@@ -5,7 +5,7 @@ File:       test_002_condition_set.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
-Version:    1.0.0
+Version:    1.0.1
 """
 
 import os
@@ -27,29 +27,31 @@ from test_data import condition_columns, condition_value_set
 from elements import ConditionSet
 from pages import table_definition
 
-file_version = "1.0.0"
+file_version = "1.0.1"
 changes = {
     "1.0.0": "Initial release",
+    "1.0.1": "Changed all test funtions to have 'tmp_path' as parameter instead of 'filesystem' and as parameter to filesystem in the body.",
 }
 
 parts_filename = "parts_test.parts"
 
 
-def base_setup(filesystem):
-    filename = filesystem + "/" + parts_filename
+def base_setup(tmp_path):
+    base_directory = filesystem(tmp_path)
+    filename = base_directory + "/" + parts_filename
     parts_file = datafile_create(filename, table_definition)
     condition_set = ConditionSet(parts_file)
     return (condition_set, parts_file)
 
 
-def test_002_01_constr(filesystem):
+def test_002_01_constr(tmp_path):
     """
     ConditionSet Extends ElementSet.
 
     The 'table' must be "conditions" and 'parts_file' needs to be the
     initializing parts_file.
     """
-    condition_set, parts_file = base_setup(filesystem)
+    condition_set, parts_file = base_setup(tmp_path)
     assert isinstance(condition_set, ConditionSet)
     assert isinstance(condition_set, ElementSet)
     assert condition_set.get_table() == "conditions"
@@ -57,12 +59,12 @@ def test_002_01_constr(filesystem):
     datafile_close(parts_file)
 
 
-def test_002_02_set_property_set_empty(filesystem):
+def test_002_02_set_property_set_empty(tmp_path):
     """
     The 'property_set', a list of 'Conmditions'", is empty when set to
     None or when the table is empty.
     """
-    condition_set, parts_file = base_setup(filesystem)
+    condition_set, parts_file = base_setup(tmp_path)
     assert isinstance(condition_set.get_property_set(), list)
     condition_set.set_property_set(None)
     assert isinstance(condition_set.get_property_set(), list)
@@ -76,12 +78,12 @@ def test_002_02_set_property_set_empty(filesystem):
     datafile_close(parts_file)
 
 
-def test_002_03_selected_rows(filesystem):
+def test_002_03_selected_rows(tmp_path):
     """
     The 'property_set', a list of Conmditions", should contain the
     requested subset of conditions.
     """
-    condition_set, parts_file = base_setup(filesystem)
+    condition_set, parts_file = base_setup(tmp_path)
     load_datafile_table(
         parts_file, "conditions", condition_columns, condition_value_set
     )

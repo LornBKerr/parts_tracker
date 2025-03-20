@@ -35,21 +35,22 @@ changes = {
 parts_filename = "parts_test.parts"
 
 
-def base_setup(filesystem):
-    filename = filesystem + "/" + parts_filename
+def base_setup(tmp_path):
+    base_directory = filesystem(tmp_path)
+    filename = base_directory + "/" + parts_filename
     parts_file = datafile_create(filename, table_definition)
     order_line_set = OrderLineSet(parts_file)
     return (order_line_set, parts_file)
 
 
-def test_010_01_constr(filesystem):
+def test_010_01_constr(tmp_path):
     """
     OrderLineSet Extends ElementSet.
 
     The 'table' must be "order_lines" and 'parts_file' needs to be the
     initializing parts_file.
     """
-    order_line_set, parts_file = base_setup(filesystem)
+    order_line_set, parts_file = base_setup(tmp_path)
     assert isinstance(order_line_set, OrderLineSet)
     assert isinstance(order_line_set, ElementSet)
     assert order_line_set.get_table() == "order_lines"
@@ -57,12 +58,12 @@ def test_010_01_constr(filesystem):
     datafile_close(parts_file)
 
 
-def test_010_02_property_set_empty(filesystem):
+def test_010_02_property_set_empty(tmp_path):
     """
     The 'property_set', a list of 'Parts'", is empty when set to
     None or when the table is empty.
     """
-    order_line_set, parts_file = base_setup(filesystem)
+    order_line_set, parts_file = base_setup(tmp_path)
     assert isinstance(order_line_set.get_property_set(), list)
     order_line_set.set_property_set(None)
     assert isinstance(order_line_set.get_property_set(), list)
@@ -76,12 +77,12 @@ def test_010_02_property_set_empty(filesystem):
     datafile_close(parts_file)
 
 
-def test_010_03_selected_rows(filesystem):
+def test_010_03_selected_rows(tmp_path):
     """
     The 'property_set', a list of 'OrderLinesarts', should contain the
     requested subset of OrderLines.
     """
-    order_line_set, parts_file = base_setup(filesystem)
+    order_line_set, parts_file = base_setup(tmp_path)
     load_datafile_table(
         parts_file, "order_lines", order_line_columns, order_line_value_set
     )
@@ -97,13 +98,13 @@ def test_010_03_selected_rows(filesystem):
     datafile_close(parts_file)
 
 
-def test_008_4_selected_rows_limit(filesystem):
+def test_008_4_selected_rows_limit(tmp_path):
     """
     The 'property_set', a list of 'Parts', should contain the
     requested subset of Items ordered by record_id and the number of
     rows given by 'limit'.
     """
-    order_line_set, parts_file = base_setup(filesystem)
+    order_line_set, parts_file = base_setup(tmp_path)
     load_datafile_table(
         parts_file, "order_lines", order_line_columns, order_line_value_set
     )
@@ -117,13 +118,13 @@ def test_008_4_selected_rows_limit(filesystem):
     datafile_close(parts_file)
 
 
-def test_008_05_selected_rows_limit_offset(filesystem):
+def test_008_05_selected_rows_limit_offset(tmp_path):
     """
     The 'property_set', a list of 'Parts', should contain the
     requested subset of Items ordered by record_id and the number of
     rows given by 'limit' starting at 'offset' number of records.
     """
-    order_line_set, parts_file = base_setup(filesystem)
+    order_line_set, parts_file = base_setup(tmp_path)
     load_datafile_table(
         parts_file, "order_lines", order_line_columns, order_line_value_set
     )

@@ -5,7 +5,7 @@ File:       test_007_part.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022, 2023 Lorn B Kerr
 License:    MIT, see file License
-Version:    1.0.0
+Version:    1.0.1
 """
 
 import os
@@ -27,10 +27,12 @@ from test_data import item_columns, item_value_set, part_columns, part_value_set
 from elements import ItemSet, Part
 from pages import table_definition
 
-file_version = "1.0.0"
+file_version = "1.0.1"
 changes = {
     "1.0.0": "Initial release",
+    "1.0.1": "Changed all test funtions to have 'tmp_path' as parameter instead of 'filesystem' and as parameter to filesystem in the body.",
 }
+
 
 parts_filename = "parts_test.parts"
 part_values = {
@@ -42,20 +44,21 @@ part_values = {
 }
 
 
-def base_setup(filesystem):
-    filename = filesystem + "/" + parts_filename
+def base_setup(tmp_path):
+    base_directory = filesystem(tmp_path)
+    filename = base_directory + "/" + parts_filename
     parts_file = datafile_create(filename, table_definition)
     part = Part(parts_file)
     return (part, parts_file)
 
 
-def test_007_01_constr(filesystem):
+def test_007_01_constr(tmp_path):
     """
     Part Extends Element.
 
     Check the types of class variables and default values.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     assert isinstance(part, Part)
     assert isinstance(part, Element)
     # default values.
@@ -69,26 +72,26 @@ def test_007_01_constr(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_02_get_table(filesystem):
-    part, parts_file = base_setup(filesystem)
+def test_007_02_get_table(tmp_path):
+    part, parts_file = base_setup(tmp_path)
     assert part.get_table() == "parts"
     datafile_close(parts_file)
 
 
-def test_007_03_get_parts_file(filesystem):
-    part, parts_file = base_setup(filesystem)
+def test_007_03_get_parts_file(tmp_path):
+    part, parts_file = base_setup(tmp_path)
     assert part.get_datafile() == parts_file
     datafile_close(parts_file)
 
 
-def test_007_04_get_set_part_number(filesystem):
+def test_007_04_get_set_part_number(tmp_path):
     """
     Get and set the part_number property.
 
     The property 'part_number' is required and is a string between 1 and
     30 characters long.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     defaults = part.get_initial_values()
     part._set_property("part_number", part_values["part_number"])
     assert part_values["part_number"] == part.get_part_number()
@@ -104,7 +107,7 @@ def test_007_04_get_set_part_number(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_05_get_set_source(filesystem):
+def test_007_05_get_set_source(tmp_path):
     """
     Get and set the source property.
 
@@ -112,7 +115,7 @@ def test_007_05_get_set_source(filesystem):
     allowed source values are held in the 'sources' table in the parts
     file.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     defaults = part.get_initial_values()
     part._set_property("source", part_values["source"])
     assert part_values["source"] == part.get_source()
@@ -128,14 +131,14 @@ def test_007_05_get_set_source(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_06_get_set_description(filesystem):
+def test_007_06_get_set_description(tmp_path):
     """
     Get and set the description property.
 
     The property 'description' is required and is a string between 1
     and 255 characters long.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     defaults = part.get_initial_values()
     part._set_property("description", part_values["description"])
     assert part_values["description"] == part.get_description()
@@ -151,14 +154,14 @@ def test_007_06_get_set_description(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_07_item_get_default_property_values(filesystem):
+def test_007_07_item_get_default_property_values(tmp_path):
     """
     Check the default values.
 
     With no properties given to consturctor, the initial values should be
     the default values.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     defaults = part.get_initial_values()
     assert part.get_record_id() == defaults["record_id"]
     assert part.get_remarks() == defaults["remarks"]
@@ -168,13 +171,13 @@ def test_007_07_item_get_default_property_values(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_08_set_properties_from_dict(filesystem):
+def test_007_08_set_properties_from_dict(tmp_path):
     """
     Check the 'set_properties' function.
 
     The inital values can be set from a dict input.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     part.set_properties(part_values)
     assert part_values["record_id"] == part.get_record_id()
     assert part_values["remarks"] == part.get_remarks()
@@ -184,24 +187,24 @@ def test_007_08_set_properties_from_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_09_get_properties_size(filesystem):
+def test_007_09_get_properties_size(tmp_path):
     """
     Check the size of the properties dict.
 
     There should be 5 members.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     assert len(part.get_properties()) == len(part_values)
     datafile_close(parts_file)
 
 
-def test_007_10_part_from_dict(filesystem):
+def test_007_10_part_from_dict(tmp_path):
     """
     Initialize a new Item with a dict of values.
 
     The resulting properties should match the input values.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     part = Part(parts_file, part_values)
     assert part_values["record_id"] == part.get_record_id()
     assert part_values["part_number"] == part.get_part_number()
@@ -211,14 +214,14 @@ def test_007_10_part_from_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_12_part_from_partial_dict(filesystem):
+def test_007_12_part_from_partial_dict(tmp_path):
     """
     Initialize a new Item with a sparse dict of values.
 
     The resulting properties should mach the input values with the
     missing values replaced with default values.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     del part_values["source"]
     part = Part(parts_file, part_values)
     assert part_values["record_id"] == part.get_record_id()
@@ -229,14 +232,14 @@ def test_007_12_part_from_partial_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_13_get_total_quantity(filesystem):
+def test_007_13_get_total_quantity(tmp_path):
     """
     Check the total quantity for a part from the database.
 
     For the given part_number check that the total quantity reflected
     is the same as he total quantity held in the database table 'items'.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     load_datafile_table(parts_file, "items", item_columns, item_value_set)
     part = Part(parts_file, part_values)
     item_set = ItemSet(parts_file, "part_number", part.get_part_number())
@@ -248,13 +251,13 @@ def test_007_13_get_total_quantity(filesystem):
     datafile_close(parts_file)
 
 
-def test_007_14_correct_column_name(filesystem):
+def test_007_14_correct_column_name(tmp_path):
     """
     Check the name of the key column in the database.
 
     The column name must be one of None, 'record_id', or 'part_number'.
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     load_datafile_table(parts_file, "parts", part_columns, part_value_set)
     part = Part(parts_file, part_value_set[0][0], "record_id")
     part.get_record_id() == part_value_set[0][0]
@@ -267,7 +270,7 @@ def test_007_14_correct_column_name(filesystem):
     part.get_part_number() == ""
 
 
-def test_007_15_get_properties_from_database(filesystem):
+def test_007_15_get_properties_from_database(tmp_path):
     """
     Access the database for the part properties.
 
@@ -275,7 +278,7 @@ def test_007_15_get_properties_from_database(filesystem):
     record_id key. The actual read and write funtions are in the
     base class "Element".
     """
-    part, parts_file = base_setup(filesystem)
+    part, parts_file = base_setup(tmp_path)
     part = Part(parts_file, part_values)
     record_id = part.add()
     assert record_id == 1

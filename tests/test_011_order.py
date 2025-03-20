@@ -42,20 +42,21 @@ order_values = {
 }
 
 
-def base_setup(filesystem):
-    filename = filesystem + "/" + parts_filename
+def base_setup(tmp_path):
+    base_directory = filesystem(tmp_path)
+    filename = base_directory + "/" + parts_filename
     parts_file = datafile_create(filename, table_definition)
     order = Order(parts_file)
     return (order, parts_file)
 
 
-def test_011_01_constr(filesystem):
+def test_011_01_constr(tmp_path):
     """
     Order Extends Element.
 
     Check the types of class variables and default values.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     assert isinstance(order, Order)
     assert isinstance(order, Element)
     # default values.
@@ -73,19 +74,19 @@ def test_011_01_constr(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_02_get_table(filesystem):
-    order, parts_file = base_setup(filesystem)
+def test_011_02_get_table(tmp_path):
+    order, parts_file = base_setup(tmp_path)
     assert order.get_table() == "orders"
     datafile_close(parts_file)
 
 
-def test_011_03_get_parts_file(filesystem):
-    order, parts_file = base_setup(filesystem)
+def test_011_03_get_parts_file(tmp_path):
+    order, parts_file = base_setup(tmp_path)
     assert order.get_datafile() == parts_file
     datafile_close(parts_file)
 
 
-def test_011_04_get_set_order_number(filesystem):
+def test_011_04_get_set_order_number(tmp_path):
     """
     Get and set the order_number property.
 
@@ -94,7 +95,7 @@ def test_011_04_get_set_order_number(filesystem):
     the nnn is a three digit sequential number starting at '001' for the
     next order in the year.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("order_number", order_values["order_number"])
     assert order_values["order_number"] == order.get_order_number()
@@ -110,7 +111,7 @@ def test_011_04_get_set_order_number(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_05_get_set_date(filesystem):
+def test_011_05_get_set_date(tmp_path):
     """
     Get and set the date property.
 
@@ -119,7 +120,7 @@ def test_011_05_get_set_date(filesystem):
     the nnn is a three digit sequential number starting at '001' for the
     next order in the year.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("date", None)
     assert defaults["date"] == order.get_date()
@@ -147,7 +148,7 @@ def test_011_05_get_set_date(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_06_get_set_source(filesystem):
+def test_011_06_get_set_source(tmp_path):
     """
     Get and set the source property.
 
@@ -155,7 +156,7 @@ def test_011_06_get_set_source(filesystem):
     entry in the datafile, a small intege. The allowed source values
     are held in the 'sources' table in the datafile.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("source", None)
     assert defaults["source"] == order.get_source()
@@ -171,14 +172,14 @@ def test_011_06_get_set_source(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_07_get_set_subtotal(filesystem):
+def test_011_07_get_set_subtotal(tmp_path):
     """
     Get and set the subtotal property.
 
     The property 'subtotal' is optional and is displayed as dollars and
     cents (nnn.nn). The subtotal defaults to 0.00.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("subtotal", None)
     assert defaults["subtotal"] == order.get_subtotal()
@@ -195,14 +196,14 @@ def test_011_07_get_set_subtotal(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_08_get_set_shipping(filesystem):
+def test_011_08_get_set_shipping(tmp_path):
     """
     Get and set the shipping property.
 
     The property 'shipping' is optional and is displayed as dollars and
     cents (nnn.nn). The shipping defaults to 0.00.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("shipping", None)
     assert defaults["shipping"] == order.get_shipping()
@@ -219,14 +220,14 @@ def test_011_08_get_set_shipping(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_09_get_set_discount(filesystem):
+def test_011_09_get_set_discount(tmp_path):
     """
     Get and set the discount property.
 
     The property 'discount' is optional and is displayed as dollars and
     cents (nnn.nn). The discount defaults to 0.00.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("discount", None)
     assert defaults["discount"] == order.get_discount()
@@ -245,14 +246,14 @@ def test_011_09_get_set_discount(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_10_get_set_tax(filesystem):
+def test_011_10_get_set_tax(tmp_path):
     """
     Get and set the tax property.
 
     The property 'tax' is optional and is displayed as dollars and
     cents (nnn.nn). The tax defaults to 0.00.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("tax", None)
     assert defaults["tax"] == order.get_tax()
@@ -269,14 +270,14 @@ def test_011_10_get_set_tax(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_11_get_set_total(filesystem):
+def test_011_11_get_set_total(tmp_path):
     """
     Get and set the total property.
 
     The property 'total' is optional and is displayed as dollars and
     cents (nnn.nn). The total defaults to 0.00.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     order._set_property("total", None)
     assert defaults["total"] == order.get_total()
@@ -293,14 +294,14 @@ def test_011_11_get_set_total(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_12_get_default_property_values(filesystem):
+def test_011_12_get_default_property_values(tmp_path):
     """
     Check the default values.
 
     With no properties given to constructor, the initial values should
     be the default values.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     defaults = order.get_initial_values()
     assert order.get_record_id() == defaults["record_id"]
     assert order.get_order_number() == defaults["order_number"]
@@ -315,13 +316,13 @@ def test_011_12_get_default_property_values(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_13_set_order_from_dict(filesystem):
+def test_011_13_set_order_from_dict(tmp_path):
     """
     Check the 'set_properties' function.
 
     The inital values can be set from a dict input.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     order.set_properties(order_values)
     assert order.get_record_id() == order_values["record_id"]
     assert order.get_order_number() == order_values["order_number"]
@@ -336,26 +337,26 @@ def test_011_13_set_order_from_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_14_get_properties_size(filesystem):
+def test_011_14_get_properties_size(tmp_path):
     """
     Check the size of the properties dict.
 
     There should be 10 members.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     data = order.get_properties()
     assert len(data) == len(order_values)
     datafile_close(parts_file)
 
 
-def test_011_15_set_order_from_partial_dict(filesystem):
+def test_011_15_set_order_from_partial_dict(tmp_path):
     """
     Initialize a new Order with a sparse dict of values.
 
     The resulting properties should mach the input values with the
     missing values replaced with default values.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     del order_values["source"]
     order = Order(parts_file, order_values)
     assert order.get_record_id() == order_values["record_id"]
@@ -371,13 +372,13 @@ def test_011_15_set_order_from_partial_dict(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_16_correct_column_name(filesystem):
+def test_011_16_correct_column_name(tmp_path):
     """
     Check the name of the key column in the database.
 
     The column name must be one of None, 'record_id', or 'order_number'.
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     order = Order(parts_file, None, "a_column")
     defaults = order.get_initial_values()
     assert order.get_record_id() == defaults["record_id"]
@@ -393,7 +394,7 @@ def test_011_16_correct_column_name(filesystem):
     datafile_close(parts_file)
 
 
-def test_011_17_get_properties_from_database(filesystem):
+def test_011_17_get_properties_from_database(tmp_path):
     """
     Access the database for the order properties.
 
@@ -401,7 +402,7 @@ def test_011_17_get_properties_from_database(filesystem):
     record_id key. The actual read and write funtions are in the
     base class "Element".
     """
-    order, parts_file = base_setup(filesystem)
+    order, parts_file = base_setup(tmp_path)
     order = Order(parts_file, order_values)
     record_id = order.add()
     assert record_id == 1
