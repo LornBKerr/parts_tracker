@@ -16,7 +16,7 @@
 -e ../lbk_library/
 
 # General Requirements
-PyQt6
+PySide6
 
 # Testing Requirements
 black
