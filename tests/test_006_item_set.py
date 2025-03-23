@@ -24,7 +24,7 @@ from lbk_library.testing_support import (
 )
 from test_data import item_columns, item_value_set
 
-from elements import Item, ItemSet
+from elements import ItemSet
 from pages import table_definition
 
 file_version = "1.0.0"

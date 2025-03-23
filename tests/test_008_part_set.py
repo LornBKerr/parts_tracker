@@ -24,7 +24,7 @@ from lbk_library.testing_support import (
 )
 from test_data import part_columns, part_value_set
 
-from elements import Part, PartSet
+from elements import PartSet
 from pages import table_definition
 
 file_version = "1.0.1"

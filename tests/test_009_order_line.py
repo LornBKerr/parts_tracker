@@ -19,9 +19,8 @@ from lbk_library.testing_support import (
     datafile_close,
     datafile_create,
     filesystem,
-    load_datafile_table,
 )
-from test_data import order_line_columns, order_line_value_set
+from test_data import order_line_value_set
 
 from elements import OrderLine
 from pages import table_definition
@@ -59,7 +58,7 @@ def test_009_01_constr(tmp_path):
     Check the types of class variables and default values.
     """
     order_line, parts_file = base_setup(tmp_path)
-    assert type(order_line) == OrderLine
+    assert type(order_line) is OrderLine
     # default values.
     assert isinstance(order_line._defaults, dict)
     assert len(order_line._defaults) == 7
@@ -108,7 +107,7 @@ def test_009_04_get_set_order_number(tmp_path):
     assert order_line.get_order_number() == order_line_values["order_number"]
     result = order_line.set_order_number(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     assert order_line.get_order_number() == defaults["order_number"]
     result = order_line.set_order_number("")
     assert not result["valid"]
@@ -151,31 +150,31 @@ def test_009_05_get_set_line(tmp_path):
     assert order_line.get_line() == 10
     result = order_line.set_line(None)
     assert order_line.get_line() == defaults["line"]
-    assert result["entry"] == None
-    assert result["valid"] == False
+    assert result["entry"] is None
+    assert result["valid"] is False
     assert len(result["msg"]) > 0
     result = order_line.set_line("")
     assert order_line.get_line() == defaults["line"]
     assert result["entry"] == ""
-    assert result["valid"] == False
+    assert result["valid"] is False
     result = order_line.set_line(defaults["line"])
     assert order_line.get_line() == defaults["line"]
     assert order_line.get_line() == defaults["line"]
     assert result["entry"] == defaults["line"]
-    assert result["valid"] == False
+    assert result["valid"] is False
     result = order_line.set_line(0)
     assert order_line.get_line() == defaults["line"]
     assert result["entry"] == defaults["line"]
-    assert result["valid"] == False
+    assert result["valid"] is False
     result = order_line.set_line(10)
     assert order_line.get_line() == 10
     assert result["entry"] == 10
-    assert result["valid"] == True
+    assert result["valid"] is True
     assert len(result["msg"]) == 0
     result = order_line.set_line(-10)
     assert order_line.get_line() == defaults["line"]
     assert result["entry"] == -10
-    assert result["valid"] == False
+    assert result["valid"] is False
     datafile_close(parts_file)
 
 
@@ -194,7 +193,7 @@ def test_009_06_get_set_part_number(tmp_path):
     assert order_line._defaults["part_number"] == order_line.get_part_number()
     result = order_line.set_part_number(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = order_line.set_part_number(order_line_values["part_number"])
     assert result["valid"]
     assert result["entry"] == order_line_values["part_number"]
@@ -243,31 +242,31 @@ def test_009_08_get_set_quantity(tmp_path):
 
     result = order_line.set_quantity(None)
     assert order_line.get_quantity() == defaults["quantity"]
-    assert result["entry"] == None
-    assert result["valid"] == False
+    assert result["entry"] is None
+    assert result["valid"] is False
     assert len(result["msg"]) > 0
     result = order_line.set_quantity("")
     assert order_line.get_quantity() == defaults["quantity"]
     assert result["entry"] == 0
-    assert result["valid"] == True
+    assert result["valid"] is True
 
     result = order_line.set_quantity(defaults["quantity"])
     assert order_line.get_quantity() == defaults["quantity"]
     assert result["entry"] == defaults["quantity"]
-    assert result["valid"] == True
+    assert result["valid"] is True
     result = order_line.set_quantity(0)
     assert order_line.get_quantity() == 0
     assert result["entry"] == 0
-    assert result["valid"] == True
+    assert result["valid"] is True
     result = order_line.set_quantity(10)
     assert order_line.get_quantity() == 10
     assert result["entry"] == 10
-    assert result["valid"] == True
+    assert result["valid"] is True
     assert len(result["msg"]) == 0
     result = order_line.set_quantity(-10)
     assert order_line.get_quantity() == defaults["quantity"]
     assert result["entry"] == -10
-    assert result["valid"] == False
+    assert result["valid"] is False
     datafile_close(parts_file)
 
 

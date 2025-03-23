@@ -66,7 +66,7 @@ def test_005_01_constr(tmp_path):
     assert item.defaults["assembly"] == ""
     assert item.defaults["quantity"] == 0
     assert item.defaults["condition"] == 0
-    assert item.defaults["installed"] == False
+    assert not item.defaults["installed"]
     assert item.defaults["remarks"] == ""
     assert item.defaults["box"] == 0
     datafile_close(parts_file)
@@ -101,7 +101,7 @@ def test_005_04_get_set_part_number(tmp_path):
     assert item.defaults["part_number"] == item.get_part_number()
     result = item.set_part_number(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = item.set_part_number(item_values["part_number"])
     assert result["valid"]
     assert result["entry"] == item_values["part_number"]
@@ -147,7 +147,7 @@ def test_005_06_get_set_quantity(tmp_path):
     assert defaults["quantity"] == item.get_quantity()
     result = item.set_quantity(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = item.set_quantity(-1)
     assert not result["valid"]
     assert result["entry"] == -1
@@ -224,7 +224,7 @@ def test_005_09_get_set_box(tmp_path):
     assert defaults["box"] == item.get_box()
     result = item.set_box(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = item.set_box(-1)
     assert not result["valid"]
     assert result["entry"] == -1

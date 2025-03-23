@@ -103,7 +103,7 @@ def test_011_04_get_set_order_number(tmp_path):
     assert order._defaults["order_number"] == order.get_order_number()
     result = order.set_order_number(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = order.set_order_number(order_values["order_number"])
     assert result["valid"]
     assert result["entry"] == order_values["order_number"]

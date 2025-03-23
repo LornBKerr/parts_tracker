@@ -99,7 +99,7 @@ def test_007_04_get_set_part_number(tmp_path):
     assert part._defaults["part_number"] == part.get_part_number()
     result = part.set_part_number(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = part.set_part_number(part_values["part_number"])
     assert result["valid"]
     assert result["entry"] == part_values["part_number"]
@@ -123,7 +123,7 @@ def test_007_05_get_set_source(tmp_path):
     assert part._defaults["source"] == part.get_source()
     result = part.set_source(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = part.set_source(part_values["source"])
     assert result["valid"]
     assert result["entry"] == part_values["source"]
@@ -146,7 +146,7 @@ def test_007_06_get_set_description(tmp_path):
     assert part._defaults["description"] == part.get_description()
     result = part.set_description(None)
     assert not result["valid"]
-    assert result["entry"] == None
+    assert result["entry"] is None
     result = part.set_description(part_values["description"])
     assert result["valid"]
     assert result["entry"] == part_values["description"]

@@ -24,7 +24,7 @@ from lbk_library.testing_support import (
 )
 from test_data import order_columns, order_value_set
 
-from elements import Order, OrderSet
+from elements import OrderSet
 from pages import table_definition
 
 file_version = "1.0.0"
