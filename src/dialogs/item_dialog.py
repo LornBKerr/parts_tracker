@@ -13,12 +13,17 @@ from typing import ClassVar
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt6 import uic
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from elements import Condition, ConditionSet, Item, ItemSet, Part, PartSet, Source
+from forms import Ui_ItemDialog
 
-from .base_dialog import BaseDialog
+from .dialog_support import (
+    PART_ORDER_COL_NAMES,
+    PART_ORDER_COL_WIDTHS,
+    fill_order_table_fields,
+    set_table_header,
+)
 
 file_version = "1.0.0"
 changes = {
@@ -26,7 +31,7 @@ changes = {
 }
 
 
-class ItemDialog(BaseDialog):
+class ItemDialog(Dialog, Ui_ItemDialog):
     """
     Edit an Item in the parts file.
 
@@ -72,41 +77,39 @@ class ItemDialog(BaseDialog):
                 defaults to Dialog.EDIT_ELEMENT
         """
         super().__init__(parent, parts_file, operation)
+        self.setupUi(self)
         self.set_element(Item(parts_file, record_id))
-        self.form = uic.loadUi("./src/forms/item.ui", self)
 
         self.set_tooltips()
         self.set_error_frames()
         self.set_visible_add_edit_elements()
-        self.set_table_header(
-            self.form.order_table,
-            BaseDialog.PART_ORDER_COL_NAMES,
-            BaseDialog.PART_ORDER_COL_WIDTHS,
-            len(BaseDialog.PART_ORDER_COL_WIDTHS) - 1,
+        set_table_header(
+            self.order_table,
+            PART_ORDER_COL_NAMES,
+            PART_ORDER_COL_WIDTHS,
+            len(PART_ORDER_COL_WIDTHS) - 1,
         )
         self.fill_dialog_fields()
 
         # Set dialog button actions
-        self.form.cancel_button.clicked.connect(
+        self.cancel_button.clicked.connect(
             lambda: self.action_cancel(self.action_save, Dialog.SAVE_DONE)
         )
-        self.form.delete_button.clicked.connect(self.action_delete)
-        self.form.save_done_button.clicked.connect(
+        self.delete_button.clicked.connect(self.action_delete)
+        self.save_done_button.clicked.connect(
             lambda: self.action_save(Dialog.SAVE_DONE)
         )
-        self.form.save_new_button.clicked.connect(
-            lambda: self.action_save(Dialog.SAVE_NEW)
-        )
+        self.save_new_button.clicked.connect(lambda: self.action_save(Dialog.SAVE_NEW))
 
         # set dialog element actions
-        self.form.assembly_edit.editingFinished.connect(self.action_assembly_edit)
-        self.form.condition_combo.activated.connect(self.action_condition_combo)
-        self.form.quantity_edit.editingFinished.connect(self.action_quantity_edit)
-        self.form.installed_chkbox.stateChanged.connect(self.action_installed_checkbox)
-        self.form.part_number_combo.activated.connect(self.action_part_number_combo)
-        self.form.remarks_edit.editingFinished.connect(self.action_remarks_edit)
-        self.form.storage_box_edit.editingFinished.connect(self.action_storage_box_edit)
-        self.form.record_id_combo.activated.connect(self.action_record_id_changed)
+        self.assembly_edit.editingFinished.connect(self.action_assembly_edit)
+        self.condition_combo.activated.connect(self.action_condition_combo)
+        self.quantity_edit.editingFinished.connect(self.action_quantity_edit)
+        self.installed_chkbox.stateChanged.connect(self.action_installed_checkbox)
+        self.part_number_combo.activated.connect(self.action_part_number_combo)
+        self.remarks_edit.editingFinished.connect(self.action_remarks_edit)
+        self.storage_box_edit.editingFinished.connect(self.action_storage_box_edit)
+        self.record_id_combo.activated.connect(self.action_record_id_changed)
 
     def action_delete(self) -> None:
         """
@@ -117,8 +120,8 @@ class ItemDialog(BaseDialog):
         successful, a failure message is displayed.
         """
         item = self.get_element()
-        if self.form.record_id_combo.currentText():
-            item.set_record_id(self.form.record_id_combo.currentText())
+        if self.record_id_combo.currentText():
+            item.set_record_id(self.record_id_combo.currentText())
             valid = item.delete()
             if valid:
                 self.clear_dialog()
@@ -156,9 +159,9 @@ class ItemDialog(BaseDialog):
             self.message_box_exec(self.message_warning_invalid())
             return_value = 1
         else:
-            if self.form.record_id_combo.currentText() == "":
+            if self.record_id_combo.currentText() == "":
                 success = item.add()
-            elif int(self.form.record_id_combo.currentText()) > 0:
+            elif int(self.record_id_combo.currentText()) > 0:
                 success = item.update()
 
             if success:
@@ -190,7 +193,7 @@ class ItemDialog(BaseDialog):
         change.
         """
         item = self.get_element()
-        new_index = self.form.record_id_combo.currentText()
+        new_index = self.record_id_combo.currentText()
         if new_index == "":
             new_index = -1
 
@@ -207,19 +210,19 @@ class ItemDialog(BaseDialog):
                 # save item with previous item number, then change to new item number
                 save_result = item.update()
                 if save_result:
-                    self.set_element(Item(self.get_parts_file(), new_index))
+                    self.set_element(Item(self.get_datafile(), new_index))
                     self.fill_dialog_fields()
                 else:
                     self.message_box_exec(self.message_warning_failed("Item Save"))
 
             elif result == QMessageBox.StandardButton.No:
                 # don't save, change to new item number
-                self.set_element(Item(self.get_parts_file(), new_index))
+                self.set_element(Item(self.get_datafile(), new_index))
                 self.fill_dialog_fields()
 
             elif result == QMessageBox.StandardButton.Cancel:
                 # cancel the record_id change, restore previous item number
-                self.form.record_id_combo.setCurrentText(str(prev_index))
+                self.record_id_combo.setCurrentText(str(prev_index))
 
     def action_assembly_edit(self) -> None:
         """
@@ -235,10 +238,10 @@ class ItemDialog(BaseDialog):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        self.form.assembly_edit.setText(self.form.assembly_edit.text().upper())
+        self.assembly_edit.setText(self.assembly_edit.text().upper())
         return self.validate_dialog_entry(
             self.get_element().set_assembly,
-            self.form.assembly_edit,
+            self.assembly_edit,
             ItemDialog.TOOLTIPS["assembly"],
         )
 
@@ -258,19 +261,19 @@ class ItemDialog(BaseDialog):
                 ['msg'] - (str) Error message if not valid
         """
         result = {"entry": "", "valid": False, "msg": ""}
-        indices = ConditionSet(self.get_parts_file()).build_option_list("record_id")
-        combo_index = self.form.condition_combo.currentIndex()
+        indices = ConditionSet(self.get_datafile()).build_option_list("record_id")
+        combo_index = self.condition_combo.currentIndex()
         if combo_index >= 0 and combo_index < len(indices):
             index = int(indices[combo_index])
             result = self.get_element().set_condition(index)
         else:
             result["msg"] = "A Condition must be selected. "
         if result["valid"]:
-            self.form.condition_combo.error = False
-            self.form.condition_combo.setToolTip(ItemDialog.TOOLTIPS["condition"])
+            self.condition_combo.error = False
+            self.condition_combo.setToolTip(ItemDialog.TOOLTIPS["condition"])
         else:
-            self.form.condition_combo.error = True
-            self.form.condition_combo.setToolTip(
+            self.condition_combo.error = True
+            self.condition_combo.setToolTip(
                 result["msg"] + ItemDialog.TOOLTIPS["condition"]
             )
         return result
@@ -286,7 +289,7 @@ class ItemDialog(BaseDialog):
                     False otherwise
                 ['msg'] - (str) Error message if not valid
         """
-        return self.get_element().set_installed(self.form.installed_chkbox.isChecked())
+        return self.get_element().set_installed(self.installed_chkbox.isChecked())
 
     def action_part_number_combo(self) -> None:
         """
@@ -305,11 +308,11 @@ class ItemDialog(BaseDialog):
         item = self.get_element()
         result = self.validate_dialog_entry(
             self.get_element().set_part_number,
-            self.form.part_number_combo,
+            self.part_number_combo,
             ItemDialog.TOOLTIPS["part_number"],
         )
         self.fill_part_fields(result["entry"])
-        self.fill_order_table_fields(result["entry"])
+        fill_order_table_fields(self.get_datafile(), result["entry"], self.order_table)
         return result
 
     def action_quantity_edit(self) -> None:
@@ -324,11 +327,11 @@ class ItemDialog(BaseDialog):
                  ['msg'] - (str) Error message if not valid
         """
         item = self.get_element()
-        if self.form.quantity_edit.text() == "":
-            self.form.quantity_edit.setText("0")
+        if self.quantity_edit.text() == "":
+            self.quantity_edit.setText("0")
         return self.validate_dialog_entry(
             self.get_element().set_quantity,
-            self.form.quantity_edit,
+            self.quantity_edit,
             ItemDialog.TOOLTIPS["quantity"],
         )
 
@@ -347,15 +350,15 @@ class ItemDialog(BaseDialog):
                 ['msg'] - (str) Error message if not valid
         """
         item = self.get_element()
-        if self.form.storage_box_edit.text() == "":
-            self.form.storage_box_edit.setText("0")
+        if self.storage_box_edit.text() == "":
+            self.storage_box_edit.setText("0")
         result = self.validate_dialog_entry(
             self.get_element().set_box,
-            self.form.storage_box_edit,
+            self.storage_box_edit,
             ItemDialog.TOOLTIPS["box"],
         )
-        if self.form.storage_box_edit.text() == "0":
-            self.form.storage_box_edit.setText("")
+        if self.storage_box_edit.text() == "0":
+            self.storage_box_edit.setText("")
         return result
 
     def action_remarks_edit(self) -> dict:
@@ -373,7 +376,7 @@ class ItemDialog(BaseDialog):
         """
         return self.validate_dialog_entry(
             self.get_element().set_remarks,
-            self.form.remarks_edit,
+            self.remarks_edit,
             ItemDialog.TOOLTIPS["remarks"],
         )
 
@@ -386,34 +389,36 @@ class ItemDialog(BaseDialog):
         item = self.get_element()
         initial_conditions = deepcopy(item.get_properties())
         self.set_combo_box_selections(
-            self.form.record_id_combo,
-            ItemSet(self.get_parts_file(), None, None, "record_id").build_option_list(
+            self.record_id_combo,
+            ItemSet(self.get_datafile(), None, None, "record_id").build_option_list(
                 "record_id"
             ),
             str(item.get_record_id()),
         )
-        self.form.assembly_edit.setText(item.get_assembly())
+        self.assembly_edit.setText(item.get_assembly())
         self.set_combo_box_selections(
-            self.form.condition_combo,
-            ConditionSet(self.get_parts_file()).build_option_list("condition"),
-            Condition(self.get_parts_file(), item.get_condition()).get_condition(),
+            self.condition_combo,
+            ConditionSet(self.get_datafile()).build_option_list("condition"),
+            Condition(self.get_datafile(), item.get_condition()).get_condition(),
         )
         qty = item.get_quantity()
-        self.form.quantity_edit.setText(str(qty))
+        self.quantity_edit.setText(str(qty))
         if qty == 0:
-            self.form.quantity_edit.setText("")
-        self.form.installed_chkbox.setChecked(bool(item.get_installed()))
+            self.quantity_edit.setText("")
+        self.installed_chkbox.setChecked(bool(item.get_installed()))
         initial_conditions["installed"] = bool(item.get_installed())
         box = item.get_box()
         if box == 0 or box is None:
             box = ""
-        self.form.storage_box_edit.setText(str(box))
-        self.form.remarks_edit.setText(item.get_remarks())
+        self.storage_box_edit.setText(str(box))
+        self.remarks_edit.setText(item.get_remarks())
 
         self.fill_part_fields(item.get_part_number())
 
         if item.get_part_number():
-            self.fill_order_table_fields(item.get_part_number())
+            fill_order_table_fields(
+                self.get_datafile(), item.get_part_number(), self.order_table
+            )
 
         item.set_initial_values(initial_conditions)
 
@@ -421,7 +426,7 @@ class ItemDialog(BaseDialog):
             item.set_value_valid_flag("record_id", True)
 
         if not item.get_record_id():
-            self.form.delete_button.setEnabled(False)
+            self.delete_button.setEnabled(False)
 
     def fill_part_fields(self, part_number: str = None) -> None:
         """
@@ -433,58 +438,58 @@ class ItemDialog(BaseDialog):
             part_number (String) The part number for the current item,
                 default is None
         """
-        part = Part(self.get_parts_file(), part_number, "part_number")
+        part = Part(self.get_datafile(), part_number, "part_number")
         self.set_combo_box_selections(
-            self.form.part_number_combo,
-            PartSet(self.get_parts_file(), None, None, "part_number").build_option_list(
+            self.part_number_combo,
+            PartSet(self.get_datafile(), None, None, "part_number").build_option_list(
                 "part_number"
             ),
             part_number,
         )
-        source = Source(self.get_parts_file(), part.get_source()).get_source()
-        self.form.source_text.setText(source)
-        self.form.description_text.setText(part.get_description())
-        self.form.remarks_text.setText(part.get_remarks())
-        self.form.total_qty_text.setText(str(part.get_total_quantity()))
+        source = Source(self.get_datafile(), part.get_source()).get_source()
+        self.source_text.setText(source)
+        self.description_text.setText(part.get_description())
+        self.remarks_text.setText(part.get_remarks())
+        self.total_qty_text.setText(str(part.get_total_quantity()))
 
     def clear_dialog(self) -> None:
         """Clear the dialog entry fields."""
-        self.set_element(Item(self.get_parts_file()))
+        self.set_element(Item(self.get_datafile()))
         self.fill_dialog_fields()
 
     def set_visible_add_edit_elements(self) -> None:
         """Set the visible dialog elements depending on operation flag."""
         if self.get_operation() == Dialog.ADD_ELEMENT:
-            self.form.record_id_combo.setEnabled(False)
-            self.form.record_id_combo.setToolTip(self.TOOLTIPS["record_id_tbd"])
+            self.record_id_combo.setEnabled(False)
+            self.record_id_combo.setToolTip(self.TOOLTIPS["record_id_tbd"])
             self.get_element().set_value_valid_flag("record_id", True)
-            self.form.setWindowTitle("Add an Item")
+            self.setWindowTitle("Add an Item")
         else:
-            self.form.record_id_combo.setEnabled(True)
-            self.form.record_id_combo.setToolTip(ItemDialog.TOOLTIPS["record_id"])
-            self.form.setWindowTitle("Edit an Item")
+            self.record_id_combo.setEnabled(True)
+            self.record_id_combo.setToolTip(ItemDialog.TOOLTIPS["record_id"])
+            self.setWindowTitle("Edit an Item")
 
     def set_tooltips(self):
         """Set the element tooltips."""
-        self.form.assembly_edit.setToolTip(self.TOOLTIPS["assembly"])
-        self.form.storage_box_edit.setToolTip(self.TOOLTIPS["box"])
-        self.form.cancel_button.setToolTip(self.TOOLTIPS["cancel"])
-        self.form.condition_combo.setToolTip(self.TOOLTIPS["condition"])
-        self.form.delete_button.setToolTip(self.TOOLTIPS["delete"])
-        self.form.installed_chkbox.setToolTip(self.TOOLTIPS["installed"])
-        self.form.part_number_combo.setToolTip(self.TOOLTIPS["part_number"])
-        self.form.quantity_edit.setToolTip(self.TOOLTIPS["quantity"])
-        self.form.record_id_combo.setToolTip(self.TOOLTIPS["record_id"])
-        self.form.remarks_edit.setToolTip(self.TOOLTIPS["remarks"])
-        self.form.save_new_button.setToolTip(self.TOOLTIPS["save_new"])
-        self.form.save_done_button.setToolTip(self.TOOLTIPS["save_done"])
+        self.assembly_edit.setToolTip(self.TOOLTIPS["assembly"])
+        self.storage_box_edit.setToolTip(self.TOOLTIPS["box"])
+        self.cancel_button.setToolTip(self.TOOLTIPS["cancel"])
+        self.condition_combo.setToolTip(self.TOOLTIPS["condition"])
+        self.delete_button.setToolTip(self.TOOLTIPS["delete"])
+        self.installed_chkbox.setToolTip(self.TOOLTIPS["installed"])
+        self.part_number_combo.setToolTip(self.TOOLTIPS["part_number"])
+        self.quantity_edit.setToolTip(self.TOOLTIPS["quantity"])
+        self.record_id_combo.setToolTip(self.TOOLTIPS["record_id"])
+        self.remarks_edit.setToolTip(self.TOOLTIPS["remarks"])
+        self.save_new_button.setToolTip(self.TOOLTIPS["save_new"])
+        self.save_done_button.setToolTip(self.TOOLTIPS["save_done"])
 
     def set_error_frames(self) -> None:
         """Attach and initialize the error_frames."""
-        self.form.assembly_edit.set_error_frame(self.form.assembly_frame)
-        self.form.condition_combo.set_error_frame(self.form.condition_frame)
-        self.form.part_number_combo.set_error_frame(self.form.part_number_frame)
-        self.form.quantity_edit.set_error_frame(self.form.quantity_frame)
-        self.form.record_id_combo.set_error_frame(self.form.record_id_frame)
-        self.form.storage_box_edit.set_error_frame(self.form.storage_box_frame)
-        self.form.remarks_edit.set_error_frame(self.form.remarks_frame)
+        self.assembly_edit.set_error_frame(self.assembly_frame)
+        self.condition_combo.set_error_frame(self.condition_frame)
+        self.part_number_combo.set_error_frame(self.part_number_frame)
+        self.quantity_edit.set_error_frame(self.quantity_frame)
+        self.record_id_combo.set_error_frame(self.record_id_frame)
+        self.storage_box_edit.set_error_frame(self.storage_box_frame)
+        self.remarks_edit.set_error_frame(self.remarks_frame)
