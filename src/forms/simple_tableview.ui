@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>simple_tableview_form</class>
- <widget class="QDialog" name="simple_tableview_form">
+ <class>TableDialog</class>
+ <widget class="QDialog" name="TableDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>350</y>
+     <y>360</y>
      <width>110</width>
      <height>31</height>
     </rect>
@@ -75,19 +75,6 @@
    </property>
    <property name="text">
     <string>Show record Id</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="copyright_label">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>380</y>
-     <width>181</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Copyright 2024, Lorn B Kerr</string>
    </property>
   </widget>
  </widget>
