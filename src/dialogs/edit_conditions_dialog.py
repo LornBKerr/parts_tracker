@@ -5,7 +5,7 @@ File:       edit_conditions_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2024 Lorn B Kerr
 License:    MIT, see file License
-Version:    1.0.0
+Version:    1.1.0
 """
 
 from lbk_library import DataFile as PartsFile
@@ -19,7 +19,8 @@ from forms import Ui_TableDialog
 
 file_version = "1.0.0"
 changes = {
-   "1.0.0": "Initial release",
+    "1.0.0": "Initial release",
+    "1.1.0": "Changed library 'PyQt5' to 'PySide6' and code cleanup",
 }
 
 
@@ -180,11 +181,10 @@ class EditConditionsDialog(Dialog, Ui_TableDialog):
                 )
             self._change_in_process = False
 
-
     def close_form(self) -> None:
         """
         Close the form when the "close" button is clicked.
-        
+
         Returns:
             bool True if form closes, false if not.
         """
