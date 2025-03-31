@@ -5,7 +5,7 @@ File:       save_assembly_list_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2023 Lorn B Kerr
 License:    MIT, see file License
-Version:    1.0.0
+Version:    1.1.0
 """
 
 import base64
@@ -14,22 +14,20 @@ import os
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt6 import uic
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtWidgets import QFileDialog, QLineEdit, QMainWindow, QMessageBox
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import QFileDialog, QLineEdit, QMainWindow, QMessageBox
 
 from elements import Item, Part
+from forms import Ui_SaveAssemblyListForm
 
-from .base_dialog import BaseDialog
-
-file_version = "1.0.0"
+file_version = "1.1.0"
 changes = {
     "1.0.0": "Initial release",
+    "1.1.0": "Changed library 'PyQt5' to 'PySide6' and code cleanup",
 }
 
 
-class AssemblyListDialog(BaseDialog):
+class AssemblyListDialog(Dialog, Ui_SaveAssemblyListForm):
     """Write a Comma Separated Values file of portions of listing."""
 
     FOLDER_OPEN_PNG = b"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAilJREFUeNqMU89rE0EYfTuz1m790ZJoQeghaqulXoSIp568CQpePOit4EHw4D8gQkWo/0TxXFAIePEgxaMQBLXWH1VqW9NWC6HGkGyyOzPr901mN1lQcNjHzM5+7+173+541QXY4XmYo6mE/xsbSYLHvPATt0Mbp2auP7rXqn2CRzcjx04iGJuAkEN5qu+junjzYXZrTPZIHDo+hZHiaUTNPbR2P2P7wytMla/l+F4QgDgiI2my4CCMVjBRF/7BUYydmUWnE6HZ6kATIyFXFrTm2pQnNDlwkInWyKBITEVoNEPs7jX6AgSuTXk+1abDCrALa00ItMMuCi6jcbOgGrpk0usbfNXvgTQ6hlaxC+chVjojpjM3gDiSVmUSeD0YwTdMsNYZGoo2mTgI7sGleXOXHs0Z6yAXQfUjaGkdcObeZ3YzCTTCkMSti1wEchDDuAiGeqDooXHENIJH8367zTF8+6J3m2A1q8jWtQOvldZ/jXBrvWjrmSfuLwEsEisM2f+AGtmDsg5sqwc+IQvU621bzzz+o4IHT1D4HeJowk2zn7L3L3CTpJQ5eHRo7lQOP3uxgiXiBZxjmFB4u4GdyZdPm6XpC8OjxRMH+E1b39Z+vVmZX+WsxSOI0mat/8TO4jI+MpcF9hlffuD219Xq87X31cuF8Ymzk+culsjB5kIFN2anUb9aRjcVoNp+5wcPChEqFLuyXaud/75Vu0Imxmm7Tuj+61z/EWAAclGWg0KibYEAAAAASUVORK5CYII="
@@ -51,7 +49,8 @@ class AssemblyListDialog(BaseDialog):
     TOOLTIPS = {
         "start_assy": "Required: Enter the start Assembly code, 1 to 15 characters.",
         "stop_assy": "Required: Enter the stop Assembly code, 1 to 15 characters.",
-        "save_loc": "Enter the location to save the generated file.\nClick the icon to select a different file location.",
+        "save_loc": "Enter the location to save the generated file.\n"
+        + "Click the icon to select a different file location.",
         "cancel": "Close the form.",
         "generate": "Generate and save the requested listing, then clear the form",
     }
@@ -61,7 +60,6 @@ class AssemblyListDialog(BaseDialog):
         self,
         parent: QMainWindow,
         parts_file: PartsFile,
-        config: QSettings,
         operation: int = Dialog.EDIT_ELEMENT,
     ) -> None:
         """
@@ -73,56 +71,56 @@ class AssemblyListDialog(BaseDialog):
             config (QSettings) the current configuration settings.
         """
         super().__init__(parent, parts_file, Dialog.EDIT_ELEMENT)
+        self.setupUi(self)
         self.parent = parent
         self.parts_file = parts_file
-        self.config = config
-        self.form = uic.loadUi("./src/forms/assembly_list_dialog.ui", self)
+        self.config = parent.config
         self.set_tool_tips()
 
         folder_open_pixmap = QPixmap()
         folder_open_pixmap.loadFromData(base64.b64decode(self.FOLDER_OPEN_PNG))
 
-        self.new_location_action = self.form.save_location_edit.addAction(
-            QIcon(folder_open_pixmap), QLineEdit.ActionPosition.TrailingPosition
+        self.new_location_action = self.save_location_edit.addAction(
+            QIcon(folder_open_pixmap), QLineEdit.TrailingPosition
         )
-        self.form.save_location_edit.setText(config.value("settings/list_files_dir"))
+        self.save_location_edit.setText(self.config.value("settings/list_files_dir"))
 
-        self.form.start_edit.editingFinished.connect(self.action_start_changed)
-        self.form.stop_edit.editingFinished.connect(self.action_stop_changed)
+        self.start_edit.editingFinished.connect(self.action_start_changed)
+        self.stop_edit.editingFinished.connect(self.action_stop_changed)
         self.new_location_action.triggered.connect(self.action_new_location)
         self.save_location_edit.editingFinished.connect(
             self.action_save_location_changed
         )
-        self.form.save_button.clicked.connect(self.action_write_file)
-        self.form.cancel_button.clicked.connect(self.close)
+        self.save_button.clicked.connect(self.action_write_file)
+        self.cancel_button.clicked.connect(self.close)
 
     def set_tool_tips(self):
         """Set the tab order for the dialog elements."""
-        self.form.start_edit.setToolTip(self.TOOLTIPS["start_assy"])
-        self.form.stop_edit.setToolTip(self.TOOLTIPS["stop_assy"])
-        self.form.save_location_edit.setToolTip(self.TOOLTIPS["save_loc"])
-        self.form.cancel_button.setToolTip(self.TOOLTIPS["cancel"])
-        self.form.save_button.setToolTip(self.TOOLTIPS["generate"])
+        self.start_edit.setToolTip(self.TOOLTIPS["start_assy"])
+        self.stop_edit.setToolTip(self.TOOLTIPS["stop_assy"])
+        self.save_location_edit.setToolTip(self.TOOLTIPS["save_loc"])
+        self.cancel_button.setToolTip(self.TOOLTIPS["cancel"])
+        self.save_button.setToolTip(self.TOOLTIPS["generate"])
 
     def action_start_changed(self):
         """Force Start value to upper case."""
-        self.form.start_edit.setText(self.form.start_edit.text().upper())
+        self.start_edit.setText(self.start_edit.text().upper())
 
     def action_stop_changed(self):
         """Force Stop value to upper case."""
-        self.form.stop_edit.setText(self.form.stop_edit.text().upper())
+        self.stop_edit.setText(self.stop_edit.text().upper())
 
     def action_new_location(self):
         """Set the directory to save the generated file."""
-        location = self.form.save_location_edit.text()
+        location = self.save_location_edit.text()
         directory = QFileDialog.getExistingDirectory(
             self,
             "Open Directory",
             location,
-            QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontResolveSymlinks,
+            QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks,
         )
         if directory:
-            self.form.save_location_edit.setText(directory)
+            self.save_location_edit.setText(str(directory))
 
             if directory != self.config.value("settings/list_files_dir"):
                 # update the config file
@@ -130,7 +128,7 @@ class AssemblyListDialog(BaseDialog):
 
     def action_save_location_changed(self):
         """Validate tor create he save location directory."""
-        location = self.form.save_location_edit.text()
+        location = self.save_location_edit.text()
         if not os.path.exists(location):
             os.makedirs(location, 0o644)
 
@@ -144,7 +142,7 @@ class AssemblyListDialog(BaseDialog):
         itemset = self.get_itemset(start, stop)
 
         # Get the location to save the file
-        location = self.form.save_location_edit.text()
+        location = self.save_location_edit.text()
 
         filename = location + os.sep + "" + start + "_" + stop + ".csv"
         msg_string = ""
@@ -160,8 +158,8 @@ class AssemblyListDialog(BaseDialog):
         msg_box = self.message_information_close(msg_string + ".\nDo another?")
         action = self.message_box_exec(msg_box)
         if action == QMessageBox.StandardButton.Yes:
-            self.form.start_edit.setText("")
-            self.form.stop_edit.setText("")
+            self.start_edit.setText("")
+            self.stop_edit.setText("")
         else:
             self.close()
 
@@ -179,8 +177,8 @@ class AssemblyListDialog(BaseDialog):
                 start (str) the start assembly code.
                 stop (str) the last assembly code to be processed.
         """
-        start = self.form.start_edit.text().upper()
-        stop = self.form.stop_edit.text().upper()
+        start = self.start_edit.text().upper()
+        stop = self.stop_edit.text().upper()
 
         # if both start and end are blank, set full listing
         if start == "" and stop == "":
