@@ -5,7 +5,7 @@ File:       item_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2020 - 2023 Lorn B Kerr
 License:    MIT, see file LICENSE
-Version:    1.0.0
+Version:    1.1.0
 """
 
 from copy import deepcopy
@@ -28,6 +28,7 @@ from .dialog_support import (
 file_version = "1.0.0"
 changes = {
     "1.0.0": "Initial release",
+    "1.1.0": "Changed library 'PyQt5' to 'PySide6' and code cleanup",
 }
 
 
