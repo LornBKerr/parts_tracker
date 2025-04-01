@@ -5,7 +5,7 @@ File:       part_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2020 - 2023 Lorn B Kerr
 License:    MIT, see file LICENSE
-Version:    1.0.0
+Version:    1.1.0
 """
 
 from copy import deepcopy
@@ -13,21 +13,33 @@ from typing import ClassVar
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog
-from PyQt6 import uic
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
 
-from elements import ItemSet, Part, PartSet, Source, SourceSet
+from elements import (
+    ItemSet,
+    Part,
+    PartSet,
+    Source,
+    SourceSet,
+)
+from forms import Ui_PartForm
 
-from .base_dialog import BaseDialog
+from .dialog_support import (
+    PART_ORDER_COL_NAMES,
+    PART_ORDER_COL_WIDTHS,
+    fill_order_table_fields,
+    set_table_header,
+)
 
 file_version = "1.0.0"
 changes = {
     "1.0.0": "Initial release",
+    "1.1.0": "Changed library 'PyQt5' to 'PySide6' and code cleanup",
 }
 
 
-class PartDialog(BaseDialog):
+class PartDialog(Dialog, Ui_PartForm):
     """
     Edit a Part in the data file.
 
@@ -78,20 +90,21 @@ class PartDialog(BaseDialog):
                 defaults to Dialog.EDIT_ELEMENT
         """
         super().__init__(parent, parts_file, operation)
+        self.setupUi(self)
         self.set_element(Part(parts_file, record_id))
-        self.form = uic.loadUi("./src/forms/part.ui", self)
+
         self.set_tooltips()
         self.set_error_frames()
         self.set_visible_add_edit_elements()
 
-        self.set_table_header(
-            self.form.order_table,
-            BaseDialog.PART_ORDER_COL_NAMES,
-            BaseDialog.PART_ORDER_COL_WIDTHS,
-            len(BaseDialog.PART_ORDER_COL_WIDTHS) - 1,
+        set_table_header(
+            self.order_table,
+            PART_ORDER_COL_NAMES,
+            PART_ORDER_COL_WIDTHS,
+            len(PART_ORDER_COL_WIDTHS) - 1,
         )
-        self.set_table_header(
-            self.form.item_table,
+        set_table_header(
+            self.item_table,
             self.ITEM_TABLE_COL_NAMES,
             self.ITEM_TABLE_COL_WIDTHS,
             len(self.ITEM_TABLE_COL_WIDTHS) - 1,
@@ -99,26 +112,22 @@ class PartDialog(BaseDialog):
         self.fill_dialog_fields()
 
         # set button actions
-        self.form.cancel_button.clicked.connect(
+        self.cancel_button.clicked.connect(
             lambda: self.action_cancel(self.action_save, Dialog.SAVE_DONE)
         )
-        self.form.delete_button.clicked.connect(self.action_delete)
-        self.form.save_done_button.clicked.connect(
+        self.delete_button.clicked.connect(self.action_delete)
+        self.save_done_button.clicked.connect(
             lambda: self.action_save(Dialog.SAVE_DONE)
         )
-        self.form.save_new_button.clicked.connect(
-            lambda: self.action_save(Dialog.SAVE_NEW)
-        )
+        self.save_new_button.clicked.connect(lambda: self.action_save(Dialog.SAVE_NEW))
         # set dialog element actions
-        self.form.part_number_edit.editingFinished.connect(
+        self.part_number_edit.editingFinished.connect(
             self.action_part_number_edit_changed
         )
-        self.form.part_number_combo.activated.connect(
-            self.action_part_number_combo_changed
-        )
-        self.form.source_combo.activated.connect(self.action_source_changed)
-        self.form.description_edit.editingFinished.connect(self.action_description_edit)
-        self.form.remarks_edit.editingFinished.connect(self.action_remarks_changed)
+        self.part_number_combo.activated.connect(self.action_part_number_combo_changed)
+        self.source_combo.activated.connect(self.action_source_changed)
+        self.description_edit.editingFinished.connect(self.action_description_edit)
+        self.remarks_edit.editingFinished.connect(self.action_remarks_changed)
 
     def action_delete(self) -> None:
         """
@@ -129,8 +138,8 @@ class PartDialog(BaseDialog):
         Part's record_id, then the dialog is cleared for another entry.
         """
         part = self.get_element()
-        if self.form.record_id_edit.text():
-            part.set_record_id(self.form.record_id_edit.text())
+        if self.record_id_edit.text():
+            part.set_record_id(self.record_id_edit.text())
             valid = part.delete()
             if valid:
                 self.clear_dialog()
@@ -168,9 +177,9 @@ class PartDialog(BaseDialog):
             self.message_warning_invalid()
             return_value = 1
         else:
-            if self.form.record_id_edit.text() == "":
+            if self.record_id_edit.text() == "":
                 success = part.add()
-            elif int(self.form.record_id_edit.text()) > 0:
+            elif int(self.record_id_edit.text()) > 0:
                 success = part.update()
 
             if success:
@@ -195,26 +204,26 @@ class PartDialog(BaseDialog):
         Handle the entry of a new part number in the text box. update
         the changed and valid flags as needed.
         """
-        partset = PartSet(self.get_parts_file(), None, None, "part_number")
+        partset = PartSet(self.get_datafile(), None, None, "part_number")
         part_number_list = partset.build_option_list("part_number")
-        part_number = self.form.part_number_edit.text()
+        part_number = self.part_number_edit.text()
 
         # if the part number is not in the current set, add
         if part_number not in part_number_list:
             part = self.get_element()
-            result = part.set_part_number(self.form.part_number_edit.text())
-            self.save_buttons_enable(part.have_values_changed() and result["valid"])
+            result = part.set_part_number(self.part_number_edit.text())
+            # self.save_buttons_enable(part.have_values_changed() and result["valid"])
             if result["valid"]:
-                self.form.part_number_edit.setToolTip(self.TOOLTIPS["part_number_edit"])
-                self.form.part_number_edit.error = False
+                self.part_number_edit.setToolTip(self.TOOLTIPS["part_number_edit"])
+                self.part_number_edit.error = False
             else:
-                self.form.part_number_edit.setToolTip(
+                self.part_number_edit.setToolTip(
                     result["msg"] + "; " + self.TOOLTIPS["part_number_edit"]
                 )
-                self.form.part_number_edit.error = True
+                self.part_number_edit.error = True
 
         else:  # change to edit mode
-            self.form.part_number_combo.setCurrentText(part_number)
+            self.part_number_combo.setCurrentText(part_number)
             self.set_operation(Dialog.EDIT_ELEMENT)
             self.set_visible_add_edit_elements()
             self.action_part_number_combo_changed()
@@ -230,13 +239,11 @@ class PartDialog(BaseDialog):
         the changed part info or cancelling the part number change.
         """
         part = self.get_element()
-        new_part_number = self.form.part_number_combo.currentText()
+        new_part_number = self.part_number_combo.currentText()
 
         # Are there unsaved edits
         if not part.have_values_changed():
-            self.set_element(
-                Part(self.get_parts_file(), new_part_number, "part_number")
-            )
+            self.set_element(Part(self.get_datafile(), new_part_number, "part_number"))
             self.fill_dialog_fields()
         else:
             prev_part_number = part.get_part_number()
@@ -246,7 +253,7 @@ class PartDialog(BaseDialog):
                 save_result = part.update()
                 if save_result:
                     self.set_element(
-                        Part(self.get_parts_file(), new_part_number, "part_number")
+                        Part(self.get_datafile(), new_part_number, "part_number")
                     )
                     self.fill_dialog_fields()
                 else:
@@ -254,12 +261,12 @@ class PartDialog(BaseDialog):
             elif result == QMessageBox.StandardButton.No:
                 # don't save, change to new part number
                 self.set_element(
-                    Part(self.get_parts_file(), new_part_number, "part_number")
+                    Part(self.get_datafile(), new_part_number, "part_number")
                 )
                 self.fill_dialog_fields()
             elif result == QMessageBox.StandardButton.Cancel:
                 # cancel save, restore previous part number
-                self.form.part_number_combo.setCurrentText(prev_part_number)
+                self.part_number_combo.setCurrentText(prev_part_number)
 
     def action_source_changed(self) -> dict:
         """
@@ -275,19 +282,19 @@ class PartDialog(BaseDialog):
                 ['msg'] - (str) Error message if not valid
         """
         result = {"entry": "", "valid": False, "msg": ""}
-        indices = SourceSet(self.get_parts_file()).build_option_list("record_id")
-        combo_index = self.form.source_combo.currentIndex()
+        indices = SourceSet(self.get_datafile()).build_option_list("record_id")
+        combo_index = self.source_combo.currentIndex()
         if combo_index >= 0 and combo_index < len(indices):
             index = int(indices[combo_index])
             result = self.get_element().set_source(index)
         else:
             result["msg"] = "A Condition must be selected. "
         if result["valid"]:
-            self.form.source_combo.error = False
-            self.form.source_combo.setToolTip(PartDialog.TOOLTIPS["source_combo"])
+            self.source_combo.error = False
+            self.source_combo.setToolTip(PartDialog.TOOLTIPS["source_combo"])
         else:
-            self.form.source_combo.error = True
-            self.form.source_combo.setToolTip(
+            self.source_combo.error = True
+            self.source_combo.setToolTip(
                 result["msg"] + PartDialog.TOOLTIPS["source_combo"]
             )
         return result
@@ -307,7 +314,7 @@ class PartDialog(BaseDialog):
         """
         return self.validate_dialog_entry(
             self.get_element().set_description,
-            self.form.description_edit,
+            self.description_edit,
             PartDialog.TOOLTIPS["description_edit"],
         )
 
@@ -326,7 +333,7 @@ class PartDialog(BaseDialog):
         """
         return self.validate_dialog_entry(
             self.get_element().set_remarks,
-            self.form.remarks_edit,
+            self.remarks_edit,
             PartDialog.TOOLTIPS["remarks_edit"],
         )
 
@@ -338,37 +345,38 @@ class PartDialog(BaseDialog):
         """
         part = self.get_element()
         initial_conditions = deepcopy(part.get_properties())
-        self.form.record_id_edit.setText(str(part.get_record_id()))
+        self.record_id_edit.setText(str(part.get_record_id()))
         if part.get_record_id() != 0:
-            self.form.record_id_edit.setText(str(part.get_record_id()))
-        self.form.part_number_edit.setText(part.get_part_number())
+            self.record_id_edit.setText(str(part.get_record_id()))
+        self.part_number_edit.setText(part.get_part_number())
         self.set_combo_box_selections(
-            self.form.part_number_combo,
-            PartSet(self.get_parts_file(), None, None, "part_number").build_option_list(
+            self.part_number_combo,
+            PartSet(self.get_datafile(), None, None, "part_number").build_option_list(
                 "part_number"
             ),
             part.get_part_number(),
         )
         self.set_combo_box_selections(
-            self.form.source_combo,
-            SourceSet(self.get_parts_file(), None, None, "source").build_option_list(
+            self.source_combo,
+            SourceSet(self.get_datafile(), None, None, "source").build_option_list(
                 "source"
             ),
-            Source(self.get_parts_file(), part.get_source()).get_source(),
+            Source(self.get_datafile(), part.get_source()).get_source(),
         )
-        self.form.description_edit.setText(part.get_description())
-        self.form.remarks_edit.setText(part.get_remarks())
-        self.form.total_qty_text.setText(str(part.get_total_quantity()))
+        self.description_edit.setText(part.get_description())
+        self.remarks_edit.setText(part.get_remarks())
+        self.total_qty_text.setText(str(part.get_total_quantity()))
 
         self.fill_item_table(part.get_part_number())
-        self.fill_order_table_fields(part.get_part_number())
+        fill_order_table_fields(
+            self.get_datafile(), part.get_part_number(), self.order_table
+        )
 
         part.set_initial_values(initial_conditions)
         if self.get_operation() == Dialog.ADD_ELEMENT:
             part.set_value_valid_flag("record_id", True)
 
-        self.form.delete_button.setEnabled(bool(part.get_record_id()))
-        self.save_buttons_enable(False)
+        self.delete_button.setEnabled(bool(part.get_record_id()))
 
     def fill_item_table(self, part_number: str = None) -> None:
         """
@@ -378,11 +386,11 @@ class PartDialog(BaseDialog):
             part_number (String) the part number being displayed; if
             no part number, the table is cleared.
         """
-        table = self.form.item_table
+        table = self.item_table
         table.clearContents()
         if part_number:
             itemset = ItemSet(
-                self.get_parts_file(), "part_number", part_number, "assembly"
+                self.get_datafile(), "part_number", part_number, "assembly"
             )
             table.setRowCount(itemset.get_number_elements())
             if len(itemset.get_property_set()) > 0:
@@ -408,44 +416,44 @@ class PartDialog(BaseDialog):
 
     def clear_dialog(self) -> None:
         """Clear the dialog entry fields."""
-        self.set_element(Part(self.get_parts_file()))
+        self.set_element(Part(self.get_datafile()))
         self.fill_dialog_fields()
 
     def set_visible_add_edit_elements(self) -> None:
         """Set the visible dialog elements depending on operation flag."""
         # always hide the entry index
-        self.form.record_id_edit.hide()
+        self.record_id_edit.hide()
 
         if self.get_operation() == Dialog.ADD_ELEMENT:
-            self.form.part_number_combo.hide()
-            self.form.part_number_combo.setEnabled(False)
-            self.form.part_number_edit.show()
-            self.form.part_number_edit.setEnabled(True)
+            self.part_number_combo.hide()
+            self.part_number_combo.setEnabled(False)
+            self.part_number_edit.show()
+            self.part_number_edit.setEnabled(True)
             self.get_element().set_value_valid_flag("record_id", True)
-            self.form.setWindowTitle("Add a Part")
+            self.setWindowTitle("Add a Part")
         else:  # editing an existing part
-            self.form.part_number_combo.show()
-            self.form.part_number_combo.setEnabled(True)
-            self.form.part_number_edit.hide()
-            self.form.part_number_edit.setEnabled(False)
-            self.form.setWindowTitle("Edit a Part")
+            self.part_number_combo.show()
+            self.part_number_combo.setEnabled(True)
+            self.part_number_edit.hide()
+            self.part_number_edit.setEnabled(False)
+            self.setWindowTitle("Edit a Part")
 
     def set_tooltips(self):
         """Set the element tooltips."""
-        self.form.part_number_combo.setToolTip(self.TOOLTIPS["part_number_combo"]),
-        self.form.part_number_edit.setToolTip(self.TOOLTIPS["part_number_edit"]),
-        self.form.source_combo.setToolTip(self.TOOLTIPS["source_combo"]),
-        self.form.description_edit.setToolTip(self.TOOLTIPS["description_edit"]),
-        self.form.remarks_edit.setToolTip(self.TOOLTIPS["remarks_edit"]),
-        self.form.delete_button.setToolTip(self.TOOLTIPS["delete_button"]),
-        self.form.cancel_button.setToolTip(self.TOOLTIPS["cancel_button"]),
-        self.form.save_new_button.setToolTip(self.TOOLTIPS["save_new_button"]),
-        self.form.save_done_button.setToolTip(self.TOOLTIPS["save_done_button"]),
+        self.part_number_combo.setToolTip(self.TOOLTIPS["part_number_combo"]),
+        self.part_number_edit.setToolTip(self.TOOLTIPS["part_number_edit"]),
+        self.source_combo.setToolTip(self.TOOLTIPS["source_combo"]),
+        self.description_edit.setToolTip(self.TOOLTIPS["description_edit"]),
+        self.remarks_edit.setToolTip(self.TOOLTIPS["remarks_edit"]),
+        self.delete_button.setToolTip(self.TOOLTIPS["delete_button"]),
+        self.cancel_button.setToolTip(self.TOOLTIPS["cancel_button"]),
+        self.save_new_button.setToolTip(self.TOOLTIPS["save_new_button"]),
+        self.save_done_button.setToolTip(self.TOOLTIPS["save_done_button"]),
 
     def set_error_frames(self) -> None:
         """Attach and initialize the error_frames."""
-        self.form.part_number_combo.set_error_frame(self.form.part_number_frame)
-        self.form.part_number_edit.set_error_frame(self.form.part_number_frame)
-        self.form.source_combo.set_error_frame(self.form.source_combo_frame)
-        self.form.description_edit.set_error_frame(self.form.description_edit_frame)
-        self.form.remarks_edit.set_error_frame(self.form.remarks_edit_frame)
+        self.part_number_combo.set_error_frame(self.part_number_frame)
+        self.part_number_edit.set_error_frame(self.part_number_frame)
+        self.source_combo.set_error_frame(self.source_combo_frame)
+        self.description_edit.set_error_frame(self.description_edit_frame)
+        self.remarks_edit.set_error_frame(self.remarks_edit_frame)
