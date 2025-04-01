@@ -166,12 +166,6 @@ def test_105_08_get_itemset(qtbot, tmp_path):
     start = "A"
     end = "ZZZ"
     itemset = dialog.get_itemset(start, end)
-    for i in range(row_count):
-        print(i)
-        print(itemset[i].get_properties())
-q        print(item_value_set[i])
-        print()
-
     assert row_count == len(itemset)
 
     start = "C"
