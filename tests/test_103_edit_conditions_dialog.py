@@ -161,8 +161,8 @@ def test_103_06_data_changed(qtbot, tmp_path):
 
     assert not dialog._change_in_process
 
+
 def test_103_07_close_form(qtbot, tmp_path):
     dialog, parts_file, data_set = setup_table_tests(qtbot, tmp_path)
 
     assert dialog.close_form()
-
