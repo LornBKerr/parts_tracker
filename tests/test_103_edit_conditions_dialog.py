@@ -5,7 +5,7 @@ File:       test_103_edit_conditions_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2024 Lorn B Kerr
 License:    MIT, see file LICENSE
-Version:    1.0.0
+Version:    1.1.0
 """
 
 import os
@@ -32,9 +32,10 @@ from elements import Condition, ConditionSet
 from forms import Ui_TableDialog
 from pages import table_definition
 
-file_version = "1.0.0"
+file_version = "1.1.0"
 changes = {
     "1.0.0": "Initial release",
+    "1.1.0": "Changed library 'PyQt5' to 'PySide6' and code cleanup",
 }
 
 
@@ -56,6 +57,7 @@ def test_103_01_class_type(qtbot, tmp_path):
     assert isinstance(dialog, Ui_TableDialog)
     assert isinstance(dialog, Dialog)
     assert isinstance(dialog.conditions, ConditionSet)
+    datafile_close(parts_file)
 
 
 def test_103_02_build_data_set(qtbot, tmp_path):
@@ -68,12 +70,12 @@ def test_103_02_build_data_set(qtbot, tmp_path):
             assert dataset[row][column] == set[row]._get_property(
                 dialog.COLUMN_NAMES[column]
             )
+    datafile_close(parts_file)
 
 
 def test_103_03_setup_form(qtbot, tmp_path):
     dialog, parts_file, data_set = setup_table_tests(qtbot, tmp_path)
 
-    dialog.setup_form()
     assert dialog.windowTitle() == "Edit Item Conditions"
     assert (
         dialog.form_label.text()
@@ -90,6 +92,7 @@ def test_103_04_append_row(qtbot, tmp_path):
     row_count = dialog.model.rowCount()
     dialog.append_row()
     assert dialog.model.rowCount() == row_count + 1
+    datafile_close(parts_file)
 
 
 def test_103_05_show_record_id(qtbot, tmp_path):
@@ -105,6 +108,7 @@ def test_103_05_show_record_id(qtbot, tmp_path):
     dialog.record_id_checkbox.click()
     assert not dialog.record_id_checkbox.isChecked()
     assert dialog.table.isColumnHidden(dialog.COLUMN_NAMES.index("record_id"))
+    datafile_close(parts_file)
 
 
 def test_103_06_data_changed(qtbot, tmp_path):
@@ -160,9 +164,11 @@ def test_103_06_data_changed(qtbot, tmp_path):
     )
 
     assert not dialog._change_in_process
+    datafile_close(parts_file)
 
 
 def test_103_07_close_form(qtbot, tmp_path):
     dialog, parts_file, data_set = setup_table_tests(qtbot, tmp_path)
 
     assert dialog.close_form()
+    datafile_close(parts_file)
