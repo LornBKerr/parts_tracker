@@ -85,7 +85,7 @@ class EditConditionsDialog(Dialog, Ui_TableDialog):
 
         self.record_id_checkbox.stateChanged.connect(self.show_record_id)
         self.model.dataChanged.connect(self.data_changed)
-        #        self.complete_button.clicked.connect(self.close_form)
+        self.complete_button.clicked.connect(self.close_form)
 
         # this is used in processing the 'dataChanged" signal
         self._change_in_process = False
