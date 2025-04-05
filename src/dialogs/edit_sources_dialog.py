@@ -5,25 +5,26 @@ File:       edit_sources_dialog.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2024 Lorn B Kerr
 License:    MIT, see file License
-Version:    1.0.0
+Version:    1.1.0
 """
 
 from lbk_library import DataFile as PartsFile
 from lbk_library.gui import Dialog, TableModel
-from PyQt6 import uic
-from PyQt6.QtCore import QModelIndex, Qt
-from PyQt6.QtGui import QBrush, QColor
-from PyQt6.QtWidgets import QHeaderView, QMainWindow
+from PySide6.QtCore import QModelIndex, Qt
+from PySide6.QtGui import QBrush, QColor
+from PySide6.QtWidgets import QHeaderView, QMainWindow
 
 from elements import Source, SourceSet
+from forms import Ui_TableDialog
 
 file_version = "1.0.0"
 changes = {
     "1.0.0": "Initial release",
+    "1.1.0": "Changed library 'PyQt5' to 'PySide6' and code cleanup",
 }
 
 
-class EditSourcesDialog(Dialog):
+class EditSourcesDialog(Dialog, Ui_TableDialog):
     """
     Edit the set of possible Part sources.
 
@@ -59,13 +60,14 @@ class EditSourcesDialog(Dialog):
             parts_file (PartsFile) reference to the current open data file.
         """
         super().__init__(parent, parts_file, None)
+        self.setupUi(self)
+
         self.parts_file = parts_file
-        self.form = uic.loadUi("./src/forms/simple_tableview.ui", self)
         self.sources = SourceSet(parts_file)
         self.source_list = self.sources.get_property_set()
         self.dataset = self.build_data_set()
 
-        self.table = self.form.table_view
+        self.table = self.table_view
         self.model = TableModel(
             self.dataset,
             self.HEADER_TITLES,
@@ -86,7 +88,7 @@ class EditSourcesDialog(Dialog):
         self.complete_button.clicked.connect(self.close_form)
 
         # this is used in processing the 'dataChanged" signal
-        self.__change_in_process = False
+        self._change_in_process = False
 
     def build_data_set(self) -> list[list[str]]:
         """
@@ -107,14 +109,8 @@ class EditSourcesDialog(Dialog):
 
     def setup_form(self) -> None:
         """Configure the table."""
-        self.form.setWindowTitle("Edit Part Sources")
-        self.form.form_label.setText(
-            "<b>Add</b> or <b>Edit</b> the set of Part Sources."
-        )
-
-        font = self.form.copyright_label.font()
-        font.setPointSize(7)
-        self.form.copyright_label.setFont(font)
+        self.setWindowTitle("Edit Part Sources")
+        self.form_label.setText("<b>Add</b> or <b>Edit</b> the set of Part Sources.")
 
         self.table.verticalHeader().hide()
         self.table.setColumnHidden(self.COLUMN_NAMES.index("record_id"), True)
@@ -148,22 +144,22 @@ class EditSourcesDialog(Dialog):
             index (QmodelIndex): the first changed table cell.
             index2 (QModelIndex): the last changed table cell. (not used)
         """
-        if self.__change_in_process:
+        if self._change_in_process:
             return
         else:
-            self.__change_in_process = True
+            self._change_in_process = True
             test_result = Source(self.parts_file).set_source(
                 self.model.data(index, Qt.ItemDataRole.EditRole)
             )
-
             if test_result["valid"]:
                 if index.row() < len(self.source_list):
-                    self.source_list[index.row()].set_condition(test_result["entry"])
+                    self.source_list[index.row()].set_source(test_result["entry"])
                     self.source_list[index.row()].update()
                 else:
                     new_source = Source(self.parts_file)
                     new_source.set_source(test_result["entry"])
                     new_source.add()
+                    self.append_row()
 
                 self.model.setData(
                     index,
@@ -173,7 +169,7 @@ class EditSourcesDialog(Dialog):
                 self.model.setData(
                     index, self.NORMAL_BACKGROUND, Qt.ItemDataRole.BackgroundRole
                 )
-                self.append_row()
+
             else:
                 self.model.setData(
                     index,
@@ -183,9 +179,13 @@ class EditSourcesDialog(Dialog):
                 self.model.setData(
                     index, self.ERROR_BACKGROUND, Qt.ItemDataRole.BackgroundRole
                 )
-
-            self.__change_in_process = False
+            self._change_in_process = False
 
     def close_form(self) -> None:
-        """Close the form when the "close" button is clicked."""
-        self.close()
+        """
+        Close the form when the "close" button is clicked.
+
+        Returns:
+            bool True if form closes, false if not.
+        """
+        return self.close()
