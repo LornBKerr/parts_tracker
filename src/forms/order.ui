@@ -318,7 +318,7 @@
    <property name="title">
     <string>  Items Ordered</string>
    </property>
-   <widget class="QTableView" name="order_line_table">
+   <widget class="QTableView" name="table">
     <property name="geometry">
      <rect>
       <x>0</x>
