@@ -17,8 +17,8 @@ src_paths = './src/*'
 [tool.flake8]
 max-line-length = 88
 filename = '*.py'
-exclude = ['*git', '__pycache__', 'docs', 'build', 'dist', '*venv', 'pending', 'tests']
-ignore = ['F841', 'W503', 'E501']
+exclude = ['*git', '__pycache__', 'docs', 'build', 'dist', '*venv', 'pending', 'forms']  #, 'test'
+ignore = ['F841', 'W503', 'E501', 'E402' ]
 per-file-ignores = '__init__.py:F401'
 max-complexity = 11
 
