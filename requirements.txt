@@ -9,9 +9,6 @@
 #
 # ########################################################
 
-# Test PyPi url
---extra-index-url https://test.pypi.org/simple/
-
 # local project library
 -e ../lbk_library/
 
